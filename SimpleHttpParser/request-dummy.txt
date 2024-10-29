@@ -1,0 +1,21 @@
+POST /file/upload HTTP/1.1
+Content-Length: 344
+Content-Type: multipart/form-data; boundary=-----r1_eDOWu7FpA0LJdLwCMLJQapQGu
+Host: localhost:8080
+Connection: Keep-Alive
+User-Agent: Apache-HttpClient/4.3.4 (java 1.5)
+Accept-Encoding: gzip,deflate
+
+-------r1_eDOWu7FpA0LJdLwCMLJQapQGu
+Content-Disposition: form-data; name=text1; filename=uploadFile1.txt
+Content-Type: application/octet-stream
+
+This is first file.
+-------r1_eDOWu7FpA0LJdLwCMLJQapQGu
+Content-Disposition: form-data; name=text2; filename=uploadFile2.txt
+Content-Type: application/octet-stream
+
+This is second file.
+-------r1_eDOWu7FpA0LJdLwCMLJQapQGu--
+
+
