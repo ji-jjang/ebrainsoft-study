@@ -18,8 +18,7 @@ public class SimpleHttpParserApplication {
   private static final String INPUT_FILE_NAME = "request-dummy.txt";
   private static final String OUTPUT_FILE_NAME = "first.txt";
 
-  private static List<Map<String, String>> requestInfos = new ArrayList<>();
-  private Map<String, MultipartFile> multipartFiles = new HashMap<String, MultipartFile>();
+  private static final List<Map<String, String>> requestInfos = new ArrayList<>();
 
   public static void parseMultipartBody(MyMultipartRequest multipartRequest, BufferedReader br)
     throws IOException {
@@ -48,9 +47,9 @@ public class SimpleHttpParserApplication {
         break;
       }
 
-      if (line.startsWith(boundary)) {
+      if (!Objects.isNull(boundary) && line.startsWith(boundary)) {
 
-        if (content.length() != 0) {
+        if (!content.isEmpty()) {
           MockMultipartFile mockMultipartFile = new MockMultipartFile(name, originalFilename,
             contentType, content.toString().getBytes());
           multipartFiles.add(mockMultipartFile);
@@ -146,7 +145,7 @@ public class SimpleHttpParserApplication {
   public static MyMultipartRequest parse(File multipartData) throws IOException {
 
     MyMultipartRequest multipartRequest = new MyMultipartRequest();
-    BufferedReader br = new BufferedReader(new FileReader(FILE_PATH + INPUT_FILE_NAME));
+    BufferedReader br = new BufferedReader(new FileReader(multipartData));
 
     parseHeader(multipartRequest, br);
     parseMultipartBody(multipartRequest, br);
@@ -165,7 +164,7 @@ public class SimpleHttpParserApplication {
 
   public static void main(String[] args) throws IOException {
 
-    File multipartData = new File(FILE_PATH);
+    File multipartData = new File(FILE_PATH + INPUT_FILE_NAME);
     MyMultipartRequest myMultiPartRequest = parse(multipartData);
 
     System.out.println(myMultiPartRequest.getMethod()); // POST
@@ -186,5 +185,10 @@ public class SimpleHttpParserApplication {
     System.out.println(new String(firstFile.getBytes())); // This is first file.
 
     MultipartFileHelper.store(firstFile, FILE_PATH + OUTPUT_FILE_NAME);
+
+    MultipartFile secondFile = myMultiPartRequest.getMultipartFile("text2");
+    System.out.println(secondFile.getName()); // text2
+    System.out.println(secondFile.getContentType()); // application/octet-stream
+    System.out.println(new String(secondFile.getBytes())); // This is second file.
   }
 }
