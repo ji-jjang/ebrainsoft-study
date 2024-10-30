@@ -1,8 +1,6 @@
 package com.juny.simplehttpparser;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -97,8 +95,8 @@ public class MyMultipartRequest {
     multipartFiles.put(file.getName(), file);
   }
 
-  public void addHeader(Map<String, String> header) {
+  public Map<String, String> getHeaders() {
 
-   headers.putAll(header);
+    return headers;
   }
 }
