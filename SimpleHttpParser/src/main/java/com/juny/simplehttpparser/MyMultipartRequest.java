@@ -1,50 +1,56 @@
 package com.juny.simplehttpparser;
 
+import static com.juny.simplehttpparser.HttpConst.HTTP_BOUNDARY;
+import static com.juny.simplehttpparser.HttpConst.HTTP_REQUEST_LINE_METHOD;
+import static com.juny.simplehttpparser.HttpConst.HTTP_REQUEST_LINE_PROTOCOL;
+import static com.juny.simplehttpparser.HttpConst.HTTP_REQUEST_LINE_REQUEST_URI;
+
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.http.HttpHeaders;
 import org.springframework.web.multipart.MultipartFile;
 
 public class MyMultipartRequest {
 
   private Map<String, String> headers = new HashMap<>();
-  private Map<String, MultipartFile> multipartFiles = new HashMap<String, MultipartFile>();
+  private Map<String, MultipartFile> multipartFiles = new HashMap<>();
 
   public String getMethod() {
 
-    if (headers.containsKey("method")) {
-      return headers.get("method");
+    if (headers.containsKey(HTTP_REQUEST_LINE_METHOD)) {
+      return headers.get(HTTP_REQUEST_LINE_METHOD);
     }
     return null;
   }
 
   public String getURI() {
 
-    if (headers.containsKey("requestURI")) {
-      return headers.get("requestURI");
+    if (headers.containsKey(HTTP_REQUEST_LINE_REQUEST_URI)) {
+      return headers.get(HTTP_REQUEST_LINE_REQUEST_URI);
     }
     return null;
   }
 
   public String getProtocol() {
 
-    if (headers.containsKey("protocol")) {
-      return headers.get("protocol");
+    if (headers.containsKey(HTTP_REQUEST_LINE_PROTOCOL)) {
+      return headers.get(HTTP_REQUEST_LINE_PROTOCOL);
     }
     return null;
   }
 
   public String getContentLength() {
 
-    if (headers.containsKey("Content-Length")) {
-      return headers.get("Content-Length");
+    if (headers.containsKey(HttpHeaders.CONTENT_LENGTH)) {
+      return headers.get(HttpHeaders.CONTENT_LENGTH);
     }
     return null;
   }
 
   public String getBoundary() {
 
-    if (headers.containsKey("boundary")) {
-      return headers.get("boundary");
+    if (headers.containsKey(HTTP_BOUNDARY)) {
+      return headers.get(HTTP_BOUNDARY);
     }
     return null;
   }
@@ -52,24 +58,24 @@ public class MyMultipartRequest {
 
   public String getContentType() {
 
-    if (headers.containsKey("Content-Type")) {
-      return headers.get("Content-Type");
+    if (headers.containsKey(HttpHeaders.CONTENT_TYPE)) {
+      return headers.get(HttpHeaders.CONTENT_TYPE);
     }
     return null;
   }
 
   public String getHost() {
 
-    if (headers.containsKey("Host")) {
-      return headers.get("Host");
+    if (headers.containsKey(HttpHeaders.HOST)) {
+      return headers.get(HttpHeaders.HOST);
     }
     return null;
   }
 
   public String getConnection() {
 
-    if (headers.containsKey("Connection")) {
-      return headers.get("Connection");
+    if (headers.containsKey(HttpHeaders.CONNECTION)) {
+      return headers.get(HttpHeaders.CONNECTION);
     }
     return null;
   }
@@ -90,9 +96,9 @@ public class MyMultipartRequest {
     return null;
   }
 
-  public void addMultipartFile(MultipartFile file) {
+  public Map<String, MultipartFile> getMultipartFiles() {
 
-    multipartFiles.put(file.getName(), file);
+    return multipartFiles;
   }
 
   public Map<String, String> getHeaders() {

@@ -1,5 +1,14 @@
 package com.juny.simplehttpparser;
 
+import static com.juny.simplehttpparser.HttpConst.ASSIGN_SYMBOL;
+import static com.juny.simplehttpparser.HttpConst.HTTP_CONTENT_DISPOSITION;
+import static com.juny.simplehttpparser.HttpConst.HTTP_CONTENT_DISPOSITION_FILENAME;
+import static com.juny.simplehttpparser.HttpConst.HTTP_CONTENT_DISPOSITION_NAME;
+import static com.juny.simplehttpparser.HttpConst.HTTP_REQUEST_LINE_METHOD;
+import static com.juny.simplehttpparser.HttpConst.HTTP_REQUEST_LINE_PROTOCOL;
+import static com.juny.simplehttpparser.HttpConst.HTTP_REQUEST_LINE_REQUEST_URI;
+import static com.juny.simplehttpparser.HttpConst.SPACE_SYMBOL;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -9,17 +18,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 public class SimpleParser {
 
   private final Map<String, String> requestInfos = new HashMap<>();
-
-  public void addKeyValues(String key, String values) {
-
-    requestInfos.put(key, values);
-  }
 
   public void parseMultipartBody(MyMultipartRequest multipartRequest, BufferedReader br)
     throws IOException {
@@ -67,23 +72,23 @@ public class SimpleParser {
         continue;
       }
 
-      if (line.startsWith("Content-Disposition")) {
-        String[] keyValues = line.split(" ");
+      if (line.startsWith(HTTP_CONTENT_DISPOSITION)) {
+        String[] keyValues = line.split(SPACE_SYMBOL);
 
         for (int i = 1; i < keyValues.length; ++i) {
-          String[] keyValue = keyValues[i].split("=");
-          if (keyValue[0].equals("name")) {
+          String[] keyValue = keyValues[i].split(ASSIGN_SYMBOL);
+          if (keyValue[0].equals(HTTP_CONTENT_DISPOSITION_NAME)) {
             name = keyValue[1].substring(0, keyValue[1].length() - 1);
           }
-          else if (keyValue[0].equals("filename")) {
+          else if (keyValue[0].equals(HTTP_CONTENT_DISPOSITION_FILENAME)) {
             originalFilename = keyValue[1];
           }
         }
         continue;
       }
 
-      if (line.startsWith("Content-Type")) {
-        contentType = line.split(" ")[1];
+      if (line.startsWith(HttpHeaders.CONTENT_TYPE)) {
+        contentType = line.split(SPACE_SYMBOL)[1];
         continue;
       }
 
@@ -98,7 +103,8 @@ public class SimpleParser {
     }
 
     for (var e : multipartFiles) {
-      multipartRequest.addMultipartFile(e);
+
+      multipartRequest.getMultipartFiles().put(e.getName(), e);
     }
   }
 
@@ -115,28 +121,27 @@ public class SimpleParser {
       }
 
       if (isFirstLine) {
-        String[] values = line.split(" ");
-        addKeyValues("method", values[0]);
-        addKeyValues("requestURI", values[1]);
-        addKeyValues("protocol", values[2]);
+        String[] values = line.split(SPACE_SYMBOL);
+        requestInfos.put(HTTP_REQUEST_LINE_METHOD, values[0]);
+        requestInfos.put(HTTP_REQUEST_LINE_REQUEST_URI, values[1]);
+        requestInfos.put(HTTP_REQUEST_LINE_PROTOCOL, values[2]);
         isFirstLine = false;
         continue;
       }
 
-      String[] keyValues = line.split(" ");
+      String[] keyValues = line.split(SPACE_SYMBOL);
 
-      if (keyValues[0].startsWith("Content-Type")) {
-
-        addKeyValues("Content-Type", keyValues[1].substring(0, keyValues[1].length() - 1));
+      if (keyValues[0].startsWith(HttpHeaders.CONTENT_TYPE)) {
+        requestInfos.put(HttpHeaders.CONTENT_TYPE, keyValues[1].substring(0, keyValues[1].length() - 1));
         for (int i = 2; i < keyValues.length; ++i) {
-          if (keyValues[i].contains("=")) {
-            String[] keyValue = keyValues[i].split("=");
-            addKeyValues(keyValue[0], keyValue[1]);
+          if (keyValues[i].contains(ASSIGN_SYMBOL)) {
+            String[] keyValue = keyValues[i].split(ASSIGN_SYMBOL);
+            requestInfos.put(keyValue[0], keyValue[1]);
           }
         }
         continue;
       }
-      addKeyValues(keyValues[0].substring(0, keyValues[0].length() - 1), keyValues[1]);
+      requestInfos.put(keyValues[0].substring(0, keyValues[0].length() - 1), keyValues[1]);
     }
 
     for (var e : requestInfos.entrySet()) {
