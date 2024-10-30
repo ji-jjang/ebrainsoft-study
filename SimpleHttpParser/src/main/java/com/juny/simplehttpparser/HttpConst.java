@@ -10,6 +10,7 @@ public final class HttpConst {
   public static final String HTTP_CONTENT_DISPOSITION = "Content-Disposition";
   public static final String HTTP_CONTENT_DISPOSITION_NAME = "name";
   public static final String HTTP_CONTENT_DISPOSITION_FILENAME = "filename";
+  public static final String HTTP_ORIGINAL_FILENAME = "originalFilename";
   public static final String HTTP_USER_AGENT = "User-Agent";
   public static final String HTTP_ACCEPT_ENCODING = "Accept-Encoding";
   public static final String HTTP_BOUNDARY = "boundary";
