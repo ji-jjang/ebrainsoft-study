@@ -1,6 +1,8 @@
 package com.juny.simplehttpparser;
 
+import static com.juny.simplehttpparser.ErrorMessageConst.HTTP_MULTIPART_NEED_BOUNDARY_MSG;
 import static com.juny.simplehttpparser.HttpConst.ASSIGN_SYMBOL;
+import static com.juny.simplehttpparser.HttpConst.HTTP_BOUNDARY;
 import static com.juny.simplehttpparser.HttpConst.HTTP_CONTENT_DISPOSITION;
 import static com.juny.simplehttpparser.HttpConst.HTTP_CONTENT_DISPOSITION_FILENAME;
 import static com.juny.simplehttpparser.HttpConst.HTTP_CONTENT_DISPOSITION_NAME;
@@ -32,12 +34,12 @@ public class SimpleParser {
     List<MultipartFile> multipartFiles = new ArrayList<>();
 
     String boundary = null;
-    if (requestInfos.containsKey("boundary")) {
-      boundary = "--" + requestInfos.get("boundary");
+    if (requestInfos.containsKey(HTTP_BOUNDARY)) {
+      boundary = "--" + requestInfos.get(HTTP_BOUNDARY);
     }
 
     if (Objects.isNull(boundary)) {
-      throw new RuntimeException("boundary field is necessary.");
+      throw new RuntimeException(HTTP_MULTIPART_NEED_BOUNDARY_MSG);
     }
 
     String name = null;
@@ -152,12 +154,12 @@ public class SimpleParser {
   public MyMultipartRequest parse(File multipartData) throws IOException {
 
     MyMultipartRequest multipartRequest = new MyMultipartRequest();
-    BufferedReader br = new BufferedReader(new FileReader(multipartData));
 
-    parseHeader(multipartRequest, br);
-    parseMultipartBody(multipartRequest, br);
+    try (BufferedReader br = new BufferedReader(new FileReader(multipartData))) {
+      parseHeader(multipartRequest, br);
+      parseMultipartBody(multipartRequest, br);
+    }
 
-    br.close();
     return multipartRequest;
   }
 }
