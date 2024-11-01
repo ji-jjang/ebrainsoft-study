@@ -1,19 +1,13 @@
 import React, { useState, useEffect } from "react";
-import "./css/BingoGame.css";
-import { BOARD_MESSAGES } from "./constants/boardMessage";
 import Player from "./Player";
 import Referee from "./Refree";
 import WinnerChecker from "./WinningChecker";
-
-const shuffle = (array) => {
-  array.sort(() => Math.random() - 0.5);
-};
+import "./css/BingoGame.css";
 
 export default function BingoGame() {
-  const [players, setPlayers] = useState(1);
-  const [rows, setRows] = useState(1);
+  const [players, setPlayers] = useState(5);
+  const [rows, setRows] = useState(5);
   const [cols, setCols] = useState(5);
-  const [boards, setBoards] = useState([]);
   const [maxNumber, setMaxNumber] = useState(30);
   const [gameStart, setGameStart] = useState(false);
   const [calledNumbers, setCalledNumbers] = useState([]);
@@ -26,42 +20,13 @@ export default function BingoGame() {
   const handlePlayersChange = (e) => setPlayers(parseInt(e.target.value));
 
   const handleGameStart = () => {
-    setBoards([]);
-    generateBoards();
     setIsGameOver(false);
     setCalledNumbers([]);
     setWinningPlayers([]);
     setGameStart(true);
   };
 
-  const generateBoards = () => {
-    let limit = rows * cols;
-
-    if (maxNumber < limit) {
-      alert(BOARD_MESSAGES.INVALID_MAX_NUMBER_MSG(limit));
-      return;
-    }
-
-    let selectedNumbers = [];
-    for (let i = 1; i <= maxNumber; ++i) selectedNumbers.push(i);
-
-    const newBoards = [];
-    for (let p = 0; p < players; ++p) {
-      const board = [];
-      let index = 0;
-      shuffle(selectedNumbers);
-      for (let i = 0; i < rows; ++i) {
-        const row = [];
-        for (let j = 0; j < cols; ++j) {
-          row.push(selectedNumbers[index++]);
-        }
-        board.push(row);
-      }
-      newBoards.push(board);
-    }
-    setBoards(newBoards);
-  };
-
+  // For Refree
   const callNumber = () => {
     if (isGameOver) return;
 
@@ -74,11 +39,9 @@ export default function BingoGame() {
     setCalledNumbers([...calledNumbers, randomNumber]);
   };
 
+  // For Players
   const handleWinners = (playerIndex) => {
-    setWinningPlayers((prev) => {
-      const newWinners = [...prev, playerIndex];
-      return newWinners;
-    });
+    setWinningPlayers((prev) => [...prev, playerIndex]);
   };
 
   return (
@@ -115,19 +78,27 @@ export default function BingoGame() {
             calledNumbers={calledNumbers}
           />
           <div className="boards-container">
-            {boards.map((board, playerIndex) => (
-              <Player
-                key={playerIndex}
-                board={board}
-                playerIndex={playerIndex}
-                calledNumbers={calledNumbers}
-                gameEnd={() => handleWinners(playerIndex)}
-                rows={rows}
-                cols={cols}
-              />
-            ))}
+            {!isNaN(players) &&
+              Array(players)
+                .fill()
+                .map((undefined, playerIndex) => (
+                  <Player
+                    key={playerIndex}
+                    playerIndex={playerIndex}
+                    rows={rows}
+                    cols={cols}
+                    maxNumber={maxNumber}
+                    calledNumbers={calledNumbers}
+                    handleWin={() => handleWinners(playerIndex)}
+                    isGameOver={isGameOver}
+                  />
+                ))}
           </div>
-          <WinnerChecker winningPlayers={winningPlayers} players={players} setIsGameOver={setIsGameOver} />
+          <WinnerChecker
+            winningPlayers={winningPlayers}
+            players={players}
+            setIsGameOver={setIsGameOver}
+          />
         </>
       )}
     </div>
