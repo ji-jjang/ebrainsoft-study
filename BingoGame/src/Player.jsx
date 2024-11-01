@@ -16,8 +16,9 @@ export default function Player({
   }, [calledNumbers]);
 
   const checkBingo = (board, calledNumbers) => {
+    let cnt = 0;
     for (let row = 0; row < rows; ++row) {
-      let cnt = 0;
+      cnt = 0;
       for (let col = 0; col < cols; ++col) {
         if (calledNumbers.includes(board[row][col])) ++cnt;
       }
@@ -25,9 +26,25 @@ export default function Player({
     }
 
     for (let col = 0; col < cols; ++col) {
-      let cnt = 0;
+      cnt = 0;
       for (let row = 0; row < rows; ++row) {
         if (calledNumbers.includes(board[row][col])) ++cnt;
+      }
+      if (cnt == rows) return true;
+    }
+
+    if (cols == rows) {
+      cnt = 0;
+      for (let row = 0; row < rows; ++row) {
+        if (calledNumbers.includes(board[row][row])) ++cnt;
+      }
+      if (cnt == rows) return true;
+
+      let col = cols - 1;
+      cnt = 0;
+      for (let row = 0; row < rows; ++row) {
+        if (calledNumbers.includes(board[row][col])) ++cnt;
+        --col;
       }
       if (cnt == rows) return true;
     }
