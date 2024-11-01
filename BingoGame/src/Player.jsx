@@ -1,21 +1,49 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import Board from "./Board";
+import { shuffle } from "./utils";
 import "./css/BingoGame.css";
 
 export default function Player({
-  board,
   playerIndex,
-  calledNumbers,
-  gameEnd,
   rows,
   cols,
+  maxNumber,
+  calledNumbers,
+  handleWin,
+  isGameOver
 }) {
-  useEffect(() => {
-    if (checkBingo(board, calledNumbers)) {
-      gameEnd();
+  const [board, setBoard] = useState([]);
+
+  const generateBoard = () => {
+
+    let limit = rows * cols;
+    console.log("limit: " + limit);
+
+    if (maxNumber < limit) {
+      alert(BOARD_MESSAGES.INVALID_MAX_NUMBER_MSG(limit));
+      return;
     }
-  }, [calledNumbers]);
+
+    let selectedNumbers = [];
+    for (let i = 1; i <= maxNumber; ++i) selectedNumbers.push(i);
+
+    const newBoard = [];
+    let index = 0;
+    shuffle(selectedNumbers);
+    for (let i = 0; i < rows; ++i) {
+      const row = [];
+      for (let j = 0; j < cols; ++j) {
+        row.push(selectedNumbers[index++]);
+      }
+      newBoard.push(row);
+    }
+    setBoard(newBoard);
+  };
 
   const checkBingo = (board, calledNumbers) => {
+
+    if (!board || board.length === 0) return false;
+
     let cnt = 0;
     for (let row = 0; row < rows; ++row) {
       cnt = 0;
@@ -51,25 +79,20 @@ export default function Player({
     return false;
   };
 
+  useEffect(() => {
+    generateBoard();
+  }, [rows, cols, maxNumber]);
+
+  useEffect(() => {
+    if (!isGameOver && checkBingo(board, calledNumbers)) {
+      handleWin();
+    }
+  }, [calledNumbers, isGameOver]);
+
   return (
     <div className="player-board">
       <h2 className="player-name">플레이어 {playerIndex + 1}</h2>
-      <table key={calledNumbers.length} className="board-table">
-        <tbody>
-          {board.map((row, rowIndex) => (
-            <tr key={rowIndex}>
-              {row.map((number, colIndex) => (
-                <td
-                  className={`board-cell ${calledNumbers.includes(number) ? "marked" : ""}`}
-                  key={colIndex}
-                >
-                  {number}
-                </td>
-              ))}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <Board board={board} calledNumbers={calledNumbers} />
     </div>
   );
 }

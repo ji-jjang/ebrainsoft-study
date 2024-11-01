@@ -1,7 +1,10 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { BOARD_MESSAGES } from "./constants/boardMessage";
 
-export default function WinnerChecker({ winningPlayers, players, setIsGameOver }) {
+export default function WinnerChecker({
+  winningPlayers,
+  setIsGameOver,
+}) {
   useEffect(() => {
     if (winningPlayers.length > 0) {
       setIsGameOver(true);
