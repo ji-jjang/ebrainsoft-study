@@ -1,0 +1,25 @@
+.input-container {
+    margin-bottom: 50px;
+    display: flex;
+    gap: 5px;
+}
+
+.boards-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 한 줄에 2개의 플레이어 테이블 */
+    justify-content: center;
+}
+
+
+.board-table {
+    text-align: center;
+    margin-top: 20px;
+    background-color: seashell;
+    border-collapse: collapse;
+}
+
+.board-cell {
+    border: 1px solid black;
+    width: 30px;
+    height: 30px;
+}
