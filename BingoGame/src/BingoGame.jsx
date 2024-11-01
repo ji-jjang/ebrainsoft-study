@@ -3,6 +3,7 @@ import "./css/BingoGame.css";
 import { BOARD_MESSAGES } from "./constants/boardMessage";
 import Player from "./Player";
 import Referee from "./Refree";
+import WinnerChecker from "./WinningChecker";
 
 const shuffle = (array) => {
   array.sort(() => Math.random() - 0.5);
@@ -17,16 +18,19 @@ export default function BingoGame() {
   const [gameStart, setGameStart] = useState(false);
   const [calledNumbers, setCalledNumbers] = useState([]);
   const [isGameOver, setIsGameOver] = useState(false);
+  const [winningPlayers, setWinningPlayers] = useState([]);
 
   const handleRowsChange = (e) => setRows(parseInt(e.target.value));
   const handleColsChange = (e) => setCols(parseInt(e.target.value));
   const handleMaxNumberChange = (e) => setMaxNumber(parseInt(e.target.value));
   const handlePlayersChange = (e) => setPlayers(parseInt(e.target.value));
+
   const handleGameStart = () => {
     setBoards([]);
     generateBoards();
     setIsGameOver(false);
     setCalledNumbers([]);
+    setWinningPlayers([]);
     setGameStart(true);
   };
 
@@ -70,9 +74,11 @@ export default function BingoGame() {
     setCalledNumbers([...calledNumbers, randomNumber]);
   };
 
-  const handleGameEnd = (playerIndex) => {
-    setIsGameOver(true);
-    alert(BOARD_MESSAGES.GAME_END_MSG(playerIndex));
+  const handleWinners = (playerIndex) => {
+    setWinningPlayers((prev) => {
+      const newWinners = [...prev, playerIndex];
+      return newWinners;
+    });
   };
 
   return (
@@ -115,12 +121,13 @@ export default function BingoGame() {
                 board={board}
                 playerIndex={playerIndex}
                 calledNumbers={calledNumbers}
-                gameEnd={() => handleGameEnd(playerIndex)}
+                gameEnd={() => handleWinners(playerIndex)}
                 rows={rows}
                 cols={cols}
               />
             ))}
           </div>
+          <WinnerChecker winningPlayers={winningPlayers} players={players} setIsGameOver={setIsGameOver} />
         </>
       )}
     </div>
