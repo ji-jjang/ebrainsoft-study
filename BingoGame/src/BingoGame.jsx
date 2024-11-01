@@ -1,59 +1,44 @@
 import React, { useState, useEffect } from "react";
-import "./css/BingoGame.css";
-import { BOARD_MESSAGES } from "./constants/boardMessage";
 import Player from "./Player";
 import Referee from "./Refree";
-
-const shuffle = (array) => {
-  array.sort(() => Math.random() - 0.5);
-};
+import WinnerChecker from "./WinningChecker";
+import "./css/BingoGame.css";
 
 export default function BingoGame() {
-  const [players, setPlayers] = useState(1);
-  const [rows, setRows] = useState(1);
+  const [players, setPlayers] = useState(5);
+  const [rows, setRows] = useState(5);
   const [cols, setCols] = useState(5);
-  const [boards, setBoards] = useState([]);
   const [maxNumber, setMaxNumber] = useState(30);
   const [gameStart, setGameStart] = useState(false);
   const [calledNumbers, setCalledNumbers] = useState([]);
   const [isGameOver, setIsGameOver] = useState(false);
+  const [winningPlayers, setWinningPlayers] = useState([]);
 
   const handleRowsChange = (e) => setRows(parseInt(e.target.value));
   const handleColsChange = (e) => setCols(parseInt(e.target.value));
   const handleMaxNumberChange = (e) => setMaxNumber(parseInt(e.target.value));
-  const handlePlayersChange = (e) => setPlayers(parseInt(e.target.value));
+  const handlePlayersChange = (e) => {
+    let value = parseInt(e.target.value);
+    if (isNaN(value)) value = 0;
+    setPlayers(value);
+  };
+
   const handleGameStart = () => {
-    generateBoards();
+    setIsGameOver(false);
+    setCalledNumbers([]);
+    setWinningPlayers([]);
     setGameStart(true);
   };
 
-  const generateBoards = () => {
-    let limit = rows * cols;
-
-    if (maxNumber < limit) {
-      alert(BOARD_MESSAGES.INVALID_MAX_NUMBER_MSG(limit));
-      return;
-    }
-
-    let selectedNumbers = [];
-    for (let i = 1; i <= maxNumber; ++i) selectedNumbers.push(i);
-
-    for (let p = 0; p < players; ++p) {
-      const board = [];
-      let index = 0;
-      shuffle(selectedNumbers);
-      for (let i = 0; i < rows; ++i) {
-        const row = [];
-        for (let j = 0; j < cols; ++j) {
-          row.push(selectedNumbers[index++]);
-        }
-        board.push(row);
-      }
-      boards.push(board);
-    }
-    setBoards(boards);
+  const handleInitialize = () => {
+    setCalledNumbers([]);
+    setIsGameOver(false);
+    setCalledNumbers([]);
+    setWinningPlayers([]);
+    setGameStart(true);
   };
 
+  // For Refree
   const callNumber = () => {
     if (isGameOver) return;
 
@@ -66,9 +51,9 @@ export default function BingoGame() {
     setCalledNumbers([...calledNumbers, randomNumber]);
   };
 
-  const handleGameEnd = () => {
-    setIsGameOver(true);
-    alert(BOARD_MESSAGES.GAME_END_MSG);
+  // For Players
+  const handleWinners = (playerIndex) => {
+    setWinningPlayers((prev) => [...prev, playerIndex]);
   };
 
   return (
@@ -77,7 +62,11 @@ export default function BingoGame() {
       <div className="input-container">
         <label>
           플레이어 수
-          <input type="number" value={players} onChange={handlePlayersChange} />
+          <input
+            type="number"
+            value={players === 0 ? "" : players}
+            onChange={handlePlayersChange}
+          />
         </label>
         <label>
           행 수
@@ -96,6 +85,7 @@ export default function BingoGame() {
           />
         </label>
         <button onClick={handleGameStart}> 시작하기 </button>
+        <button onClick={handleInitialize}> 초기화 </button>
       </div>
       {gameStart && (
         <>
@@ -105,18 +95,27 @@ export default function BingoGame() {
             calledNumbers={calledNumbers}
           />
           <div className="boards-container">
-            {boards.map((board, playerIndex) => (
-              <Player
-                key={playerIndex}
-                board={board}
-                playerIndex={playerIndex}
-                calledNumbers={calledNumbers}
-                gameEnd={handleGameEnd}
-                rows={rows}
-                cols={cols}
-              />
-            ))}
+            {!isNaN(players) &&
+              Array(players)
+                .fill()
+                .map((undefined, playerIndex) => (
+                  <Player
+                    key={playerIndex}
+                    playerIndex={playerIndex}
+                    rows={rows}
+                    cols={cols}
+                    maxNumber={maxNumber}
+                    calledNumbers={calledNumbers}
+                    handleWin={() => handleWinners(playerIndex)}
+                    isGameOver={isGameOver}
+                  />
+                ))}
           </div>
+          <WinnerChecker
+            winningPlayers={winningPlayers}
+            players={players}
+            setIsGameOver={setIsGameOver}
+          />
         </>
       )}
     </div>
