@@ -17,9 +17,21 @@ export default function BingoGame() {
   const handleRowsChange = (e) => setRows(parseInt(e.target.value));
   const handleColsChange = (e) => setCols(parseInt(e.target.value));
   const handleMaxNumberChange = (e) => setMaxNumber(parseInt(e.target.value));
-  const handlePlayersChange = (e) => setPlayers(parseInt(e.target.value));
+  const handlePlayersChange = (e) => {
+    let value = parseInt(e.target.value);
+    if (isNaN(value)) value = 0;
+    setPlayers(value);
+  };
 
   const handleGameStart = () => {
+    setIsGameOver(false);
+    setCalledNumbers([]);
+    setWinningPlayers([]);
+    setGameStart(true);
+  };
+
+  const handleInitialize = () => {
+    setCalledNumbers([]);
     setIsGameOver(false);
     setCalledNumbers([]);
     setWinningPlayers([]);
@@ -50,7 +62,11 @@ export default function BingoGame() {
       <div className="input-container">
         <label>
           플레이어 수
-          <input type="number" value={players} onChange={handlePlayersChange} />
+          <input
+            type="number"
+            value={players === 0 ? "" : players}
+            onChange={handlePlayersChange}
+          />
         </label>
         <label>
           행 수
@@ -69,6 +85,7 @@ export default function BingoGame() {
           />
         </label>
         <button onClick={handleGameStart}> 시작하기 </button>
+        <button onClick={handleInitialize}> 초기화 </button>
       </div>
       {gameStart && (
         <>

@@ -17,7 +17,6 @@ export default function Player({
   const generateBoard = () => {
 
     let limit = rows * cols;
-    console.log("limit: " + limit);
 
     if (maxNumber < limit) {
       alert(BOARD_MESSAGES.INVALID_MAX_NUMBER_MSG(limit));
