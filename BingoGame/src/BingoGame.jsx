@@ -1,33 +1,51 @@
 import React, { useState, useEffect } from "react";
 import "./css/BingoGame.css";
-import { ERROR_MESSAGES } from "./constants/errorMessage";
+import { BOARD_MESSAGES } from "./constants/boardMessage";
+import Player from "./Player";
+import Referee from "./Refree";
+
+const shuffle = (array) => {
+  array.sort(() => Math.random() - 0.5);
+};
 
 export default function BingoGame() {
+  const [players, setPlayers] = useState(1);
   const [rows, setRows] = useState(1);
   const [cols, setCols] = useState(5);
-  const [players, setPlayers] = useState(1);
   const [boards, setBoards] = useState([]);
   const [maxNumber, setMaxNumber] = useState(30);
+  const [gameStart, setGameStart] = useState(false);
+  const [calledNumbers, setCalledNumbers] = useState([]);
+  const [isGameOver, setIsGameOver] = useState(false);
 
   const handleRowsChange = (e) => setRows(parseInt(e.target.value));
   const handleColsChange = (e) => setCols(parseInt(e.target.value));
   const handleMaxNumberChange = (e) => setMaxNumber(parseInt(e.target.value));
   const handlePlayersChange = (e) => setPlayers(parseInt(e.target.value));
+  const handleGameStart = () => {
+    generateBoards();
+    setGameStart(true);
+  };
 
   const generateBoards = () => {
     let limit = rows * cols;
+
     if (maxNumber < limit) {
-      alert(ERROR_MESSAGES.INVALID_MAX_NUMBER(limit));
+      alert(BOARD_MESSAGES.INVALID_MAX_NUMBER_MSG(limit));
       return;
     }
 
-    const boards = [];
+    let selectedNumbers = [];
+    for (let i = 1; i <= maxNumber; ++i) selectedNumbers.push(i);
+
     for (let p = 0; p < players; ++p) {
       const board = [];
+      let index = 0;
+      shuffle(selectedNumbers);
       for (let i = 0; i < rows; ++i) {
         const row = [];
         for (let j = 0; j < cols; ++j) {
-          row.push(Math.floor(Math.random() * maxNumber) + 1);
+          row.push(selectedNumbers[index++]);
         }
         board.push(row);
       }
@@ -36,13 +54,26 @@ export default function BingoGame() {
     setBoards(boards);
   };
 
-  useEffect(() => {
-    generateBoards();
-  }, [rows, cols, players]);
+  const callNumber = () => {
+    if (isGameOver) return;
+
+    let randomNumber;
+    while (true) {
+      randomNumber = Math.floor(Math.random() * maxNumber) + 1;
+      if (!calledNumbers.includes(randomNumber)) break;
+    }
+
+    setCalledNumbers([...calledNumbers, randomNumber]);
+  };
+
+  const handleGameEnd = () => {
+    setIsGameOver(true);
+    alert(BOARD_MESSAGES.GAME_END_MSG);
+  };
 
   return (
     <div className="bingo-container">
-      <h1>Bingo Game</h1>
+      <h1>빙고 게임</h1>
       <div className="input-container">
         <label>
           플레이어 수
@@ -64,29 +95,30 @@ export default function BingoGame() {
             onChange={handleMaxNumberChange}
           />
         </label>
-        <button onClick={generateBoards}> 시작하기 </button>
+        <button onClick={handleGameStart}> 시작하기 </button>
       </div>
-
-      <div className="boards-container">
-        {boards.map((board, playerIndex) => (
-          <div key={playerIndex} className="player-board">
-            <h2 className="player-name">플레이어 {playerIndex + 1}</h2>
-            <table className="board-table">
-              <tbody>
-                {board.map((row, rowIndex) => (
-                  <tr key={rowIndex}>
-                    {row.map((number, colIndex) => (
-                      <td className="board-cell" key={colIndex}>
-                        {number}
-                      </td>
-                    ))}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      {gameStart && (
+        <>
+          <Referee
+            callNumber={callNumber}
+            isGameOver={isGameOver}
+            calledNumbers={calledNumbers}
+          />
+          <div className="boards-container">
+            {boards.map((board, playerIndex) => (
+              <Player
+                key={playerIndex}
+                board={board}
+                playerIndex={playerIndex}
+                calledNumbers={calledNumbers}
+                gameEnd={handleGameEnd}
+                rows={rows}
+                cols={cols}
+              />
+            ))}
           </div>
-        ))}
-      </div>
+        </>
+      )}
     </div>
   );
 }
