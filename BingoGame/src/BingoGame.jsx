@@ -23,7 +23,10 @@ export default function BingoGame() {
   const handleMaxNumberChange = (e) => setMaxNumber(parseInt(e.target.value));
   const handlePlayersChange = (e) => setPlayers(parseInt(e.target.value));
   const handleGameStart = () => {
+    setBoards([]);
     generateBoards();
+    setIsGameOver(false);
+    setCalledNumbers([]);
     setGameStart(true);
   };
 
@@ -38,6 +41,7 @@ export default function BingoGame() {
     let selectedNumbers = [];
     for (let i = 1; i <= maxNumber; ++i) selectedNumbers.push(i);
 
+    const newBoards = [];
     for (let p = 0; p < players; ++p) {
       const board = [];
       let index = 0;
@@ -49,9 +53,9 @@ export default function BingoGame() {
         }
         board.push(row);
       }
-      boards.push(board);
+      newBoards.push(board);
     }
-    setBoards(boards);
+    setBoards(newBoards);
   };
 
   const callNumber = () => {
@@ -66,9 +70,9 @@ export default function BingoGame() {
     setCalledNumbers([...calledNumbers, randomNumber]);
   };
 
-  const handleGameEnd = () => {
+  const handleGameEnd = (playerIndex) => {
     setIsGameOver(true);
-    alert(BOARD_MESSAGES.GAME_END_MSG);
+    alert(BOARD_MESSAGES.GAME_END_MSG(playerIndex));
   };
 
   return (
@@ -111,7 +115,7 @@ export default function BingoGame() {
                 board={board}
                 playerIndex={playerIndex}
                 calledNumbers={calledNumbers}
-                gameEnd={handleGameEnd}
+                gameEnd={() => handleGameEnd(playerIndex)}
                 rows={rows}
                 cols={cols}
               />
