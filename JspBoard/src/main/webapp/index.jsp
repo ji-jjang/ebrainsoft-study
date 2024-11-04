@@ -5,7 +5,9 @@
   Time: 11:01 AM
   To change this template use File | Settings | File Templates.
 --%>
-<%@ page import="com.juny.jspboard.ConnectionTest" %>
+<%@ page import="com.juny.jspboard.utility.DriverManagerUtils" %>
+<%@ page import="java.lang.module.Configuration" %>
+<%@ page import="java.sql.Connection" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html>
@@ -20,12 +22,7 @@
 
 
 <%
-
-  out.println("This is a test string");
-  ConnectionTest t = new ConnectionTest();
-  out.println(t.getConnection());
-
-
+  out.println(DriverManagerUtils.getConnection());
 %>
 
 </body>
