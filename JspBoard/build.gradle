@@ -11,7 +11,11 @@ repositories {
 }
 
 ext {
+    jakartaServeltApiVersion = '5.0.0'
     junitVersion = '5.8.2'
+    assertJVersion = '3.26.3'
+    mockitoVersion = '5.14.2'
+    mysqlConnectorVersion = '8.0.33'
 }
 
 tasks.withType(JavaCompile) {
@@ -19,11 +23,15 @@ tasks.withType(JavaCompile) {
 }
 
 dependencies {
-    compileOnly('jakarta.servlet:jakarta.servlet-api:5.0.0')
+    compileOnly "jakarta.servlet:jakarta.servlet-api:${jakartaServeltApiVersion}"
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
-    implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.28'
+    testImplementation "jakarta.servlet:jakarta.servlet-api:${jakartaServeltApiVersion}"
+    testImplementation "org.junit.jupiter:junit-jupiter-api:${junitVersion}"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:${junitVersion}"
+    implementation "mysql:mysql-connector-java:${mysqlConnectorVersion}"
+
+    testImplementation "org.assertj:assertj-core:${assertJVersion}"
+    testImplementation "org.mockito:mockito-core:${mockitoVersion}"
 }
 
 tasks.named('test') {
