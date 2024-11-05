@@ -28,7 +28,7 @@ class DispatcherServletTest {
     when(request.getRequestURI()).thenReturn("/boards/free/write");
 
     // then
-    dispatcher.execute(request, null);
+    dispatcher.service(request, null);
     verify(createBoardServletSpy, times(1)).execute(request, null);
   }
 
@@ -46,7 +46,7 @@ class DispatcherServletTest {
     when(request.getRequestURI()).thenReturn(requestURI);
 
     // then
-    Assertions.assertThatThrownBy(() -> dispatcher.execute(request, null))
+    Assertions.assertThatThrownBy(() -> dispatcher.service(request, null))
       .isInstanceOf(RuntimeException.class)
       .hasMessageContaining(ErrorMessage.NO_HANDLER_MSG + request.getRequestURI());
   }
