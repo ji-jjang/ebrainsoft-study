@@ -10,7 +10,7 @@ CREATE TABLE boards (
     title VARCHAR(255) NOT NULL,
     content TEXT NOT NULL,
     password VARCHAR(255) NOT NULL,
-    viewCount INT DEFAULT 0,
+    view_count INT DEFAULT 0,
     created_at DATETIME,
     updated_at DATETIME,
     created_by VARCHAR(255) NOT NULL,
