@@ -22,7 +22,7 @@ class DispatcherServletTest {
     HttpServletRequest request = mock(HttpServletRequest.class);
     MyDispatcher dispatcher = new MyDispatcher();
     CreateBoardServlet createBoardServletSpy = spy(new CreateBoardServlet());
-    dispatcher.getHandlerMappings().put("/boards/free/write", createBoardServletSpy);
+    dispatcher.getExactMappings().put("/boards/free/write", createBoardServletSpy);
 
     // when
     when(request.getRequestURI()).thenReturn("/boards/free/write");

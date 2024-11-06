@@ -9,6 +9,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -17,18 +19,21 @@ import java.util.Map;
 @WebServlet(urlPatterns = "/boards/*")
 public class MyDispatcher extends HttpServlet {
 
-  private Map<String, BoardControllerServlet> handlerMappings = new HashMap<>();
+  private Map<String, BoardControllerServlet> exactMappings = new HashMap<>();
+  private Map<Pattern, BoardControllerServlet> regexMappings = new HashMap<>();
 
   /**
    * URL에 따라 처리할 핸들러 등록
-   * TODO 해당 서블릿은 실행되면서, 제일 먼저 URL 검증
+   * extractMapping는 정확한 url을 가진 servlet 검색, regexMapping는 정규식을 통해 해당하는 servlet 검색
    */
   public MyDispatcher() {
-    this.handlerMappings.put("/boards/free/write", new CreateBoardServlet());
-    this.handlerMappings.put("/boards/free/list", new BoardListServlet());
-    this.handlerMappings.put("/boards/free/view", new BoardDetailServlet());
-    this.handlerMappings.put("/boards/free/modify", new UpdateBoardServlet());
-    this.handlerMappings.put("/boards/free/delete", new DeleteBoardServlet());
+    this.exactMappings.put("/boards/free/write", new CreateBoardServlet());
+    this.exactMappings.put("/boards/free/list", new BoardListServlet());
+    this.exactMappings.put("/boards/free/modify", new UpdateBoardServlet());
+    this.exactMappings.put("/boards/free/delete", new DeleteBoardServlet());
+    this.exactMappings.put("/boards/downloads", new FileDownloadServlet());
+    this.regexMappings.put(Pattern.compile("^/boards/free/view/[0-9]+"), new BoardDetailServlet());
+    this.regexMappings.put(Pattern.compile("^/boards/[0-9]+/comments$"), new CreateCommentServlet());
   }
 
   /**
@@ -36,17 +41,17 @@ public class MyDispatcher extends HttpServlet {
    *
    * @return the handler mappings
    */
-  public Map<String, BoardControllerServlet> getHandlerMappings() {
-    return handlerMappings;
+  public Map<String, BoardControllerServlet> getExactMappings() {
+    return exactMappings;
   }
 
   /**
    * Sets handler mappings.
    *
-   * @param handlerMappings the handler mappings
+   * @param exactMappings the handler mappings
    */
-  public void setHandlerMappings(Map<String, BoardControllerServlet> handlerMappings) {
-    this.handlerMappings = handlerMappings;
+  public void setExactMappings(Map<String, BoardControllerServlet> exactMappings) {
+    this.exactMappings = exactMappings;
   }
 
   /**
@@ -61,14 +66,29 @@ public class MyDispatcher extends HttpServlet {
   protected void service(HttpServletRequest request, HttpServletResponse response)
     throws ServletException, IOException {
 
+    String requestURI = request.getRequestURI();
     boolean isFound = false;
-    for (var entry : handlerMappings.entrySet()) {
+
+    System.out.println("requestURI = " + requestURI);
+    for (var entry : exactMappings.entrySet()) {
       var key = entry.getKey();
-      if (request.getRequestURI().startsWith(key)) {
-        BoardControllerServlet servlet = handlerMappings.get(key);
+      System.out.println("key = " + key);
+      if (requestURI.equals(key)) {
+        BoardControllerServlet servlet = exactMappings.get(key);
         servlet.execute(request, response);
         isFound = true;
         break;
+      }
+    }
+    if (!isFound) {
+      for (var entry : regexMappings.entrySet()) {
+        Pattern pattern = entry.getKey();
+        Matcher matcher = pattern.matcher(requestURI);
+        if (matcher.matches()) {
+          entry.getValue().execute(request, response);
+          isFound = true;
+          break;
+        }
       }
     }
     if (!isFound) {
