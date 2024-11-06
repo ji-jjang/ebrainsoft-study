@@ -22,6 +22,7 @@ CREATE TABLE board_images (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     stored_name VARCHAR(255) NOT NULL,
     stored_path VARCHAR(255) NOT NULL,
+    extension VARCHAR(50),
     board_id BIGINT,
     FOREIGN KEY (board_id) REFERENCES boards(id)
 );
@@ -41,8 +42,9 @@ CREATE TABLE attachments (
 CREATE TABLE comments (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     content TEXT NOT NULL,
-    createdAt DATETIME,
-    createdBy VARCHAR(255) NOT NULL,
+    password VARCHAR(50),
+    created_at DATETIME,
+    created_by VARCHAR(255) NOT NULL,
     board_id BIGINT,
     FOREIGN KEY (board_id) REFERENCES boards(id)
 );
