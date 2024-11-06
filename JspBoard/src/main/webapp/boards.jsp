@@ -60,7 +60,7 @@
                         있음
                     </c:if>
                 </td>
-                <td>${board.title}</td>
+                <td><a href="/boards/free/view/${board.id}">${board.title}</a></td>
                 <td>${board.createdBy}</td>
                 <td>${board.viewCount}</td>
                 <td>${board.createdAt}</td>
