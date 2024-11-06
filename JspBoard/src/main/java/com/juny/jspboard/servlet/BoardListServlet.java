@@ -18,6 +18,19 @@ public class BoardListServlet implements BoardControllerServlet {
   private BoardDAO boardDAO = new BoardDAOImpl();
   private BoardValidator validator = new BoardValidator();
 
+  /**
+   * 1. 파라미터 검증
+   * 2. 검색 조건이 있을때와 없을 때 게시글 목록 조회 화면 출력
+   *  - categories 이름 받아오는 쿼리
+   *  - 검색 조건 처리하는 쿼리
+   *  - 페이징 처리
+   *  - 페이징 이동하면서 검색 조건 기억하기 위해 쿼리스트링 저장
+   *
+   * @param req
+   * @param res
+   * @throws ServletException
+   * @throws IOException
+   */
   @Override
   public void execute(HttpServletRequest req, HttpServletResponse res)
     throws ServletException, IOException {
