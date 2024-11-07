@@ -1,28 +1,26 @@
 package com.juny.jspboard.dao;
 
-import com.juny.jspboard.dto.ReqBoard;
 import com.juny.jspboard.dto.ResAttachment;
 import com.juny.jspboard.dto.ResBoardDetail;
 import com.juny.jspboard.dto.ResBoardImage;
 import com.juny.jspboard.dto.ResBoardViewList;
 import com.juny.jspboard.dto.ResComment;
+import com.juny.jspboard.entity.Attachment;
+import com.juny.jspboard.entity.Board;
+import com.juny.jspboard.entity.BoardImage;
 import com.juny.jspboard.utility.DriverManagerUtils;
 import com.juny.jspboard.utility.TimeFormatterUtils;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 public class BoardDAOImpl implements BoardDAO {
-
-  @Override
-  public ResBoardViewList createBoard(ReqBoard req) {
-    return null;
-  }
 
   @Override
   public List<ResBoardViewList> getBoardList(int page) {
@@ -40,9 +38,9 @@ public class BoardDAOImpl implements BoardDAO {
       + "LEFT JOIN categories c ON b.category_id = c.id "
       + "LEFT JOIN attachments a ON b.id = a.board_id "
       + "GROUP BY b.id, c.name, b.title, b.created_by, b.view_count, b.created_at, b.updated_at "
+      + "ORDER BY b.created_at DESC "
       + "LIMIT ? OFFSET ?";
 
-    System.out.println("sql: " + sql);
     try (Connection conn = DriverManagerUtils.getConnection();
       PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
@@ -233,9 +231,9 @@ public class BoardDAOImpl implements BoardDAO {
       sql.append(connector)
         .append(" (b.title LIKE ? OR b.created_by LIKE ? OR b.content LIKE ?) ");
     }
+    sql.append(" ORDER BY b.created_at DESC ");
     sql.append(" LIMIT ? OFFSET ?");
 
-    System.out.println("sql: " + sql);
     try (Connection conn = DriverManagerUtils.getConnection();
       PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
 
@@ -461,6 +459,92 @@ public class BoardDAOImpl implements BoardDAO {
     }
   }
 
+  @Override
+  public Long getCategoryIdByName(String category) {
+
+    String sql = "SELECT id FROM categories WHERE name = ?";
+
+    try (Connection conn = DriverManagerUtils.getConnection();
+      PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+      pstmt.setString(1, category);
+      ResultSet rs = pstmt.executeQuery();
+
+      if (rs.next()) {
+        return rs.getLong("id");
+      }
+    } catch (SQLException e) {
+      e.printStackTrace();
+    } catch (ClassNotFoundException e) {
+      throw new RuntimeException(e);
+    }
+    return null;
+  }
+
+  @Override
+  public Long createBoard(String category, Board board, List<BoardImage> images,
+    List<Attachment> attachments) {
+
+    Connection conn = null;
+    PreparedStatement boardPstmt = null;
+    PreparedStatement imagePstmt = null;
+    PreparedStatement attachmentPstmt = null;
+
+    Long boardId = null;
+
+    try {
+      conn = DriverManagerUtils.getConnection();
+      conn.setAutoCommit(false);
+
+      String boardSql = "INSERT INTO boards (title, content, password, view_count, created_at, updated_at, created_by, category_id) VALUES (?, ?, ?, ?, NOW(), NULL, ?, ?)";
+      boardPstmt = conn.prepareStatement(boardSql, Statement.RETURN_GENERATED_KEYS);
+      boardPstmt.setString(1, board.getTitle());
+      boardPstmt.setString(2, board.getContent());
+      boardPstmt.setString(3, board.getPassword());
+      boardPstmt.setInt(4, board.getViewCount());
+      boardPstmt.setString(5, board.getCreatedBy());
+      boardPstmt.setLong(6, board.getCategoryId());
+      boardPstmt.executeUpdate();
+
+      ResultSet rs = boardPstmt.getGeneratedKeys();
+      if (rs.next()) {
+        boardId = rs.getLong(1);
+      }
+      rs.close();
+
+      String imageSql = "INSERT INTO board_images (board_id, stored_path, stored_name, extension) VALUES (?, ?, ?, ?)";
+      imagePstmt = conn.prepareStatement(imageSql);
+      for (var image : images) {
+        imagePstmt.setLong(1, boardId);
+        imagePstmt.setString(2, image.getStoredPath());
+        imagePstmt.setString(3, image.getStoredName());
+        imagePstmt.setString(4, image.getExtension());
+        imagePstmt.executeUpdate();
+      }
+
+      String attachmentSql = "INSERT INTO attachments (board_id, logical_name, logical_path, stored_name, stored_path, extension, size) VALUES (?, ?, ?, ?, ?, ?, ?)";
+      attachmentPstmt = conn.prepareStatement(attachmentSql);
+      for (Attachment attachment : attachments) {
+        attachmentPstmt.setLong(1, boardId);
+        attachmentPstmt.setString(2, attachment.getLogicalName());
+        attachmentPstmt.setString(3, "");
+        attachmentPstmt.setString(4, attachment.getStoredName());
+        attachmentPstmt.setString(5, attachment.getStoredPath());
+        attachmentPstmt.setString(6, attachment.getExtension());
+        attachmentPstmt.setLong(7, attachment.getSize());
+        attachmentPstmt.executeUpdate();
+      }
+
+      conn.commit();
+    } catch (ClassNotFoundException e) {
+      throw new RuntimeException(e);
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+
+    return boardId;
+  }
+
   private String handleLongTitle(String title) {
 
     if (!Objects.isNull(title) && title.length() > 80) {
@@ -468,5 +552,4 @@ public class BoardDAOImpl implements BoardDAO {
     }
     return title;
   }
-
 }
