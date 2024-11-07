@@ -22,4 +22,9 @@ public class BoardValidator {
     }
     return Integer.parseInt(seq);
   }
+
+  // TODO 게시판 생성 인자 유효성 검사
+  public void validateCreateBoardParams(String category, String createdBy, String password, String passwordConfirm, String title, String content) {
+
+  }
 }

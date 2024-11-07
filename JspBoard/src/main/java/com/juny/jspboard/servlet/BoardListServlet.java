@@ -56,10 +56,6 @@ public class BoardListServlet implements BoardControllerServlet {
       boards = boardDAO.getBoardList(page);
     }
 
-    for (var e : searchConditions.entrySet()) {
-      System.out.println(e.getKey() + ": " + e.getValue());
-    }
-
     int pageSize = 10;
     int totalPages = (int) Math.ceil((double) totals / pageSize);
 
@@ -74,7 +70,6 @@ public class BoardListServlet implements BoardControllerServlet {
     req.setAttribute("totals", totals);
     req.setAttribute("defaultStartDate", defaultStartDate);
     req.setAttribute("defaultEndDate", defaultEndDate);
-    System.out.println("page: " + page);
     req.setAttribute("page", page);
     req.setAttribute("totalPages", totalPages);
     req.setAttribute("boards", boards);
