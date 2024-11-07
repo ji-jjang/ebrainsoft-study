@@ -1,5 +1,7 @@
 package com.juny.jspboard.dao;
 
+import com.juny.jspboard.constant.ErrorMessage;
+import com.juny.jspboard.dto.ReqBoardUpdate;
 import com.juny.jspboard.dto.ResAttachment;
 import com.juny.jspboard.dto.ResBoardDetail;
 import com.juny.jspboard.dto.ResBoardImage;
@@ -10,6 +12,7 @@ import com.juny.jspboard.entity.Board;
 import com.juny.jspboard.entity.BoardImage;
 import com.juny.jspboard.utility.DriverManagerUtils;
 import com.juny.jspboard.utility.TimeFormatterUtils;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -79,7 +82,7 @@ public class BoardDAOImpl implements BoardDAO {
   }
 
   @Override
-  public ResBoardDetail getBoardDetail(int boardId) {
+  public ResBoardDetail getBoardDetail(Long boardId) {
 
     ResBoardDetail board = null;
 
@@ -135,17 +138,140 @@ public class BoardDAOImpl implements BoardDAO {
     return board;
   }
 
-  private List<ResAttachment> getAttachments(Connection conn, int boardId) {
+  @Override
+  public ResBoardDetail updateBoard(ReqBoardUpdate reqBoardUpdate) {
+    Connection conn = null;
+    PreparedStatement boardPstmt = null;
+    PreparedStatement imagePstmt = null;
+    PreparedStatement attachmentPstmt = null;
+
+    try {
+      conn = DriverManagerUtils.getConnection();
+      conn.setAutoCommit(false);
+
+      if (!Objects.isNull(reqBoardUpdate.deleteImages())){
+        for (var deleteImage : reqBoardUpdate.deleteImages()) {
+          String[] split = deleteImage.split(",");
+          Long boardImageId = Long.parseLong(split[0]);
+          String storedPath = split[1];
+          String storedName = split[2];
+          String extension = split[3];
+          File file = new File(storedPath + storedName + extension);
+          if (file.exists()) {
+            file.delete();
+          }
+          deleteBoardImageById(conn, boardImageId);
+        }
+      }
+
+      if (!Objects.isNull(reqBoardUpdate.deleteAttachments())){
+        for (var deleteAttachment : reqBoardUpdate.deleteAttachments()) {
+          String[] split = deleteAttachment.split(",");
+          Long attachmentId = Long.parseLong(split[0]);
+          String storedPath = split[1];
+          String storedName = split[2];
+          String extension = split[3];
+          File file = new File(storedPath + storedName + extension);
+          if (file.exists()) {
+            file.delete();
+          }
+          deleteAttachmentById(conn, attachmentId);
+        }
+      }
+
+      String boardSql = "UPDATE boards SET created_by = ?, title = ?, updated_at = ?, content = ? WHERE id = ?";
+      boardPstmt = conn.prepareStatement(boardSql);
+      boardPstmt.setString(1, reqBoardUpdate.createdBy());
+      boardPstmt.setString(2, reqBoardUpdate.updatedTitle());
+      boardPstmt.setString(3, reqBoardUpdate.updatedAt());
+      boardPstmt.setString(4, reqBoardUpdate.content());
+      boardPstmt.setLong(5, reqBoardUpdate.boardId());
+      int row = boardPstmt.executeUpdate();
+      if (row == 0) {
+        throw new SQLException(ErrorMessage.ROW_NOT_CHANGED_MSG + boardSql);
+      }
+
+
+      String imageSql = "INSERT INTO board_images (board_id, stored_path, stored_name, extension) VALUES (?, ?, ?, ?)";
+      imagePstmt = conn.prepareStatement(imageSql);
+      for (var image : reqBoardUpdate.boardImages()) {
+        imagePstmt.setLong(1, reqBoardUpdate.boardId());
+        imagePstmt.setString(2, image.getStoredPath());
+        imagePstmt.setString(3, image.getStoredName());
+        imagePstmt.setString(4, image.getExtension());
+        row = imagePstmt.executeUpdate();
+        if (row == 0) {
+          throw new SQLException(ErrorMessage.ROW_NOT_CHANGED_MSG + imageSql);
+        }
+      }
+
+      String attachmentSql = "INSERT INTO attachments (board_id, logical_name, logical_path, stored_name, stored_path, extension, size) VALUES (?, ?, ?, ?, ?, ?, ?)";
+      attachmentPstmt = conn.prepareStatement(attachmentSql);
+      for (var attachment : reqBoardUpdate.attachments()) {
+        attachmentPstmt.setLong(1, reqBoardUpdate.boardId());
+        attachmentPstmt.setString(2, attachment.getLogicalName());
+        attachmentPstmt.setString(3, "");
+        attachmentPstmt.setString(4, attachment.getStoredName());
+        attachmentPstmt.setString(5, attachment.getStoredPath());
+        attachmentPstmt.setString(6, attachment.getExtension());
+        attachmentPstmt.setLong(7, attachment.getSize());
+        row = attachmentPstmt.executeUpdate();
+        if (row == 0) {
+          throw new SQLException(ErrorMessage.ROW_NOT_CHANGED_MSG + attachmentSql);
+        }
+      }
+
+      conn.commit();
+
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    } catch (ClassNotFoundException e) {
+      throw new RuntimeException(e);
+    }
+    return null;
+  }
+
+  private void deleteBoardImageById(Connection conn, Long boardImageId) {
+
+    String sql = "DELETE FROM board_images WHERE id = ?";
+
+    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+      pstmt.setLong(1, boardImageId);
+      int rows = pstmt.executeUpdate();
+      if (rows == 0) {
+        throw new SQLException(ErrorMessage.ROW_NOT_CHANGED_MSG + sql);
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private void deleteAttachmentById(Connection conn, Long attachmentId) {
+
+    String sql = "DELETE FROM attachments WHERE id = ?";
+
+    try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
+      pstmt.setLong(1, attachmentId);
+      int rows = pstmt.executeUpdate();
+      if (rows == 0) {
+        throw new SQLException(ErrorMessage.ROW_NOT_CHANGED_MSG + sql);
+      }
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  private List<ResAttachment> getAttachments(Connection conn, Long boardId) {
 
     List<ResAttachment> attachments = new ArrayList<>();
 
-    String sql = "SELECT logical_name, stored_name, stored_path, extension FROM attachments WHERE board_id = ?";
+    String sql = "SELECT id, logical_name, stored_name, stored_path, extension FROM attachments WHERE board_id = ?";
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setLong(1, boardId);
       ResultSet rs = pstmt.executeQuery();
       while (rs.next()) {
-        attachments.add(new ResAttachment(rs.getString("logical_name"), rs.getString("stored_name"), rs.getString("stored_path"), rs.getString("extension")));
+        attachments.add(new ResAttachment(rs.getLong("id"), rs.getString("logical_name"), rs.getString("stored_name"), rs.getString("stored_path"), rs.getString("extension")));
       }
     } catch (SQLException e) {
       throw new RuntimeException(e);
@@ -153,7 +279,7 @@ public class BoardDAOImpl implements BoardDAO {
     return attachments;
   }
 
-  private List<ResComment> getComments(Connection conn, int boardId) {
+  private List<ResComment> getComments(Connection conn, Long boardId) {
 
     List<ResComment> comments = new ArrayList<>();
 
@@ -171,16 +297,16 @@ public class BoardDAOImpl implements BoardDAO {
     return comments;
   }
 
-  private List<ResBoardImage> getBoardImages(Connection conn, int boardId) {
+  private List<ResBoardImage> getBoardImages(Connection conn, Long boardId) {
 
     List<ResBoardImage> images = new ArrayList<>();
-    String sql = "SELECT stored_path, stored_name, extension FROM board_images WHERE board_id = ?";
+    String sql = "SELECT id, stored_path, stored_name, extension FROM board_images WHERE board_id = ?";
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setLong(1, boardId);
       ResultSet rs = pstmt.executeQuery();
       while (rs.next()) {
-        images.add(new ResBoardImage(rs.getString("stored_path"), rs.getString("stored_name"), rs.getString("extension")));
+        images.add(new ResBoardImage(rs.getLong("id"), rs.getString("stored_path"), rs.getString("stored_name"), rs.getString("extension")));
       }
     } catch (SQLException e) {
       throw new RuntimeException(e);
@@ -188,15 +314,8 @@ public class BoardDAOImpl implements BoardDAO {
     return images;
   }
 
-
-
   @Override
-  public ResBoardViewList updateBoard(int boardId) {
-    return null;
-  }
-
-  @Override
-  public void deleteBoard(int boardId) {
+  public void deleteBoard(Long boardId) {
 
   }
 
@@ -423,7 +542,7 @@ public class BoardDAOImpl implements BoardDAO {
   }
 
   @Override
-  public void increaseViewCount(int boardId) {
+  public void increaseViewCount(Long boardId) {
 
     String sql = "UPDATE boards SET view_count = view_count + 1 WHERE id = ?";
 
@@ -440,7 +559,7 @@ public class BoardDAOImpl implements BoardDAO {
   }
 
   @Override
-  public void createComment(int boardId, String name, String password, String content) {
+  public void createComment(Long boardId, String name, String password, String content) {
 
     String sql = "INSERT INTO comments (board_id, created_by, password, content, created_at) VALUES (?, ?, ?, ?, NOW())";
 

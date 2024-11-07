@@ -29,12 +29,14 @@ public class MyDispatcher extends HttpServlet {
   public MyDispatcher() {
     this.exactMappings.put("/boards/free/write", new CreateBoardServlet());
     this.exactMappings.put("/boards/free/list", new BoardListServlet());
-    this.exactMappings.put("/boards/free/modify", new UpdateBoardServlet());
     this.exactMappings.put("/boards/free/delete", new DeleteBoardServlet());
     this.exactMappings.put("/boards/downloads", new FileDownloadServlet());
     this.exactMappings.put("/boards/processCreateBoard", new ProcessCreateBoardServlet());
     this.regexMappings.put(Pattern.compile("^/boards/free/view/[0-9]+"), new BoardDetailServlet());
-    this.regexMappings.put(Pattern.compile("^/boards/[0-9]+/comments$"), new CreateCommentServlet());
+    this.regexMappings.put(
+      Pattern.compile("^/boards/[0-9]+/comments$"), new CreateCommentServlet());
+    this.regexMappings.put(
+      Pattern.compile("^/boards/free/modify/[0-9]+"), new ModifyBoardServlet());
   }
 
   /**

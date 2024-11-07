@@ -62,7 +62,7 @@
 
 <div>
     <button onclick="location.href='/boards/free/list'">목록</button>
-    <button onclick="location.href='/boards/free/edit/${board.id}'">수정</button>
+    <button onclick="location.href='/boards/free/modify/${board.id}'">수정</button>
     <button onclick="location.href='/boards/free/delete/confirm'">삭제</button>
 </div>
 
