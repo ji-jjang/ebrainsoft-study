@@ -22,7 +22,7 @@
 
 <c:forEach var="boardImage" items="${board.boardImages}">
     <div>
-        <img src="${boardImage.storedPath}${boardImage.storedName}${boardImage.extension}" alt="Board Image" width="300" height="200"/>
+        <img src="/images/${boardImage.storedName}${boardImage.extension}" alt="Board Image" width="300" height="200"/>
     </div>
 </c:forEach>
 
@@ -65,7 +65,6 @@
     <button onclick="location.href='/boards/free/edit/${board.id}'">수정</button>
     <button onclick="location.href='/boards/free/delete/confirm'">삭제</button>
 </div>
-
 
 </body>
 </html>
