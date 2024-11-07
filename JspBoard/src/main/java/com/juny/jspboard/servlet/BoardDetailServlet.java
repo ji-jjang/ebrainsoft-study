@@ -19,7 +19,7 @@ public class BoardDetailServlet implements BoardControllerServlet {
   public void execute(HttpServletRequest req, HttpServletResponse res)
     throws ServletException, IOException {
 
-    int boardId = validator.validateBoardDetail(req);
+    Long boardId = validator.validateBoardDetail(req);
 
     boardDAO.increaseViewCount(boardId);
     ResBoardDetail board = boardDAO.getBoardDetail(boardId);

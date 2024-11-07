@@ -1,3 +1,3 @@
 package com.juny.jspboard.dto;
 
-public record ResAttachment(String logicalName, String storedName, String storedPath, String extension) {}
+public record ResAttachment(Long id, String logicalName, String storedName, String storedPath, String extension) {}

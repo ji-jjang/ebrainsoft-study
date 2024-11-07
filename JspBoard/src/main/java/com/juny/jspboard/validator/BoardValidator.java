@@ -10,7 +10,7 @@ public class BoardValidator {
 
   }
 
-  public int validateBoardDetail(HttpServletRequest req) {
+  public Long validateBoardDetail(HttpServletRequest req) {
 
     String suffix = req.getRequestURI().substring(req.getRequestURI().lastIndexOf("/") + 1);
     String seq = suffix.substring(0);
@@ -20,7 +20,7 @@ public class BoardValidator {
     } catch (NumberFormatException e) {
       throw new RuntimeException(ErrorMessage.INVALID_BOARD_SEQ_MSG + seq);
     }
-    return Integer.parseInt(seq);
+    return Long.parseLong(seq);
   }
 
   // TODO 게시판 생성 인자 유효성 검사

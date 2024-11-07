@@ -1,4 +1,4 @@
 package com.juny.jspboard.dto;
 
-public record ResBoardImage(String storedPath, String storedName, String extension) {
+public record ResBoardImage(Long id, String storedPath, String storedName, String extension) {
 }

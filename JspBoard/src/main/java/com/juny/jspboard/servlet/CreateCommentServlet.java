@@ -15,7 +15,7 @@ public class CreateCommentServlet implements BoardControllerServlet {
   public void execute(HttpServletRequest req, HttpServletResponse res)
     throws ServletException, IOException {
 
-    int boardId = extractBoardId(req.getRequestURI());
+    Long boardId = extractBoardId(req.getRequestURI());
     String name = req.getParameter("name");
     String password = req.getParameter("password");
     String content = req.getParameter("content");
@@ -24,10 +24,10 @@ public class CreateCommentServlet implements BoardControllerServlet {
     res.sendRedirect("/boards/free/view/" + boardId);
   }
 
-  private int extractBoardId(String requestURI) {
+  private Long extractBoardId(String requestURI) {
 
     String[] split = requestURI.split("/");
 
-    return Integer.parseInt(split[2]);
+    return Long.parseLong(split[2]);
   }
 }
