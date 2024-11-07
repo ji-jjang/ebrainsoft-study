@@ -32,6 +32,7 @@ public class MyDispatcher extends HttpServlet {
     this.exactMappings.put("/boards/free/modify", new UpdateBoardServlet());
     this.exactMappings.put("/boards/free/delete", new DeleteBoardServlet());
     this.exactMappings.put("/boards/downloads", new FileDownloadServlet());
+    this.exactMappings.put("/boards/processCreateBoard", new ProcessCreateBoardServlet());
     this.regexMappings.put(Pattern.compile("^/boards/free/view/[0-9]+"), new BoardDetailServlet());
     this.regexMappings.put(Pattern.compile("^/boards/[0-9]+/comments$"), new CreateCommentServlet());
   }
@@ -69,10 +70,8 @@ public class MyDispatcher extends HttpServlet {
     String requestURI = request.getRequestURI();
     boolean isFound = false;
 
-    System.out.println("requestURI = " + requestURI);
     for (var entry : exactMappings.entrySet()) {
       var key = entry.getKey();
-      System.out.println("key = " + key);
       if (requestURI.equals(key)) {
         BoardControllerServlet servlet = exactMappings.get(key);
         servlet.execute(request, response);
