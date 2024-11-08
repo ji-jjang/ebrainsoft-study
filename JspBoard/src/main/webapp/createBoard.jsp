@@ -15,7 +15,7 @@
     <title>Create Board</title>
 </head>
 <body>
-<form action="/boards/processCreateBoard" method="post" enctype="multipart/form-data">
+<form action="/processCreateBoard" method="post" enctype="multipart/form-data">
 
   <label for="category">카테고리:</label>
   <select id="category" name="category" required>

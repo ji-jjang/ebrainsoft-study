@@ -2,6 +2,8 @@ package com.juny.jspboard.servlet;
 
 import static org.mockito.Mockito.*;
 
+import com.juny.jspboard.board.controller.BoardCreateController;
+import com.juny.jspboard.board.servlet.BoardServlet;
 import com.juny.jspboard.constant.ErrorMessage;
 import jakarta.servlet.ServletException;
 import java.io.IOException;
@@ -20,8 +22,8 @@ class DispatcherServletTest {
 
     // given
     HttpServletRequest request = mock(HttpServletRequest.class);
-    MyDispatcher dispatcher = new MyDispatcher();
-    CreateBoardServlet createBoardServletSpy = spy(new CreateBoardServlet());
+    BoardServlet dispatcher = new BoardServlet();
+    BoardCreateController createBoardServletSpy = spy(new BoardCreateController());
     dispatcher.getExactMappings().put("/boards/free/write", createBoardServletSpy);
 
     // when
@@ -40,7 +42,7 @@ class DispatcherServletTest {
 
     // given
     HttpServletRequest request = mock(HttpServletRequest.class);
-    MyDispatcher dispatcher = new MyDispatcher();
+    BoardServlet dispatcher = new BoardServlet();
 
     // when
     when(request.getRequestURI()).thenReturn(requestURI);

@@ -11,12 +11,10 @@
     <input type="hidden" name="boardId" value="${param.boardId}">
 
     <c:forEach var="deleteImage" items="${deleteImages}">
-        <div>${deleteImage}</div>
         <input type="hidden" name="deleteImages" value="${deleteImage}">
     </c:forEach>
 
     <c:forEach var="deleteAttachment" items="${deleteAttachments}">
-        <div>${deleteAttachment}</div>
         <input type="hidden" name="deleteAttachments" value="${deleteAttachment}">
     </c:forEach>
 
