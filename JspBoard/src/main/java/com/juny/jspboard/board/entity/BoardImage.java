@@ -1,4 +1,4 @@
-package com.juny.jspboard.entity;
+package com.juny.jspboard.board.entity;
 
 public class BoardImage {
 

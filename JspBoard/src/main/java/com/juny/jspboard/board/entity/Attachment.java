@@ -1,4 +1,4 @@
-package com.juny.jspboard.entity;
+package com.juny.jspboard.board.entity;
 
 public class Attachment {
 
@@ -11,8 +11,13 @@ public class Attachment {
   private Long size;
   private Long boardId;
 
-  public Attachment(String logicalName, String logicalPath, String storedName, String storedPath,
-    String extension, Long size) {
+  public Attachment(
+      String logicalName,
+      String logicalPath,
+      String storedName,
+      String storedPath,
+      String extension,
+      Long size) {
     this.logicalName = logicalName;
     this.logicalPath = logicalPath;
     this.storedName = storedName;

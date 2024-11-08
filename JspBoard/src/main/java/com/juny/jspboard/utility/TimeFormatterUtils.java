@@ -4,14 +4,14 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-
-/**
- * jsp에서 시간을 출력하기 위한 클래스
- */
+/** jsp에서 시간을 출력하기 위한 클래스 */
 public class TimeFormatterUtils {
 
   private static DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
   private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+  /** 유틸리티 정적 클래스 인스턴스 방지 */
+  private TimeFormatterUtils() {}
 
   /**
    * LocalDateTime을 String으로 변환하여 JSP에서 쉽게 출력하기 위함
@@ -43,11 +43,5 @@ public class TimeFormatterUtils {
    */
   public static String getDefaultEndDate() {
     return LocalDate.now().format(dateFormatter);
-  }
-
-  /**
-   * 유틸리티 정적 클래스 인스턴스 방지
-   */
-  private TimeFormatterUtils() {
   }
 }

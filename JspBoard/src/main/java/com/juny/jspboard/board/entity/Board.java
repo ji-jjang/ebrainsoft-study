@@ -1,5 +1,4 @@
-package com.juny.jspboard.entity;
-
+package com.juny.jspboard.board.entity;
 
 import java.time.LocalDateTime;
 
@@ -15,8 +14,15 @@ public class Board {
   private LocalDateTime updatedAt;
   private Long categoryId;
 
-  public Board(String title, String content, String password, Integer viewCount,
-    LocalDateTime createdAt, String createdBy, LocalDateTime updatedAt, Long categoryId) {
+  public Board(
+      String title,
+      String content,
+      String password,
+      Integer viewCount,
+      LocalDateTime createdAt,
+      String createdBy,
+      LocalDateTime updatedAt,
+      Long categoryId) {
     this.title = title;
     this.content = content;
     this.password = password;
