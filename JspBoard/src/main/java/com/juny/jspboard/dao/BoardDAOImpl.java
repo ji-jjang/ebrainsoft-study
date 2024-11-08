@@ -315,8 +315,67 @@ public class BoardDAOImpl implements BoardDAO {
   }
 
   @Override
-  public void deleteBoard(Long boardId) {
+  public void deleteBoard(Long boardId, String[] deleteImages, String[] deleteAttachments) {
 
+    String imageSql = "DELETE FROM board_images WHERE board_id = ?";
+    String attachmentSQL = "DELETE FROM attachments WHERE board_id = ?";
+    String boardSql = "DELETE FROM boards WHERE id = ?";
+
+    PreparedStatement boardPstmt = null;
+    PreparedStatement imagePstmt = null;
+    PreparedStatement attachmentPstmt = null;
+
+    if (deleteImages != null && deleteImages.length > 0) {
+      System.out.println("dao, deleteImages.length = " + deleteImages.length);
+      System.out.println("dao, deleteAttachments.length = " + deleteAttachments.length);
+
+    }
+    try {
+      Connection conn = DriverManagerUtils.getConnection();
+      conn.setAutoCommit(false);
+
+      if (deleteImages != null && deleteImages.length > 0) {
+        imagePstmt = conn.prepareStatement(imageSql);
+        imagePstmt.setLong(1, boardId);
+        int rows = imagePstmt.executeUpdate();
+        if (rows == 0) {
+          throw new SQLException(ErrorMessage.ROW_NOT_CHANGED_MSG + imageSql);
+        }
+        for (var path : deleteImages) {
+          File file = new File(path);
+          if (file.exists()) {
+            file.delete();
+          }
+        }
+      }
+
+      if (deleteAttachments != null && deleteAttachments.length > 0) {
+        attachmentPstmt = conn.prepareStatement(attachmentSQL);
+        attachmentPstmt.setLong(1, boardId);
+        int rows = attachmentPstmt.executeUpdate();
+        if (rows == 0) {
+          throw new SQLException(ErrorMessage.ROW_NOT_CHANGED_MSG + imageSql);
+        }
+        for (var path : deleteAttachments) {
+          File file = new File(path);
+          if (file.exists()) {
+            file.delete();
+          }
+        }
+      }
+      boardPstmt = conn.prepareStatement(boardSql);
+      boardPstmt.setLong(1, boardId);
+      int rows = boardPstmt.executeUpdate();
+      if (rows == 0) {
+        throw new SQLException(ErrorMessage.ROW_NOT_CHANGED_MSG + boardSql);
+      }
+
+      conn.commit();
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    } catch (ClassNotFoundException e) {
+      throw new RuntimeException(e);
+    }
   }
 
   @Override

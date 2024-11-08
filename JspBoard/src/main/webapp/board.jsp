@@ -63,7 +63,21 @@
 <div>
     <button onclick="location.href='/boards/free/list'">목록</button>
     <button onclick="location.href='/boards/free/modify/${board.id}'">수정</button>
-    <button onclick="location.href='/boards/free/delete/confirm'">삭제</button>
+    <form action="/boards/free/delete" method="post">
+        <input type="hidden" name="boardId" value="${board.id}">
+        <c:forEach var="attachment" items="${board.attachments}">
+            <input type="hidden" name="attachmentFilePath" value="${attachment.storedPath}">
+            <input type="hidden" name="attachmentStoredName" value="${attachment.storedName}">
+            <input type="hidden" name="attachmentExtension" value="${attachment.extension}">
+        </c:forEach>
+        <c:forEach var="boardImage" items="${board.boardImages}">
+            <input type="hidden" name="imageFilePath" value="${boardImage.storedPath}">
+            <input type="hidden" name="imageStoredName" value="${boardImage.storedName}">
+            <input type="hidden" name="imageExtension" value="${boardImage.extension}">
+        </c:forEach>
+
+        <button type="submit">삭제</button>
+    </form>
 </div>
 
 </body>

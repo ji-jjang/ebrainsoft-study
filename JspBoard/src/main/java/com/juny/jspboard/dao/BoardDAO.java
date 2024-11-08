@@ -14,7 +14,7 @@ public interface BoardDAO {
   List<ResBoardViewList> getBoardList(int page);
   ResBoardDetail getBoardDetail(Long boardId);
   ResBoardDetail updateBoard(ReqBoardUpdate reqBoardUpdate);
-  void deleteBoard(Long boardId);
+  void deleteBoard(Long boardId, String[] deleteImages, String[] deleteAttachments);
 
   List<ResBoardViewList> getBoardSearchList(int page, Map<String, String> searchConditions);
   List<String> getCategories();
