@@ -12,7 +12,6 @@
     <title>BoardDetail</title>
 </head>
 
-
 <body>
 <h1>게시판 - 보기</h1>
 <p>작성자 : ${board.createdBy} | 등록일 : ${board.createdAt} | 수정일 : ${board.updatedAt} | 조회수 : ${board.viewCount}</p>
@@ -31,9 +30,11 @@
 <br>
 <h3>첨부파일</h3>
 <c:forEach var="attachment" items="${board.attachments}">
-    <a href="/boards/downloads?fileName=${attachment.storedName}&filePath=${attachment.storedPath}&extension=${attachment.extension}">
-            ${attachment.logicalName}${attachment.extension}
-    </a>
+    <div>
+        <a href="/downloads?fileName=${attachment.storedName}&filePath=${attachment.storedPath}&extension=${attachment.extension}">
+                ${attachment.logicalName}${attachment.extension}
+        </a>
+    </div>
 </c:forEach>
 
 <br>
@@ -79,6 +80,5 @@
         <button type="submit">삭제</button>
     </form>
 </div>
-
 </body>
 </html>
