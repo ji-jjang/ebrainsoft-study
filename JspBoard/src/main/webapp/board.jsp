@@ -14,14 +14,16 @@
 
 <body>
 <h1>게시판 - 보기</h1>
-<p>작성자 : ${board.createdBy} | 등록일 : ${board.createdAt} | 수정일 : ${board.updatedAt} | 조회수 : ${board.viewCount}</p>
+<p>작성자 : ${board.createdBy} | 등록일 : ${board.createdAt} | 수정일 : ${board.updatedAt} | 조회수
+    : ${board.viewCount}</p>
 <h3>[${board.categoryName}] ${board.title} </h3>
 
 <p>${board.content}</p>
 
 <c:forEach var="boardImage" items="${board.boardImages}">
     <div>
-        <img src="/images/${boardImage.storedName}${boardImage.extension}" alt="Board Image" width="300" height="200"/>
+        <img src="/images/${boardImage.storedName}${boardImage.extension}" alt="Board Image"
+             width="300" height="200"/>
     </div>
 </c:forEach>
 
