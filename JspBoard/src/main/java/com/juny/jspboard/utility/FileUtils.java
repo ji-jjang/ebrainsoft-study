@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -85,8 +86,13 @@ public final class FileUtils {
     List<String> deleteImages = createFilePaths(imageFilePath, imageStoredName, imageExtensions);
     List<String> deleteAttachments =
         createFilePaths(attachmentsFilePath, attachmentsStoredName, attachmentExtensions);
+    String[] comments = req.getParameterValues(Constants.COMMENT_ID);
+    List<String> deleteComments = null;
+    if (comments != null && comments.length > 0) {
+        deleteComments = Arrays.stream(req.getParameterValues(Constants.COMMENT_ID)).toList();
+    }
 
-    return new ResDeleteFileParsing(deleteImages, deleteAttachments);
+    return new ResDeleteFileParsing(deleteImages, deleteAttachments, deleteComments);
   }
 
   private static List<String> createFilePaths(

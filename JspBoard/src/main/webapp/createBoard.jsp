@@ -17,7 +17,7 @@
 </head>
 <body>
 <form action="/processCreateBoard" method="post" enctype="multipart/form-data"
-      onsubmit="return checkBoardInput(this)">
+      onsubmit="return checkBoardInput(this, create)">
 
     <label for="category">카테고리:</label>
     <select id="category" name="category" required>
