@@ -78,6 +78,9 @@
             <input type="hidden" name="imageStoredName" value="${boardImage.storedName}">
             <input type="hidden" name="imageExtension" value="${boardImage.extension}">
         </c:forEach>
+        <c:forEach var="comment" items="${board.comments}">
+            <input type="hidden" name="commentId" value="${comment.id}">
+        </c:forEach>
 
         <button type="submit">삭제</button>
     </form>

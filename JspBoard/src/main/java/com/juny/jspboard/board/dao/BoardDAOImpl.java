@@ -69,9 +69,9 @@ public class BoardDAOImpl implements BoardDAO {
 
       if (searchConditions.containsKey(Constants.KEYWORD)) {
         String keyword =
-            Constants.AMPERSAND_SIGN
+            Constants.PERSENT_SIGN
                 + searchConditions.get(Constants.KEYWORD)
-                + Constants.AMPERSAND_SIGN;
+                + Constants.PERSENT_SIGN;
         pstmt.setString(++index, keyword);
         pstmt.setString(++index, keyword);
         pstmt.setString(++index, keyword);
@@ -140,9 +140,9 @@ public class BoardDAOImpl implements BoardDAO {
 
       if (searchConditions.containsKey(Constants.KEYWORD)) {
         String keyword =
-            Constants.AMPERSAND_SIGN
+            Constants.PERSENT_SIGN
                 + searchConditions.get(Constants.KEYWORD)
-                + Constants.AMPERSAND_SIGN;
+                + Constants.PERSENT_SIGN;
         pstmt.setString(++index, keyword);
         pstmt.setString(++index, keyword);
         pstmt.setString(++index, keyword);
@@ -519,7 +519,7 @@ public class BoardDAOImpl implements BoardDAO {
     List<ResComment> comments = new ArrayList<>();
 
     String sql =
-        "SELECT content, created_at, created_by FROM comments WHERE board_id = ? ORDER BY created_at ASC";
+        "SELECT id, content, created_at, created_by FROM comments WHERE board_id = ? ORDER BY created_at ASC";
 
     try (PreparedStatement pstmt = conn.prepareStatement(sql)) {
       pstmt.setLong(1, boardId);
@@ -527,7 +527,10 @@ public class BoardDAOImpl implements BoardDAO {
       while (rs.next()) {
         comments.add(
             new ResComment(
-                rs.getString("content"), rs.getString("created_at"), rs.getString("created_by")));
+                rs.getLong("id"),
+                rs.getString("content"),
+                rs.getString("created_at"),
+                rs.getString("created_by")));
       }
     } catch (SQLException e) {
       throw new RuntimeException(e);
@@ -559,10 +562,15 @@ public class BoardDAOImpl implements BoardDAO {
   }
 
   @Override
-  public void deleteBoard(Long boardId, String[] deleteImages, String[] deleteAttachments) {
+  public void deleteBoard(
+      Long boardId,
+      String[] deleteImages,
+      String[] deleteAttachments,
+      List<Long> deleteCommentsId) {
 
     String imageSql = "DELETE FROM board_images WHERE board_id = ?";
     String attachmentSql = "DELETE FROM attachments WHERE board_id = ?";
+    String commentSQL = "DELETE FROM comments WHERE board_id = ?";
     String boardSql = "DELETE FROM boards WHERE id = ?";
 
     try (Connection conn = DriverManagerUtils.getConnection()) {
@@ -596,6 +604,16 @@ public class BoardDAOImpl implements BoardDAO {
             if (file.exists()) {
               file.delete();
             }
+          }
+        }
+      }
+
+      if (deleteCommentsId != null && deleteCommentsId.size() > 0) {
+        try (PreparedStatement commentPstmt = conn.prepareStatement(commentSQL)) {
+          commentPstmt.setLong(1, boardId);
+          int row = commentPstmt.executeUpdate();
+          if (row == 0) {
+            throw new SQLException(ErrorMessage.ROW_NOT_CHANGED_MSG + commentSQL);
           }
         }
       }
