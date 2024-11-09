@@ -10,30 +10,32 @@
 <html>
 <head>
     <title>Edit Board</title>
+    <script src="/resources/js/boardInputValidation.js"></script>
 </head>
 <h1>게시판 - 수정</h1>
 <body>
-<form action="/processModifyBoard" method="post" enctype="multipart/form-data">
+<form action="/processModifyBoard" method="post" enctype="multipart/form-data"
+      onsubmit="return checkBoardInput(this)">>
     <input type="hidden" name="boardId" value="${board.id}">
     <p>
         <label>카테고리:</label>
         <span>${board.categoryName}</span>
     </p>
     <p>
-    <label>등록일시:</label>
-    <span>${board.createdAt}</span>
+        <label>등록일시:</label>
+        <span>${board.createdAt}</span>
     </p>
     <p>
-    <label>수정일시:</label>
-    <span>${board.updatedAt}</span>
+        <label>수정일시:</label>
+        <span>${board.updatedAt}</span>
     <p>
         <label for="createdBy">작성자:</label>
         <input type="text" id="createdBy" name="createdBy" value="${board.createdBy}" required>
     </p>
 
     <p>
-    <label for="password">비밀번호:</label>
-    <input type="password" id="password" name="password" required>
+        <label for="password">비밀번호:</label>
+        <input type="password" id="password" name="password" required>
     </p>
 
     <p>
@@ -43,15 +45,18 @@
 
     <p>
         <label for="content">내용:</label><br>
-        <textarea id="content" name="content" rows="5" cols="50" required>${board.content}</textarea>
+        <textarea id="content" name="content" rows="5" cols="50"
+                  required>${board.content}</textarea>
     </p>
 
     <h3>게시판 이미지</h3>
     <c:forEach var="boardImage" items="${board.boardImages}">
         <div>
-            <img src="/images/${boardImage.storedName}${boardImage.extension}" alt="Board Image" width="300" height="200"/>
+            <img src="/images/${boardImage.storedName}${boardImage.extension}" alt="Board Image"
+                 width="300" height="200"/>
             <label>
-                <input type="checkbox" name="deleteImages" value="${boardImage.id},${boardImage.storedPath},${boardImage.storedName},${boardImage.extension}">
+                <input type="checkbox" name="deleteImages"
+                       value="${boardImage.id},${boardImage.storedPath},${boardImage.storedName},${boardImage.extension}">
                 삭제
             </label>
         </div>
@@ -64,7 +69,8 @@
                     ${attachment.logicalName}${attachment.extension}
             </a>
             <label>
-                <input type="checkbox" name="deleteAttachments" value="${attachment.id},${attachment.storedPath},${attachment.storedName},${attachment.extension}">
+                <input type="checkbox" name="deleteAttachments"
+                       value="${attachment.id},${attachment.storedPath},${attachment.storedName},${attachment.extension}">
                 삭제
             </label>
         </div>

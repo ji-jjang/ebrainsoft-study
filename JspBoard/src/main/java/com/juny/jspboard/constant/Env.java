@@ -18,6 +18,7 @@ public final class Env {
   public static final String DB_USER = "ebsoft";
   public static final String DB_PASSWORD = "ebsoft";
   public static final String DB_DRIVER = "com.mysql.cj.jdbc.Driver";
+  public static final String RESOURCE_PATH = "/resources";
 
   private Env() {}
 }
