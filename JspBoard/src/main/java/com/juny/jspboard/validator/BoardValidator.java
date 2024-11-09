@@ -177,7 +177,7 @@ public class BoardValidator {
    *
    * @param reqBoardDelete
    */
-  public void validateProcessDeleteBoard(ReqBoardDelete reqBoardDelete) {
+  public void validateDeleteExecutionBoard(ReqBoardDelete reqBoardDelete) {
 
     if (!checkHttpMethodMatch(Constants.HTTP_METHOD_POST, reqBoardDelete.method())) {
       throw new RuntimeException(ErrorMessage.HTTP_METHOD_NOT_MATCH_MSG + reqBoardDelete.method());

@@ -14,16 +14,6 @@ import java.io.OutputStream;
 @WebServlet("/resources/*")
 public class ResourceServlet extends HttpServlet {
 
-  private File getFile(HttpServletResponse resp, String filename) throws IOException {
-
-    File file = new File(getServletContext().getRealPath(Env.RESOURCE_PATH), filename);
-    if (!file.exists()) {
-      resp.sendError(HttpServletResponse.SC_NOT_FOUND);
-      return null;
-    }
-    return file;
-  }
-
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
 
@@ -32,6 +22,16 @@ public class ResourceServlet extends HttpServlet {
     if (file == null) return;
 
     readAndWriteFile(resp, file);
+  }
+
+  private File getFile(HttpServletResponse resp, String filename) throws IOException {
+
+    File file = new File(getServletContext().getRealPath(Env.RESOURCE_PATH), filename);
+    if (!file.exists()) {
+      resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+      return null;
+    }
+    return file;
   }
 
   private void readAndWriteFile(HttpServletResponse resp, File file) throws IOException {

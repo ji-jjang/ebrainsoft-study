@@ -25,7 +25,8 @@ public interface BoardDAO {
 
   ResBoardDetail updateBoard(ReqBoardUpdate reqBoardUpdate);
 
-  void deleteBoard(Long boardId, String[] deleteImages, String[] deleteAttachments);
+  void deleteBoard(
+      Long boardId, String[] deleteImages, String[] deleteAttachments, List<Long> deleteCommentsId);
 
   Long createBoard(
       String category, Board board, List<BoardImage> images, List<Attachment> attachments);
