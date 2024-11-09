@@ -1,7 +1,6 @@
 package com.juny.jspboard.board.controller;
 
 import com.juny.jspboard.board.dao.BoardDAO;
-import com.juny.jspboard.board.dao.BoardDAOImpl;
 import com.juny.jspboard.board.dto.ReqCommentCreate;
 import com.juny.jspboard.constant.Constants;
 import com.juny.jspboard.validator.BoardValidator;
@@ -11,8 +10,13 @@ import java.io.IOException;
 
 public class CommentCreateController implements BoardController {
 
-  private final BoardDAO boardDAO = new BoardDAOImpl();
-  private BoardValidator validator = new BoardValidator();
+  private final BoardDAO boardDAO;
+  private final BoardValidator validator;
+
+  public CommentCreateController(BoardDAO boardDAO, BoardValidator validator) {
+    this.boardDAO = boardDAO;
+    this.validator = validator;
+  }
 
   @Override
   public void execute(HttpServletRequest req, HttpServletResponse res) throws IOException {

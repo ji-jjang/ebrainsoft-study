@@ -50,6 +50,7 @@ public final class Constants {
   public static final String ATTACHMENT_FILENAME = "attachment;filename=\"%s\"";
 
   public static final String AMPERSAND_SIGN = "&";
+  public static final String PERSENT_SIGN = "%";
   public static final String EQUALS_SIGN = "=";
   public static final String SLASH_SIGN = "/";
   public static final String DOT_SIGN = ".";
@@ -64,6 +65,8 @@ public final class Constants {
   public static final String IMAGE_STORED_NAME = "imageStoredName";
   public static final String IMAGE_EXTENSION = "imageExtension";
   public static final String NAME = "name";
+  public static final String COMMENT_ID = "commentId";
+  public static final String DELETE_COMMENTS = "deleteComments";
 
   public Constants() {}
 }

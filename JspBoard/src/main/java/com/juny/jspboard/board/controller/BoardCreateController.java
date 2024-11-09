@@ -2,7 +2,6 @@ package com.juny.jspboard.board.controller;
 
 import com.juny.jspboard.constant.Constants;
 import com.juny.jspboard.board.dao.CategoryDAO;
-import com.juny.jspboard.board.dao.CategoryDAOImpl;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,7 +10,11 @@ import java.util.List;
 
 public class BoardCreateController implements BoardController {
 
-  private final CategoryDAO categoryDAO = new CategoryDAOImpl();
+  private final CategoryDAO categoryDAO;
+
+  public BoardCreateController(CategoryDAO categoryDAO) {
+    this.categoryDAO = categoryDAO;
+  }
 
   @Override
   public void execute(HttpServletRequest req, HttpServletResponse res)

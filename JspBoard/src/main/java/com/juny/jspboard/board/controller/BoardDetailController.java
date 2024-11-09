@@ -2,7 +2,6 @@ package com.juny.jspboard.board.controller;
 
 import com.juny.jspboard.constant.Constants;
 import com.juny.jspboard.board.dao.BoardDAO;
-import com.juny.jspboard.board.dao.BoardDAOImpl;
 import com.juny.jspboard.board.dto.ResBoardDetail;
 import com.juny.jspboard.validator.BoardValidator;
 import jakarta.servlet.ServletException;
@@ -12,8 +11,13 @@ import java.io.IOException;
 
 public class BoardDetailController implements BoardController {
 
-  private BoardDAO boardDAO = new BoardDAOImpl();
-  private BoardValidator validator = new BoardValidator();
+  private final BoardDAO boardDAO;
+  private final BoardValidator validator;
+
+  public BoardDetailController(BoardDAO boardDAO, BoardValidator validator) {
+    this.boardDAO = boardDAO;
+    this.validator = validator;
+  }
 
   @Override
   public void execute(HttpServletRequest req, HttpServletResponse res)

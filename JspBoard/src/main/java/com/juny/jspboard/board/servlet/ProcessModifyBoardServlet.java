@@ -3,6 +3,7 @@ package com.juny.jspboard.board.servlet;
 import com.juny.jspboard.board.dao.BoardDAO;
 import com.juny.jspboard.board.dao.BoardDAOImpl;
 import com.juny.jspboard.board.dto.ReqBoardUpdate;
+import com.juny.jspboard.board.servlet.support.BoardControllerFactory;
 import com.juny.jspboard.constant.Constants;
 import com.juny.jspboard.constant.Env;
 import com.juny.jspboard.utility.FileUtils;
@@ -26,11 +27,16 @@ import java.util.Objects;
 @MultipartConfig
 public class ProcessModifyBoardServlet extends HttpServlet {
 
-  private final BoardDAO boardDAO = new BoardDAOImpl();
-  private final BoardValidator validator = new BoardValidator();
+  private BoardDAO boardDAO;
+  private BoardValidator validator;
 
   @Override
   public void init() {
+    BoardControllerFactory factory =
+      (BoardControllerFactory) getServletContext().getAttribute("boardControllerFactory");
+
+    this.boardDAO = factory.createBoardDAO();
+    this.validator = factory.createBoardValidator();
     new File(Env.ATTACHMENT_PATH).mkdirs();
     new File(Env.IMAGE_PATH).mkdirs();
   }

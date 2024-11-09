@@ -11,7 +11,11 @@ import java.io.IOException;
 
 public class BoardDeleteController implements BoardController {
 
-  private final BoardValidator validator = new BoardValidator();
+  private final BoardValidator validator;
+
+  public BoardDeleteController(BoardValidator validator) {
+    this.validator = validator;
+  }
 
   /**
    * 게시판을 삭제하기 전에 게시판에 달린 첨부파일과 이미지 파일을 먼저 삭제 첨부 파일과 이미지 파일 정보를 DB에서 조회하는 게 아닌 JSP 상세 페이지에서 정보를 받아오기
@@ -33,6 +37,7 @@ public class BoardDeleteController implements BoardController {
 
     req.setAttribute(Constants.DELETE_IMAGES, resDeleteFiles.deleteImages());
     req.setAttribute(Constants.DELETE_ATTACHMENTS, resDeleteFiles.deleteAttachments());
+    req.setAttribute(Constants.DELETE_COMMENTS, resDeleteFiles.deleteComments());
     req.getRequestDispatcher("/deleteBoardPasswordCheck.jsp").forward(req, res);
   }
 }

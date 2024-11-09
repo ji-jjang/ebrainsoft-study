@@ -15,18 +15,9 @@ import java.io.OutputStream;
 @WebServlet("/images/*")
 public class ImageServlet extends HttpServlet {
 
-  private static File getFile(HttpServletResponse resp, String filename) throws IOException {
-    File file = new File(Env.IMAGE_PATH, filename);
-    if (!file.exists()) {
-      resp.sendError(HttpServletResponse.SC_NOT_FOUND);
-      return null;
-    }
-    return file;
-  }
-
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
-      throws ServletException, IOException {
+      throws IOException {
 
     String filename = req.getPathInfo().substring(1);
 
@@ -34,6 +25,15 @@ public class ImageServlet extends HttpServlet {
     if (file == null) return;
 
     readAndWriteFile(resp, file);
+  }
+
+  private static File getFile(HttpServletResponse resp, String filename) throws IOException {
+    File file = new File(Env.IMAGE_PATH, filename);
+    if (!file.exists()) {
+      resp.sendError(HttpServletResponse.SC_NOT_FOUND);
+      return null;
+    }
+    return file;
   }
 
   private void readAndWriteFile(HttpServletResponse resp, File file) throws IOException {

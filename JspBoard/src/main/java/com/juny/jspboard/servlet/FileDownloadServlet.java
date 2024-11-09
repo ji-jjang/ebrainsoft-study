@@ -1,8 +1,10 @@
 package com.juny.jspboard.servlet;
 
+import com.juny.jspboard.board.servlet.support.BoardControllerFactory;
 import com.juny.jspboard.constant.Constants;
 import com.juny.jspboard.constant.ErrorMessage;
 import com.juny.jspboard.validator.BoardValidator;
+import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -17,7 +19,15 @@ import java.io.OutputStream;
 @WebServlet("/downloads")
 public class FileDownloadServlet extends HttpServlet {
 
-  BoardValidator validator = new BoardValidator();
+  private BoardValidator validator;
+
+  @Override
+  public void init(ServletConfig config) throws ServletException {
+    BoardControllerFactory factory =
+      (BoardControllerFactory) getServletContext().getAttribute("boardControllerFactory");
+
+    this.validator = factory.createBoardValidator();
+  }
 
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse res)

@@ -2,9 +2,7 @@ package com.juny.jspboard.board.controller;
 
 import com.juny.jspboard.constant.Constants;
 import com.juny.jspboard.board.dao.BoardDAO;
-import com.juny.jspboard.board.dao.BoardDAOImpl;
 import com.juny.jspboard.board.dao.CategoryDAO;
-import com.juny.jspboard.board.dao.CategoryDAOImpl;
 import com.juny.jspboard.board.dto.ResBoardViewList;
 import com.juny.jspboard.utility.TimeFormatterUtils;
 import com.juny.jspboard.validator.BoardValidator;
@@ -18,15 +16,14 @@ import java.util.Map;
 
 public class BoardListController implements BoardController {
 
-  private final BoardDAO boardDAO = new BoardDAOImpl();
-  private final CategoryDAO categoryDAO = new CategoryDAOImpl();
+  private final BoardDAO boardDAO;
+  private final CategoryDAO categoryDAO;
+  private final BoardValidator validator;
 
-  private BoardValidator validator = new BoardValidator();
-
-  private static int getPageNumber(HttpServletRequest req) {
-    String pageParameter = req.getParameter(Constants.PAGE);
-    int page = (pageParameter == null ? 1 : Integer.parseInt(pageParameter));
-    return page;
+  public BoardListController(BoardDAO boardDAO, CategoryDAO categoryDAO, BoardValidator validator) {
+    this.boardDAO = boardDAO;
+    this.categoryDAO = categoryDAO;
+    this.validator = validator;
   }
 
   /**
@@ -63,6 +60,12 @@ public class BoardListController implements BoardController {
     req.setAttribute(Constants.BOARDS, boards);
     req.setAttribute(Constants.QUERY_PARAMS, queryParams);
     req.getRequestDispatcher("/boards.jsp").forward(req, res);
+  }
+
+  private int getPageNumber(HttpServletRequest req) {
+    String pageParameter = req.getParameter(Constants.PAGE);
+    int page = (pageParameter == null ? 1 : Integer.parseInt(pageParameter));
+    return page;
   }
 
   private Map<String, String> getSearchConditions(HttpServletRequest req) {
