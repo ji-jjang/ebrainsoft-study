@@ -21,8 +21,9 @@ public class FileDownloadServlet extends HttpServlet {
 
   private BoardValidator validator;
 
+
   @Override
-  public void init(ServletConfig config) throws ServletException {
+  public void init() throws ServletException {
     BoardControllerFactory factory =
       (BoardControllerFactory) getServletContext().getAttribute("boardControllerFactory");
 

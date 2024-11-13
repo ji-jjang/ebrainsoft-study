@@ -57,7 +57,7 @@ public class BoardDispatcherServlet extends HttpServlet {
    * @throws ServletException
    */
   @Override
-  public void init(ServletConfig config) throws ServletException {
+  public void init() throws ServletException {
     super.init(config);
 
     BoardDAO boardDAO = new BoardDAOImpl();

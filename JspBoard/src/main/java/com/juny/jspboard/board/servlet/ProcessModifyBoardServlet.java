@@ -41,11 +41,6 @@ public class ProcessModifyBoardServlet extends HttpServlet {
     new File(Env.IMAGE_PATH).mkdirs();
   }
 
-  @Override
-  public void init(ServletConfig config) throws ServletException {
-    super.init(config);
-  }
-
   /**
    * 1. 게시판 이미지와 첨부 파일 처리 2. delete 선택된 목록은 DB와 파일시스템에서 제거 3. 이미 DB에 등록된 이미지와 첨부 파일은 로컬 파일시스템에 존재한다면
    * INSERT 쿼리에서 제외.

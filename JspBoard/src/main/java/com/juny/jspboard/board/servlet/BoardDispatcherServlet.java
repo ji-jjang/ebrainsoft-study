@@ -9,7 +9,6 @@ import com.juny.jspboard.board.dao.CategoryDAOImpl;
 import com.juny.jspboard.board.controller.BoardController;
 import com.juny.jspboard.constant.ErrorMessage;
 import com.juny.jspboard.validator.BoardValidator;
-import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -29,12 +28,10 @@ public class BoardDispatcherServlet extends HttpServlet {
    * <p>필드 주입에서 생성자 주입 방식으로 변경하고, 컨트롤러 인스턴스 생성을 Factory 객체에게 위임 요청 URL 해당하는 컨트롤러를 찾는 로직은
    * ControllerResolver 객체에게 위임
    *
-   * @param config
    * @throws ServletException
    */
   @Override
-  public void init(ServletConfig config) throws ServletException {
-    super.init(config);
+  public void init() {
 
     BoardDAO boardDAO = new BoardDAOImpl();
     CategoryDAO categoryDAO = new CategoryDAOImpl();
