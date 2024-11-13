@@ -15,7 +15,7 @@
 <h1>게시판 - 수정</h1>
 <body>
 <form action="/processModifyBoard" method="post" enctype="multipart/form-data"
-      onsubmit="return checkBoardInput(this, modify)">>
+      onsubmit="return checkBoardInput(this, 'modify')">>
     <input type="hidden" name="boardId" value="${board.id}">
     <p>
         <label>카테고리:</label>
