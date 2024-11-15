@@ -78,6 +78,6 @@
         </c:forEach>
     </div>
 
-    <button onclick="location.href='/boards/free/write'">등록</button>
+    <button onclick="location.href='/boards/free/write/new'">등록</button>
 </body>
 </html>

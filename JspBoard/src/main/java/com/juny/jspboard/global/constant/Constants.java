@@ -1,4 +1,4 @@
-package com.juny.jspboard.constant;
+package com.juny.jspboard.global.constant;
 
 public final class Constants {
 
@@ -67,6 +67,7 @@ public final class Constants {
   public static final String NAME = "name";
   public static final String COMMENT_ID = "commentId";
   public static final String DELETE_COMMENTS = "deleteComments";
+  public static final String REDIRECT_PREFIX = "redirect:";
 
   public Constants() {}
 }

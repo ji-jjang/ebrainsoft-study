@@ -1,6 +1,6 @@
 package com.juny.jspboard.utility;
 
-import com.juny.jspboard.constant.Env;
+import com.juny.jspboard.global.constant.Env;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;

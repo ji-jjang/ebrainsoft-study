@@ -2,8 +2,8 @@ package com.juny.jspboard.utility;
 
 import com.juny.jspboard.board.entity.Attachment;
 import com.juny.jspboard.board.entity.BoardImage;
-import com.juny.jspboard.constant.Constants;
-import com.juny.jspboard.constant.Env;
+import com.juny.jspboard.global.constant.Constants;
+import com.juny.jspboard.global.constant.Env;
 import com.juny.jspboard.utility.dto.ResDeleteFileParsing;
 import com.juny.jspboard.utility.dto.ResFileParsing;
 import jakarta.servlet.ServletException;

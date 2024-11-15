@@ -16,7 +16,7 @@
     <script src="/resources/js/boardInputValidation.js"></script>
 </head>
 <body>
-<form action="/processCreateBoard" method="post" enctype="multipart/form-data"
+<form action="/boards/free/write" method="post" enctype="multipart/form-data"
       onsubmit="return checkBoardInput(this, 'create')">
 
     <label for="category">카테고리:</label>

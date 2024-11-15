@@ -1,4 +1,4 @@
-package com.juny.jspboard.board.servlet.support;
+package com.juny.jspboard.board.servlet;
 
 import com.juny.jspboard.board.controller.BoardController;
 import java.util.Map;

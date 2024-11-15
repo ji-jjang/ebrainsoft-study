@@ -1,4 +1,4 @@
-package com.juny.jspboard.constant;
+package com.juny.jspboard.global.constant;
 
 /**
  * 추후 Secret Key 적용할 수 있음

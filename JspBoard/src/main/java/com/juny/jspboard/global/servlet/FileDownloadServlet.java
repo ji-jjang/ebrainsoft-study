@@ -1,10 +1,9 @@
-package com.juny.jspboard.servlet;
+package com.juny.jspboard.global.servlet;
 
-import com.juny.jspboard.board.servlet.support.BoardControllerFactory;
-import com.juny.jspboard.constant.Constants;
-import com.juny.jspboard.constant.ErrorMessage;
+import com.juny.jspboard.board.servlet.BoardControllerFactory;
+import com.juny.jspboard.global.constant.Constants;
+import com.juny.jspboard.global.constant.ErrorMessage;
 import com.juny.jspboard.validator.BoardValidator;
-import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -16,11 +15,10 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /** 첨부파일 리스트를 클릭하면 FileDownloadServlet 실행 */
-@WebServlet("/downloads")
+@WebServlet("/fileDownloads")
 public class FileDownloadServlet extends HttpServlet {
 
   private BoardValidator validator;
-
 
   @Override
   public void init() throws ServletException {

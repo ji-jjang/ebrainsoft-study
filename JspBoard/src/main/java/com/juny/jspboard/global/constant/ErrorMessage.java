@@ -1,4 +1,4 @@
-package com.juny.jspboard.constant;
+package com.juny.jspboard.global.constant;
 
 public final class ErrorMessage {
 

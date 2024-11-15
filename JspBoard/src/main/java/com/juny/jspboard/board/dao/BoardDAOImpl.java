@@ -1,7 +1,7 @@
 package com.juny.jspboard.board.dao;
 
-import com.juny.jspboard.constant.Constants;
-import com.juny.jspboard.constant.ErrorMessage;
+import com.juny.jspboard.global.constant.Constants;
+import com.juny.jspboard.global.constant.ErrorMessage;
 import com.juny.jspboard.board.dto.ReqBoardUpdate;
 import com.juny.jspboard.board.dto.ResAttachment;
 import com.juny.jspboard.board.dto.ResBoardDetail;
