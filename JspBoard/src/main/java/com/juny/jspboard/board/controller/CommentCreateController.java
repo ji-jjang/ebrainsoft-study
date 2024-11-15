@@ -2,7 +2,7 @@ package com.juny.jspboard.board.controller;
 
 import com.juny.jspboard.board.dao.BoardDAO;
 import com.juny.jspboard.board.dto.ReqCommentCreate;
-import com.juny.jspboard.constant.Constants;
+import com.juny.jspboard.global.constant.Constants;
 import com.juny.jspboard.validator.BoardValidator;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,7 +19,7 @@ public class CommentCreateController implements BoardController {
   }
 
   @Override
-  public void execute(HttpServletRequest req, HttpServletResponse res) throws IOException {
+  public String execute(HttpServletRequest req, HttpServletResponse res) throws IOException {
 
     ReqCommentCreate reqCommentCreate = extractReqCreateComment(req);
 
@@ -31,7 +31,7 @@ public class CommentCreateController implements BoardController {
         reqCommentCreate.password(),
         reqCommentCreate.content());
 
-    res.sendRedirect("/boards/free/view/" + reqCommentCreate.boardId());
+    return Constants.REDIRECT_PREFIX + "/boards/free/view/" + reqCommentCreate.boardId();
   }
 
   private ReqCommentCreate extractReqCreateComment(HttpServletRequest req) {

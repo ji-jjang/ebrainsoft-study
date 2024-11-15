@@ -1,6 +1,6 @@
 package com.juny.jspboard.board.controller;
 
-import com.juny.jspboard.constant.Constants;
+import com.juny.jspboard.global.constant.Constants;
 import com.juny.jspboard.utility.FileUtils;
 import com.juny.jspboard.utility.dto.ResDeleteFileParsing;
 import com.juny.jspboard.validator.BoardValidator;
@@ -28,7 +28,7 @@ public class BoardDeleteController implements BoardController {
    * @throws IOException
    */
   @Override
-  public void execute(HttpServletRequest req, HttpServletResponse res)
+  public String execute(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
 
     validator.validateDeleteBoard(req);
@@ -38,6 +38,6 @@ public class BoardDeleteController implements BoardController {
     req.setAttribute(Constants.DELETE_IMAGES, resDeleteFiles.deleteImages());
     req.setAttribute(Constants.DELETE_ATTACHMENTS, resDeleteFiles.deleteAttachments());
     req.setAttribute(Constants.DELETE_COMMENTS, resDeleteFiles.deleteComments());
-    req.getRequestDispatcher("/deleteBoardPasswordCheck.jsp").forward(req, res);
+    return "/deleteBoardPasswordCheck.jsp";
   }
 }

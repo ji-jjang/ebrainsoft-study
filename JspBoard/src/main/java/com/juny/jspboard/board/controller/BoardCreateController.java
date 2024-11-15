@@ -1,6 +1,6 @@
 package com.juny.jspboard.board.controller;
 
-import com.juny.jspboard.constant.Constants;
+import com.juny.jspboard.global.constant.Constants;
 import com.juny.jspboard.board.dao.CategoryDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,12 +17,12 @@ public class BoardCreateController implements BoardController {
   }
 
   @Override
-  public void execute(HttpServletRequest req, HttpServletResponse res)
+  public String execute(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
 
     List<String> categories = categoryDAO.getCategories();
 
     req.setAttribute(Constants.CATEGORIES, categories);
-    req.getRequestDispatcher("/createBoard.jsp").forward(req, res);
+    return "/createBoard.jsp";
   }
 }

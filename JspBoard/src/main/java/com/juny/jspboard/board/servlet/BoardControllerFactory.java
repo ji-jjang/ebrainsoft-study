@@ -1,12 +1,14 @@
-package com.juny.jspboard.board.servlet.support;
+package com.juny.jspboard.board.servlet;
 
 import com.juny.jspboard.board.controller.BoardController;
 import com.juny.jspboard.board.controller.BoardCreateController;
+import com.juny.jspboard.board.controller.BoardCreateExecutionController;
 import com.juny.jspboard.board.controller.BoardDeleteController;
 import com.juny.jspboard.board.controller.BoardDeleteExecutionController;
 import com.juny.jspboard.board.controller.BoardDetailController;
 import com.juny.jspboard.board.controller.BoardListController;
 import com.juny.jspboard.board.controller.BoardModifyController;
+import com.juny.jspboard.board.controller.BoardModifyExecutionController;
 import com.juny.jspboard.board.controller.CommentCreateController;
 import com.juny.jspboard.board.dao.BoardDAO;
 import com.juny.jspboard.board.dao.CategoryDAO;
@@ -29,10 +31,14 @@ public class BoardControllerFactory {
 
   public Map<String, BoardController> createExactMappings() {
     Map<String, BoardController> exactMappings = new HashMap<>();
-    exactMappings.put("/boards/free/write", new BoardCreateController(categoryDAO));
+    exactMappings.put("/boards/free/write/new", new BoardCreateController(categoryDAO));
     exactMappings.put(
         "/boards/free/list", new BoardListController(boardDAO, categoryDAO, validator));
     exactMappings.put("/boards/free/delete", new BoardDeleteController(validator));
+    exactMappings.put(
+        "/boards/free/write", new BoardCreateExecutionController(boardDAO, validator));
+    exactMappings.put(
+        "/boards/free/modify", new BoardModifyExecutionController(boardDAO, validator));
 
     return exactMappings;
   }

@@ -1,6 +1,6 @@
 package com.juny.jspboard.board.controller;
 
-import com.juny.jspboard.constant.Constants;
+import com.juny.jspboard.global.constant.Constants;
 import com.juny.jspboard.board.dao.BoardDAO;
 import com.juny.jspboard.board.dao.CategoryDAO;
 import com.juny.jspboard.board.dto.ResBoardViewList;
@@ -36,7 +36,7 @@ public class BoardListController implements BoardController {
    * @throws IOException
    */
   @Override
-  public void execute(HttpServletRequest req, HttpServletResponse res)
+  public String execute(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
 
     validator.validateBoardListParams(req);
@@ -59,7 +59,7 @@ public class BoardListController implements BoardController {
     req.setAttribute(Constants.TOTAL_PAGES, totalPages);
     req.setAttribute(Constants.BOARDS, boards);
     req.setAttribute(Constants.QUERY_PARAMS, queryParams);
-    req.getRequestDispatcher("/boards.jsp").forward(req, res);
+    return "/boards.jsp";
   }
 
   private int getPageNumber(HttpServletRequest req) {

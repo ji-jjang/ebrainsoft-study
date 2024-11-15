@@ -2,7 +2,7 @@ package com.juny.jspboard.board.controller;
 
 import com.juny.jspboard.board.dao.BoardDAO;
 import com.juny.jspboard.board.dto.ReqBoardDelete;
-import com.juny.jspboard.constant.Constants;
+import com.juny.jspboard.global.constant.Constants;
 import com.juny.jspboard.validator.BoardValidator;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,7 +27,7 @@ public class BoardDeleteExecutionController implements BoardController {
   }
 
   @Override
-  public void execute(HttpServletRequest req, HttpServletResponse res)
+  public String execute(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
 
     ReqBoardDelete reqBoardDelete = extreactRequestParams(req);
@@ -40,8 +40,7 @@ public class BoardDeleteExecutionController implements BoardController {
       reqBoardDelete.deleteAttachments(),
       reqBoardDelete.deleteComments());
 
-    String redirectUrl = "/boards/free/list";
-    res.sendRedirect(redirectUrl);
+    return Constants.REDIRECT_PREFIX + "/boards/free/list";
   }
 
   private ReqBoardDelete extreactRequestParams(HttpServletRequest req) {

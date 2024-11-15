@@ -1,44 +1,28 @@
-package com.juny.jspboard.board.servlet;
+package com.juny.jspboard.board.controller;
 
 import com.juny.jspboard.board.dao.BoardDAO;
-import com.juny.jspboard.board.dao.BoardDAOImpl;
 import com.juny.jspboard.board.dto.ReqBoardUpdate;
-import com.juny.jspboard.board.servlet.support.BoardControllerFactory;
-import com.juny.jspboard.constant.Constants;
-import com.juny.jspboard.constant.Env;
+import com.juny.jspboard.global.constant.Constants;
 import com.juny.jspboard.utility.FileUtils;
 import com.juny.jspboard.utility.dto.ResFileParsing;
 import com.juny.jspboard.validator.BoardValidator;
-import jakarta.servlet.ServletConfig;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.MultipartConfig;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-@WebServlet("/processModifyBoard")
-@MultipartConfig
-public class ProcessModifyBoardServlet extends HttpServlet {
+public class BoardModifyExecutionController implements BoardController {
 
-  private BoardDAO boardDAO;
-  private BoardValidator validator;
+  private final BoardDAO boardDAO;
+  private final BoardValidator validator;
 
-  @Override
-  public void init() {
-    BoardControllerFactory factory =
-      (BoardControllerFactory) getServletContext().getAttribute("boardControllerFactory");
-
-    this.boardDAO = factory.createBoardDAO();
-    this.validator = factory.createBoardValidator();
-    new File(Env.ATTACHMENT_PATH).mkdirs();
-    new File(Env.IMAGE_PATH).mkdirs();
+  public BoardModifyExecutionController(BoardDAO boardDAO, BoardValidator validator) {
+    this.boardDAO = boardDAO;
+    this.validator = validator;
   }
 
   /**
@@ -47,12 +31,13 @@ public class ProcessModifyBoardServlet extends HttpServlet {
    *
    * @param req
    * @param res
+   * @return
    * @throws ServletException
    * @throws IOException
    */
   @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
+  public String execute(HttpServletRequest req, HttpServletResponse res)
+    throws ServletException, IOException {
 
     ReqBoardUpdate reqBoardUpdate = extractReqBoardUpdate(req);
 
@@ -60,7 +45,7 @@ public class ProcessModifyBoardServlet extends HttpServlet {
 
     boardDAO.updateBoard(reqBoardUpdate);
 
-    res.sendRedirect("/boards/free/view/" + reqBoardUpdate.boardId());
+    return Constants.REDIRECT_PREFIX + "/boards/free/view/" + reqBoardUpdate.boardId();
   }
 
   private ReqBoardUpdate extractReqBoardUpdate(HttpServletRequest req)

@@ -1,22 +1,24 @@
 package com.juny.jspboard.board.servlet;
 
-import com.juny.jspboard.board.servlet.support.BoardControllerFactory;
-import com.juny.jspboard.board.servlet.support.BoardControllerResolver;
 import com.juny.jspboard.board.dao.BoardDAO;
 import com.juny.jspboard.board.dao.BoardDAOImpl;
 import com.juny.jspboard.board.dao.CategoryDAO;
 import com.juny.jspboard.board.dao.CategoryDAOImpl;
 import com.juny.jspboard.board.controller.BoardController;
-import com.juny.jspboard.constant.ErrorMessage;
+import com.juny.jspboard.global.constant.Constants;
+import com.juny.jspboard.global.constant.ErrorMessage;
 import com.juny.jspboard.validator.BoardValidator;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Objects;
 
 @WebServlet(urlPatterns = "/boards/*")
+@MultipartConfig
 public class BoardDispatcherServlet extends HttpServlet {
 
   private BoardControllerResolver controllerResolver;
@@ -61,6 +63,13 @@ public class BoardDispatcherServlet extends HttpServlet {
     if (controller == null) {
       throw new RuntimeException(ErrorMessage.NO_HANDLER_MSG + request.getRequestURI());
     }
-    controller.execute(request, response);
+
+    String view = controller.execute(request, response);
+
+    if (!Objects.isNull(view) && view.startsWith(Constants.REDIRECT_PREFIX)) {
+      response.sendRedirect(view.substring(Constants.REDIRECT_PREFIX.length()));
+      return;
+    }
+    request.getRequestDispatcher(view).forward(request, response);
   }
 }

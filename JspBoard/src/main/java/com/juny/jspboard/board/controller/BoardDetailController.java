@@ -1,6 +1,6 @@
 package com.juny.jspboard.board.controller;
 
-import com.juny.jspboard.constant.Constants;
+import com.juny.jspboard.global.constant.Constants;
 import com.juny.jspboard.board.dao.BoardDAO;
 import com.juny.jspboard.board.dto.ResBoardDetail;
 import com.juny.jspboard.validator.BoardValidator;
@@ -20,7 +20,7 @@ public class BoardDetailController implements BoardController {
   }
 
   @Override
-  public void execute(HttpServletRequest req, HttpServletResponse res)
+  public String execute(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
 
     validator.validateBoardDetailParams(req);
@@ -30,7 +30,7 @@ public class BoardDetailController implements BoardController {
     ResBoardDetail board = boardDAO.getBoardDetail(boardId);
 
     req.setAttribute(Constants.BOARD, board);
-    req.getRequestDispatcher("/board.jsp").forward(req, res);
+    return "/board.jsp";
   }
 
   private Long extractBoardId(String requestURI) {

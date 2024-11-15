@@ -7,6 +7,6 @@ import java.io.IOException;
 
 public interface BoardController {
 
-  public void execute(HttpServletRequest req, HttpServletResponse res)
+  public String execute(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException;
 }

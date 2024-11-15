@@ -1,8 +1,6 @@
-package com.juny.jspboard.board.servlet;
+package com.juny.jspboard.board.controller;
 
-import com.juny.jspboard.board.servlet.support.BoardControllerFactory;
-import com.juny.jspboard.constant.Constants;
-import com.juny.jspboard.constant.Env;
+import com.juny.jspboard.global.constant.Constants;
 import com.juny.jspboard.board.dao.BoardDAO;
 import com.juny.jspboard.board.dto.ReqBoardCreate;
 import com.juny.jspboard.board.entity.Attachment;
@@ -12,38 +10,26 @@ import com.juny.jspboard.utility.FileUtils;
 import com.juny.jspboard.utility.dto.ResFileParsing;
 import com.juny.jspboard.validator.BoardValidator;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.MultipartConfig;
-import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
 /** 사용자가 입력한 게시판 생성 정보를 가지고, 이미지나 첨부 파일을 로컬 파일 시스템과 DB에 저장하고, 게시판을 DB에 저장함. */
-@WebServlet("/processCreateBoard")
-@MultipartConfig
-public class ProcessCreateBoardServlet extends HttpServlet {
+public class BoardCreateExecutionController implements BoardController {
 
-  private BoardDAO boardDAO;
-  private BoardValidator validator;
+  private final BoardDAO boardDAO;
+  private final BoardValidator validator;
 
-  @Override
-  public void init() {
-    BoardControllerFactory factory =
-        (BoardControllerFactory) getServletContext().getAttribute("boardControllerFactory");
-
-    this.boardDAO = factory.createBoardDAO();
-    this.validator = factory.createBoardValidator();
-    new File(Env.ATTACHMENT_PATH).mkdirs();
-    new File(Env.IMAGE_PATH).mkdirs();
+  public BoardCreateExecutionController(BoardDAO boardDAO, BoardValidator validator) {
+    this.boardDAO = boardDAO;
+    this.validator = validator;
   }
 
   @Override
-  protected void doPost(HttpServletRequest req, HttpServletResponse res)
-      throws ServletException, IOException {
+  public String execute(HttpServletRequest req, HttpServletResponse res)
+    throws ServletException, IOException {
 
     ReqBoardCreate reqBoardCreate = extractReqBoardCreate(req);
     validator.validateCreateBoardParams(reqBoardCreate);
@@ -51,7 +37,7 @@ public class ProcessCreateBoardServlet extends HttpServlet {
     ResFileParsing files = FileUtils.parsingFiles(req);
     Long boardId = createAndSaveBoard(reqBoardCreate, files.images(), files.attachments());
 
-    res.sendRedirect("/boards/free/view/" + boardId);
+    return Constants.REDIRECT_PREFIX + "/boards/free/view/" + boardId;
   }
 
   private ReqBoardCreate extractReqBoardCreate(HttpServletRequest req) {
