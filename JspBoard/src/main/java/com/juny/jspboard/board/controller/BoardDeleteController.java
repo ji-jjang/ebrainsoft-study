@@ -1,9 +1,6 @@
 package com.juny.jspboard.board.controller;
 
-import com.juny.jspboard.global.constant.Constants;
-import com.juny.jspboard.utility.FileUtils;
-import com.juny.jspboard.utility.dto.ResDeleteFileParsing;
-import com.juny.jspboard.validator.BoardValidator;
+import com.juny.jspboard.board.service.BoardService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,19 +8,25 @@ import java.io.IOException;
 
 public class BoardDeleteController implements BoardController {
 
-  private final BoardValidator validator;
+  private final BoardService boardService;
 
-  public BoardDeleteController(BoardValidator validator) {
-    this.validator = validator;
+  public BoardDeleteController(BoardService boardService) {
+    this.boardService = boardService;
   }
 
   /**
-   * 게시판을 삭제하기 전에 게시판에 달린 첨부파일과 이미지 파일을 먼저 삭제 첨부 파일과 이미지 파일 정보를 DB에서 조회하는 게 아닌 JSP 상세 페이지에서 정보를 받아오기
-   * 때문에 파싱 작업 필요 BoardDeleteController -> 파일 정보 파싱 -> JSP 화면에서 비밀번호 입력 -> ProcessDelete에서 첨부파일과 이미지
-   * 파일 삭제
    *
-   * @param req
+   *
+   * <h1>게시판 삭제 전처리</h1>
+   *
+   * <br>
+   * - JSP 상세 페이지에서 첨부 파일과 이미지 파일 정보를 가져옴 <br>
+   * - 초기 구현에는 파일 삭제할 때 파일 경로를 전달해주면 검색 쿼리를 아낄 수 있다고 생각했음 <br>
+   * - 하지만, 악의적인 클라이언트가 다른 파일 삭제할 가능성 있음. 따라서 Path 넘기는 방식 지양
+   *
+   * @param req HTTP 요청
    * @param res
+   * @return View
    * @throws ServletException
    * @throws IOException
    */
@@ -31,13 +34,8 @@ public class BoardDeleteController implements BoardController {
   public String execute(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
 
-    validator.validateDeleteBoard(req);
+    boardService.preProcessDelete(req);
 
-    ResDeleteFileParsing resDeleteFiles = FileUtils.parseDeleteFilePaths(req);
-
-    req.setAttribute(Constants.DELETE_IMAGES, resDeleteFiles.deleteImages());
-    req.setAttribute(Constants.DELETE_ATTACHMENTS, resDeleteFiles.deleteAttachments());
-    req.setAttribute(Constants.DELETE_COMMENTS, resDeleteFiles.deleteComments());
     return "/deleteBoardPasswordCheck.jsp";
   }
 }

@@ -1,41 +1,41 @@
 package com.juny.jspboard.board.controller;
 
+import com.juny.jspboard.board.service.BoardService;
 import com.juny.jspboard.global.constant.Constants;
-import com.juny.jspboard.board.dao.BoardDAO;
 import com.juny.jspboard.board.dto.ReqBoardCreate;
-import com.juny.jspboard.board.entity.Attachment;
-import com.juny.jspboard.board.entity.Board;
-import com.juny.jspboard.board.entity.BoardImage;
-import com.juny.jspboard.utility.FileUtils;
-import com.juny.jspboard.utility.dto.ResFileParsing;
-import com.juny.jspboard.validator.BoardValidator;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.util.List;
 
-/** 사용자가 입력한 게시판 생성 정보를 가지고, 이미지나 첨부 파일을 로컬 파일 시스템과 DB에 저장하고, 게시판을 DB에 저장함. */
 public class BoardCreateExecutionController implements BoardController {
 
-  private final BoardDAO boardDAO;
-  private final BoardValidator validator;
+  private final BoardService boardService;
 
-  public BoardCreateExecutionController(BoardDAO boardDAO, BoardValidator validator) {
-    this.boardDAO = boardDAO;
-    this.validator = validator;
+  public BoardCreateExecutionController(BoardService boardService) {
+    this.boardService = boardService;
   }
 
+  /**
+   *
+   *
+   * <h1>게시판 생성 후처리</h1>
+   *
+   * - DB 반영
+   *
+   * @param req
+   * @param res
+   * @return View
+   * @throws ServletException
+   * @throws IOException
+   */
   @Override
   public String execute(HttpServletRequest req, HttpServletResponse res)
-    throws ServletException, IOException {
+      throws ServletException, IOException {
 
     ReqBoardCreate reqBoardCreate = extractReqBoardCreate(req);
-    validator.validateCreateBoardParams(reqBoardCreate);
 
-    ResFileParsing files = FileUtils.parsingFiles(req);
-    Long boardId = createAndSaveBoard(reqBoardCreate, files.images(), files.attachments());
+    Long boardId = boardService.createBoard(reqBoardCreate, req.getParts());
 
     return Constants.REDIRECT_PREFIX + "/boards/free/view/" + boardId;
   }
@@ -51,23 +51,5 @@ public class BoardCreateExecutionController implements BoardController {
 
     return new ReqBoardCreate(
         category, createdBy, password, passwordConfirm, title, content, method);
-  }
-
-  private Long createAndSaveBoard(
-      ReqBoardCreate reqBoardCreate, List<BoardImage> images, List<Attachment> attachments) {
-    Long categoryId = boardDAO.getCategoryIdByName(reqBoardCreate.category());
-
-    Board board =
-        new Board(
-            reqBoardCreate.title(),
-            reqBoardCreate.title(),
-            reqBoardCreate.password(),
-            0,
-            LocalDateTime.now(),
-            reqBoardCreate.createdBy(),
-            null,
-            categoryId);
-
-    return boardDAO.createBoard(reqBoardCreate.category(), board, images, attachments);
   }
 }
