@@ -15,6 +15,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class BoardDAOImpl implements BoardDAO {
 
@@ -248,78 +249,6 @@ public class BoardDAOImpl implements BoardDAO {
   }
 
   @Override
-  public int getTotals() {
-
-    String sql =
-        """
-    SELECT
-        COUNT(*)
-    FROM
-        boards
-    """;
-
-    try (Connection conn = DriverManagerUtils.getConnection();
-        PreparedStatement pstmt = conn.prepareStatement(sql);
-        ResultSet rs = pstmt.executeQuery()) {
-
-      if (rs.next()) {
-        return rs.getInt(1);
-      }
-    } catch (SQLException | ClassNotFoundException e) {
-      throw new RuntimeException(e);
-    }
-    throw new RuntimeException(ErrorMessage.GET_TOTAL_BOARD_FAIL_MSG + sql);
-  }
-
-  @Override
-  public List<Board> getBoardList(int page) {
-    String sql =
-        """
-    SELECT
-        b.id, b.title, b.content, b.view_count, b.created_at, b.created_by, b.updated_at, b.category_id
-    FROM
-        boards b
-    ORDER BY
-        b.created_at
-    DESC
-        LIMIT ? OFFSET ?
-    """;
-
-    List<Board> boards = new ArrayList<>();
-    int limit = Constants.BOARD_LIST_PAGE_SIZE;
-    int offset = (page - 1) * limit;
-
-    try (Connection conn = DriverManagerUtils.getConnection();
-        PreparedStatement pstmt = conn.prepareStatement(sql)) {
-
-      pstmt.setInt(1, limit);
-      pstmt.setInt(2, offset);
-
-      try (ResultSet rs = pstmt.executeQuery()) {
-        while (rs.next()) {
-          boards.add(
-              new Board(
-                  rs.getLong(Constants.ID_COLUMN),
-                  rs.getString(Constants.TITLE_COLUMN),
-                  rs.getString(Constants.CONTENT_COLUMN),
-                  null,
-                  rs.getInt(Constants.VIEW_COUNT_COLUMN),
-                  rs.getTimestamp(Constants.CREATED_AT_COLUMN).toLocalDateTime(),
-                  rs.getString(Constants.CREATED_BY_COLUMN),
-                  rs.getTimestamp(Constants.UPDATED_AT_COLUMN) != null
-                      ? rs.getTimestamp(Constants.UPDATED_AT_COLUMN).toLocalDateTime()
-                      : null,
-                  rs.getLong(Constants.CATEGORY_ID_COLUMN)));
-        }
-      }
-    } catch (SQLException | ClassNotFoundException e) {
-      throw new RuntimeException(e);
-    }
-
-    return boards;
-  }
-
-  @Override
   public Board getBoardDetail(Long boardId) {
 
     String sql =
@@ -395,7 +324,7 @@ public class BoardDAOImpl implements BoardDAO {
   }
 
   @Override
-  public List<Board> getBoardSearchList(int page, Map<String, String> searchConditions) {
+  public List<Board> getBoardList(int page, Map<String, String> searchConditions) {
 
     List<Board> boards = new ArrayList<>();
 
@@ -403,7 +332,7 @@ public class BoardDAOImpl implements BoardDAO {
         new StringBuilder(
             """
         SELECT
-          b.id, b.title, b.view_count, b.created_at, b.updated_at
+          b.id, b.title, b.content, b.view_count, b.created_at, b.created_by, b.updated_at, b.category_id
         FROM
           boards b
         LEFT JOIN
@@ -426,6 +355,7 @@ public class BoardDAOImpl implements BoardDAO {
     if (searchConditions.containsKey(Constants.CATEGORY)) {
       String connector = hasWhere ? "AND" : "WHERE";
       sql.append(connector).append(" c.name = ? ");
+      hasWhere = true;
     }
 
     if (searchConditions.containsKey(Constants.KEYWORD)) {
@@ -472,7 +402,7 @@ public class BoardDAOImpl implements BoardDAO {
                   rs.getLong(Constants.ID_COLUMN),
                   rs.getString(Constants.TITLE_COLUMN),
                   rs.getString(Constants.CONTENT_COLUMN),
-                  rs.getString(Constants.PASSWORD_COLUMN),
+                  null,
                   rs.getInt(Constants.VIEW_COUNT_COLUMN),
                   rs.getTimestamp(Constants.CREATED_AT_COLUMN).toLocalDateTime(),
                   rs.getString(Constants.CREATED_BY_COLUMN),
@@ -489,7 +419,7 @@ public class BoardDAOImpl implements BoardDAO {
   }
 
   @Override
-  public int getTotalsWithSearchConditions(Map<String, String> searchConditions) {
+  public int getTotals(Map<String, String> searchConditions) {
 
     StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM boards b ");
     sql.append("LEFT JOIN categories c ON b.category_id = c.id ");

@@ -55,12 +55,12 @@ public class BoardService {
   private final CommentDAO commentDAO;
 
   public BoardService(
-    BoardDAO boardDAO,
-    BoardImageDAO boardImageDAO,
-    CategoryDAO categoryDAO,
-    AttachmentDAO attachmentDAO,
-    CommentDAO commentDAO,
-    BoardValidator validator) {
+      BoardDAO boardDAO,
+      BoardImageDAO boardImageDAO,
+      CategoryDAO categoryDAO,
+      AttachmentDAO attachmentDAO,
+      CommentDAO commentDAO,
+      BoardValidator validator) {
 
     this.boardDAO = boardDAO;
     this.boardImageDAO = boardImageDAO;
@@ -91,7 +91,10 @@ public class BoardService {
   }
 
   /**
-   * <h1> 게시판 생성 시 카테고리 목록 가져오기 </h1>
+   *
+   *
+   * <h1>게시판 생성 시 카테고리 목록 가져오기 </h1>
+   *
    * @return
    */
   public List<ResCategoryName> getCategories() {
@@ -102,8 +105,12 @@ public class BoardService {
   }
 
   /**
-   * <h1> 게시판 생성 </h1>
+   *
+   *
+   * <h1>게시판 생성 </h1>
+   *
    * - 게시판과 연관된 일대다 엔티티(게시판 이미지, 첨부 파일)에 대해 BATCH INSERT 적용할 수 있음.
+   *
    * @param reqBoardCreate
    * @param parts
    * @return
@@ -125,110 +132,59 @@ public class BoardService {
         Long categoryId = boardDAO.getCategoryIdByName(reqBoardCreate.category());
 
         Board board =
-          new Board(
-            reqBoardCreate.title(),
-            reqBoardCreate.content(),
-            reqBoardCreate.password(),
-            0,
-            LocalDateTime.now(),
-            reqBoardCreate.createdBy(),
-            null,
-            categoryId);
+            new Board(
+                reqBoardCreate.title(),
+                reqBoardCreate.content(),
+                reqBoardCreate.password(),
+                0,
+                LocalDateTime.now(),
+                reqBoardCreate.createdBy(),
+                null,
+                categoryId);
         boardId = boardDAO.saveBoard(conn, board);
 
-
         for (var image : files.images()) {
-          BoardImage boardImage = new BoardImage(image.getStoredName(), image.getStoredName(),
-            image.getExtension(), boardId);
+          BoardImage boardImage =
+              new BoardImage(
+                  image.getStoredName(), image.getStoredName(), image.getExtension(), boardId);
           boardDAO.saveBoardImage(conn, boardImage);
         }
 
         for (var attach : files.attachments()) {
           Attachment attachment =
-            new Attachment(
-              attach.getLogicalName(),
-              attach.getLogicalPath(),
-              attach.getStoredName(),
-              attach.getStoredPath(),
-              attach.getExtension(),
-              attach.getSize(),
-              boardId);
+              new Attachment(
+                  attach.getLogicalName(),
+                  attach.getLogicalPath(),
+                  attach.getStoredName(),
+                  attach.getStoredPath(),
+                  attach.getExtension(),
+                  attach.getSize(),
+                  boardId);
           boardDAO.saveAttachment(conn, attachment);
         }
         conn.commit();
       } catch (SQLException e) {
         conn.rollback();
-        throw new RuntimeException(ErrorMessage.TRANSACTION_FAILED_MSG + Constants.SPACE_SIGN + e.getMessage(), e);
+        throw new RuntimeException(
+            ErrorMessage.TRANSACTION_FAILED_MSG + Constants.SPACE_SIGN + e.getMessage(), e);
       }
     } catch (SQLException | ClassNotFoundException e) {
-      throw new RuntimeException(ErrorMessage.DB_CONNECTION_FAILED_MSG + Constants.SPACE_SIGN + e.getMessage(), e);
+      throw new RuntimeException(
+          ErrorMessage.DB_CONNECTION_FAILED_MSG + Constants.SPACE_SIGN + e.getMessage(), e);
     }
 
     return boardId;
   }
 
   /**
-   * <h1> 게시판 삭제 전처리 </h1>
-   * - 게시판 삭제 시 JSP 상세 페이지에서 첨부 파일과 이미지 파일 정보를 가져옴   *
-   * @param req
-   * @return void
-   */
-  public void preProcessDelete(HttpServletRequest req) {
-
-    validator.validateDeleteBoard(req);
-  }
-
-  /**
-   * <h1> 게시판 삭제 후처리 </h1>
-   * <br>- DB 반영 (이미지 -> 첨부파일 -> 댓글 -> 게시글 -> 파일 경로 삭제)
-   * <br>- 트랜잭션이 성공했다면 파일을 지움
-   * @param reqBoardDelete
-   */
-  public void deleteBoard(ReqBoardDelete reqBoardDelete) {
-
-    validator.validateDeleteExecutionBoard(reqBoardDelete);
-
-    List<String> imagePaths = null;
-    List<String> attachmentPaths = null;
-
-    try (Connection conn = DriverManagerUtils.getConnection()) {
-      conn.setAutoCommit(false);
-
-      try {
-        imagePaths = boardDAO.findImagePathsByBoardId(conn, reqBoardDelete.boardId());
-        attachmentPaths = boardDAO.findAttachmentPathsByBoardId(conn, reqBoardDelete.boardId());
-
-        boardDAO.deleteImagesByBoardId(conn, reqBoardDelete.boardId());
-        boardDAO.deleteAttachmentsByBoardId(conn, reqBoardDelete.boardId());
-        boardDAO.deleteCommentsByBoardId(conn, reqBoardDelete.boardId());
-        boardDAO.deleteBoard(conn, reqBoardDelete.boardId());
-
-        conn.commit();
-      } catch (SQLException e) {
-        conn.rollback();
-        throw new RuntimeException(ErrorMessage.TRANSACTION_FAILED_MSG + e.getMessage(), e);
-      }
-    } catch (SQLException | ClassNotFoundException e) {
-      throw new RuntimeException(e.getMessage(), e);
-    }
-
-    deleteFiles(imagePaths);
-    deleteFiles(attachmentPaths);
-  }
-
-  private void deleteFiles(List<String> paths) {
-    for (var path : paths) {
-      File file = new File(path);
-      if (file.exists()) {
-        file.delete();
-      }
-    }
-  }
-
-  /**
-   * <h1> 게시판 상세 조회 </h1>
-   * <br>- 게시판 엔티티 조회 후 CategoryID로 Category 이름 조회
-   * <br>- 게시판 이미지, 게시판 첨부파일, 댓글 추가로 조회
+   *
+   *
+   * <h1>게시판 상세 조회 </h1>
+   *
+   * <br>
+   * - 게시판 엔티티 조회 후 CategoryID로 Category 이름 조회 <br>
+   * - 게시판 이미지, 게시판 첨부파일, 댓글 추가로 조회
+   *
    * @param req
    * @return ResBoardDetail
    */
@@ -243,31 +199,56 @@ public class BoardService {
         boardDAO.increaseViewCount(conn, req.boardId());
 
         Board board = boardDAO.getBoardDetail(conn, req.boardId());
-        String categoryName = categoryDAO.getCategoryNameByCategoryId(conn,
-          board.getCategoryId());
+        String categoryName = categoryDAO.getCategoryNameByCategoryId(conn, board.getCategoryId());
         List<BoardImage> boardImages = boardImageDAO.getBoardImages(conn, req.boardId());
         List<Attachment> attachments = attachmentDAO.getAttachmentsByBoardId(conn, req.boardId());
         List<Comment> comments = commentDAO.getComments(conn, req.boardId());
 
         conn.commit();
 
-        String updatedAt = board.getUpdatedAt() != null
-          ? TimeFormatterUtils.datetimeToString(board.getUpdatedAt())
-          : "-";
+        String updatedAt =
+            board.getUpdatedAt() != null
+                ? TimeFormatterUtils.datetimeToString(board.getUpdatedAt())
+                : "-";
 
         return new ResBoardDetail(
-          board.getId(),
-          board.getTitle(),
-          board.getContent(),
-          board.getViewCount(),
-          board.getCreatedAt().toString(),
-          board.getCreatedBy(),
-          updatedAt,
-          categoryName,
-          boardImages.stream().map(img -> new ResBoardImage(img.getId(), img.getStoredName(), img.getStoredPath(), img.getExtension())).toList(),
-          attachments.stream().map(att -> new ResAttachment(att.getId(), att.getLogicalName(), att.getLogicalPath(), att.getStoredName(), att.getStoredPath(), att.getExtension())).toList(),
-          comments.stream().map(cmt -> new ResComment(cmt.getId(), cmt.getContent(), cmt.getCreatedAt().toString(), cmt.getCreatedBy())).toList()
-        );
+            board.getId(),
+            board.getTitle(),
+            board.getContent(),
+            board.getViewCount(),
+            board.getCreatedAt().toString(),
+            board.getCreatedBy(),
+            updatedAt,
+            categoryName,
+            boardImages.stream()
+                .map(
+                    img ->
+                        new ResBoardImage(
+                            img.getId(),
+                            img.getStoredName(),
+                            img.getStoredPath(),
+                            img.getExtension()))
+                .toList(),
+            attachments.stream()
+                .map(
+                    att ->
+                        new ResAttachment(
+                            att.getId(),
+                            att.getLogicalName(),
+                            att.getLogicalPath(),
+                            att.getStoredName(),
+                            att.getStoredPath(),
+                            att.getExtension()))
+                .toList(),
+            comments.stream()
+                .map(
+                    cmt ->
+                        new ResComment(
+                            cmt.getId(),
+                            cmt.getContent(),
+                            cmt.getCreatedAt().toString(),
+                            cmt.getCreatedBy()))
+                .toList());
       } catch (SQLException e) {
         conn.rollback();
         throw new RuntimeException(ErrorMessage.TRANSACTION_FAILED_MSG + e.getMessage(), e);
@@ -278,8 +259,11 @@ public class BoardService {
   }
 
   /**
-   * <h1> 게시판 조회는 1. 단순 목록 조회와 2. 검색 조건 파라미터 목록 조회</h1>
-   * - 페이지 이동 시에도 페이지 파라미터와 같이 검색어 파라미터 저장
+   *
+   *
+   * <h1>게시판 조회</h1>
+   * <br>- 페이지 이동 시에도 페이지 파라미터와 같이 검색어 파라미터 저장
+   *
    * @param req
    * @return ResBoardList
    */
@@ -289,52 +273,63 @@ public class BoardService {
 
     Map<String, String> searchConditions = getSearchConditions(req);
 
-    int totals = searchConditions.isEmpty() ?
-      boardDAO.getTotals() :
-      boardDAO.getTotalsWithSearchConditions(searchConditions);
+    int totals = boardDAO.getTotals(searchConditions);
 
     int totalPages = (int) Math.ceil((double) totals / Constants.BOARD_LIST_PAGE_SIZE);
 
-    List<Board> boards = searchConditions.isEmpty() ?
-      boardDAO.getBoardList(req.page()) :
-      boardDAO.getBoardSearchList(req.page(), searchConditions);
+    List<Board> boards = boardDAO.getBoardList(req.page(), searchConditions);
 
-    List<ResBoardViewList> boardViewList = boards.stream()
-      .map(board -> {
-        String categoryName = categoryDAO.getCategoryNameByCategoryId(board.getCategoryId());
-        boolean hasAttachment = attachmentDAO.existsAttachment(board.getId());
+    List<ResBoardViewList> boardViewList =
+        boards.stream()
+            .map(
+                board -> {
+                  String categoryName =
+                      categoryDAO.getCategoryNameByCategoryId(board.getCategoryId());
+                  boolean hasAttachment = attachmentDAO.existsAttachment(board.getId());
 
-        String updatedAt = board.getUpdatedAt() != null
-          ? TimeFormatterUtils.datetimeToString(board.getUpdatedAt())
-          : "-";
+                  String updatedAt =
+                      board.getUpdatedAt() != null
+                          ? TimeFormatterUtils.datetimeToString(board.getUpdatedAt())
+                          : Constants.DASH_SIGN;
 
-        return new ResBoardViewList(
-          board.getId(),
-          handleLongTitle(board.getTitle()),
-          board.getViewCount(),
-          TimeFormatterUtils.datetimeToString(board.getCreatedAt()),
-          board.getCreatedBy(),
-          updatedAt,
-          categoryName,
-          hasAttachment
-        );
-      })
-      .collect(toList());
+                  return new ResBoardViewList(
+                      board.getId(),
+                      handleLongTitle(board.getTitle()),
+                      board.getViewCount(),
+                      TimeFormatterUtils.datetimeToString(board.getCreatedAt()),
+                      board.getCreatedBy(),
+                      updatedAt,
+                      categoryName,
+                      hasAttachment);
+                })
+            .collect(toList());
 
     List<String> categories = categoryDAO.getCategories();
 
     String defaultStartDate = TimeFormatterUtils.getDefaultStartDate();
     String defaultEndDate = TimeFormatterUtils.getDefaultEndDate();
 
-    return new ResBoardList(searchConditions, totals, totalPages, boardViewList, categories, defaultStartDate, defaultEndDate);
+    return new ResBoardList(
+        searchConditions,
+        totals,
+        totalPages,
+        boardViewList,
+        categories,
+        defaultStartDate,
+        defaultEndDate);
   }
 
   private String handleLongTitle(String title) {
     return title.length() > Constants.TITLE_MAX_LENGTH
-        ? title.substring(0, Constants.TITLE_MAX_LENGTH) + "..."
+        ? title.substring(0, Constants.TITLE_MAX_LENGTH) + Constants.ELLIPSIS_SIGN
         : title;
   }
 
+  /**
+   * <h1> 수정 전처리: 게시판 상세 목록 조회</h1>
+   * @param req
+   * @return ResBoardDetail
+   */
   public ResBoardDetail preProcessModify(ReqBoardUpdatePre req) {
 
     validator.validateModifyBoardServlet(req);
@@ -345,40 +340,68 @@ public class BoardService {
     List<Attachment> attachments = attachmentDAO.getAttachmentsByBoardId(req.boardId());
     List<Comment> comments = commentDAO.getComments(req.boardId());
 
-    String updatedAt = board.getUpdatedAt() != null
-      ? TimeFormatterUtils.datetimeToString(board.getUpdatedAt())
-      : "-";
+    String updatedAt =
+        board.getUpdatedAt() != null
+            ? TimeFormatterUtils.datetimeToString(board.getUpdatedAt())
+            : "-";
 
     return new ResBoardDetail(
-      board.getId(),
-      board.getTitle(),
-      board.getContent(),
-      board.getViewCount(),
-      board.getCreatedAt().toString(),
-      board.getCreatedBy(),
-      updatedAt,
-      categoryName,
-      boardImages.stream().map(img -> new ResBoardImage(img.getId(), img.getStoredName(), img.getStoredPath(), img.getExtension())).toList(),
-      attachments.stream().map(att -> new ResAttachment(att.getId(), att.getLogicalName(), att.getLogicalPath(), att.getStoredName(), att.getStoredPath(), att.getExtension())).toList(),
-      comments.stream().map(cmt -> new ResComment(cmt.getId(), cmt.getContent(), cmt.getCreatedAt().toString(), cmt.getCreatedBy())).toList()
-    );
+        board.getId(),
+        board.getTitle(),
+        board.getContent(),
+        board.getViewCount(),
+        board.getCreatedAt().toString(),
+        board.getCreatedBy(),
+        updatedAt,
+        categoryName,
+        boardImages.stream()
+            .map(
+                img ->
+                    new ResBoardImage(
+                        img.getId(), img.getStoredName(), img.getStoredPath(), img.getExtension()))
+            .toList(),
+        attachments.stream()
+            .map(
+                att ->
+                    new ResAttachment(
+                        att.getId(),
+                        att.getLogicalName(),
+                        att.getLogicalPath(),
+                        att.getStoredName(),
+                        att.getStoredPath(),
+                        att.getExtension()))
+            .toList(),
+        comments.stream()
+            .map(
+                cmt ->
+                    new ResComment(
+                        cmt.getId(),
+                        cmt.getContent(),
+                        cmt.getCreatedAt().toString(),
+                        cmt.getCreatedBy()))
+            .toList());
   }
 
+  /**
+   * <h1> 게시판 수정 DB 반영 </h1>
+   * <br>- DB에 파일(이미지, 첨부 파일)목록을 조회하고 요청된 파일과 비교하여 추가할 파일, 삭제할 파일을 결정
+   * @param reqBoardUpdate
+   */
   public void modifyBoard(ReqBoardUpdate reqBoardUpdate) {
 
     validator.validateProcessModifyBoard(reqBoardUpdate);
 
-    Board board = new Board(
-      reqBoardUpdate.boardId(),
-      reqBoardUpdate.title(),
-      reqBoardUpdate.content(),
-      reqBoardUpdate.password(),
-      null,
-      null,
-      reqBoardUpdate.createdBy(),
-      LocalDateTime.now(),
-      null
-    );
+    Board board =
+        new Board(
+            reqBoardUpdate.boardId(),
+            reqBoardUpdate.title(),
+            reqBoardUpdate.content(),
+            reqBoardUpdate.password(),
+            null,
+            null,
+            reqBoardUpdate.createdBy(),
+            LocalDateTime.now(),
+            null);
 
     try (Connection conn = DriverManagerUtils.getConnection()) {
       conn.setAutoCommit(false);
@@ -445,12 +468,20 @@ public class BoardService {
   private void processAttachments(Connection conn, Long boardId, List<Attachment> attachments) {
     List<Attachment> existingAttachments = attachmentDAO.getAttachmentsByBoardId(conn, boardId);
 
-    List<Attachment> attachmentsToDelete = existingAttachments.stream()
-      .filter(existing -> attachments.stream().noneMatch(newAttachment -> newAttachment.getStoredName().equals(existing.getStoredName())))
-      .toList();
+    List<Attachment> attachmentsToDelete =
+        existingAttachments.stream()
+            .filter(
+                existing ->
+                    attachments.stream()
+                        .noneMatch(
+                            newAttachment ->
+                                newAttachment.getStoredName().equals(existing.getStoredName())))
+            .toList();
 
     for (var attachment : attachmentsToDelete) {
-      File file = new File(attachment.getStoredPath() + attachment.getStoredName() + attachment.getExtension());
+      File file =
+          new File(
+              attachment.getStoredPath() + attachment.getStoredName() + attachment.getExtension());
       if (file.exists()) {
         file.delete();
       }
@@ -482,12 +513,83 @@ public class BoardService {
     }
   }
 
+  /**
+   *
+   *
+   * <h1>게시판 삭제 전처리 </h1>
+   *
+   * - 게시판 삭제 시 JSP 상세 페이지에서 첨부 파일과 이미지 파일 정보를 가져옴 *
+   *
+   * @param req
+   * @return void
+   */
+  public void preProcessDelete(HttpServletRequest req) {
+
+    validator.validateDeleteBoard(req);
+  }
+
+  /**
+   *
+   *
+   * <h1>게시판 삭제 후처리 </h1>
+   *
+   * <br>
+   * - DB 반영 (이미지 -> 첨부파일 -> 댓글 -> 게시글 -> 파일 경로 삭제) <br>
+   * - 트랜잭션이 성공했다면 파일을 지움
+   *
+   * @param reqBoardDelete
+   */
+  public void deleteBoard(ReqBoardDelete reqBoardDelete) {
+
+    validator.validateDeleteExecutionBoard(reqBoardDelete);
+
+    List<String> imagePaths = null;
+    List<String> attachmentPaths = null;
+
+    try (Connection conn = DriverManagerUtils.getConnection()) {
+      conn.setAutoCommit(false);
+
+      try {
+        imagePaths = boardDAO.findImagePathsByBoardId(conn, reqBoardDelete.boardId());
+        attachmentPaths = boardDAO.findAttachmentPathsByBoardId(conn, reqBoardDelete.boardId());
+
+        boardDAO.deleteImagesByBoardId(conn, reqBoardDelete.boardId());
+        boardDAO.deleteAttachmentsByBoardId(conn, reqBoardDelete.boardId());
+        boardDAO.deleteCommentsByBoardId(conn, reqBoardDelete.boardId());
+        boardDAO.deleteBoard(conn, reqBoardDelete.boardId());
+
+        conn.commit();
+      } catch (SQLException e) {
+        conn.rollback();
+        throw new RuntimeException(ErrorMessage.TRANSACTION_FAILED_MSG + e.getMessage(), e);
+      }
+    } catch (SQLException | ClassNotFoundException e) {
+      throw new RuntimeException(e.getMessage(), e);
+    }
+
+    deleteFiles(imagePaths);
+    deleteFiles(attachmentPaths);
+  }
+
+  private void deleteFiles(List<String> paths) {
+    for (var path : paths) {
+      File file = new File(path);
+      if (file.exists()) {
+        file.delete();
+      }
+    }
+  }
+
+  /**
+   * <h1> 댓글 생성 -> 로직 많아질 경우 CommentService 책임 분리</h1>
+   * @param req
+   */
   public void createComment(ReqCommentCreate req) {
 
     validator.validateCreateCommentParams(req);
 
     Comment comment =
-        new Comment(req.content(), req.password(), LocalDateTime.now(), req.name(), req.boardId());
+      new Comment(req.content(), req.password(), LocalDateTime.now(), req.name(), req.boardId());
     commentDAO.createComment(comment);
   }
 }

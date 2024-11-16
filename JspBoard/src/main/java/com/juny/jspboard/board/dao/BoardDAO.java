@@ -35,13 +35,9 @@ public interface BoardDAO {
 
   Board getBoardDetail(Long boardId);
 
-  int getTotals();
+  int getTotals(Map<String, String> searchConditions);
 
-  List<Board> getBoardList(int page);
-
-  int getTotalsWithSearchConditions(Map<String, String> searchConditions);
-
-  List<Board> getBoardSearchList(int page, Map<String, String> searchConditions);
+  List<Board> getBoardList(int page, Map<String, String> searchConditions);
 
   void updateBoard(Connection conn, Board board);
 
