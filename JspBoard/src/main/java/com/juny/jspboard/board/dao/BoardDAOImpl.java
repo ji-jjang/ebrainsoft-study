@@ -1,11 +1,13 @@
 package com.juny.jspboard.board.dao;
 
+import com.juny.jspboard.board.dao.builder.QueryBuilder;
 import com.juny.jspboard.global.constant.Constants;
 import com.juny.jspboard.global.constant.ErrorMessage;
 import com.juny.jspboard.board.entity.Attachment;
 import com.juny.jspboard.board.entity.Board;
 import com.juny.jspboard.board.entity.BoardImage;
 import com.juny.jspboard.utility.DriverManagerUtils;
+import com.juny.jspboard.utility.TimeFormatterUtils;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -15,7 +17,6 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class BoardDAOImpl implements BoardDAO {
 
@@ -328,88 +329,61 @@ public class BoardDAOImpl implements BoardDAO {
 
     List<Board> boards = new ArrayList<>();
 
-    StringBuilder sql =
-        new StringBuilder(
-            """
+    String baseQuery = """
         SELECT
           b.id, b.title, b.content, b.view_count, b.created_at, b.created_by, b.updated_at, b.category_id
         FROM
           boards b
         LEFT JOIN
-          categories c
-        ON
-          b.category_id = c.id
-        """);
+          categories c ON b.category_id = c.id
+        """;
 
     int limit = Constants.BOARD_LIST_PAGE_SIZE;
     int offset = (page - 1) * limit;
 
-    boolean hasWhere = false;
+    QueryBuilder queryBuilder = QueryBuilder.create(baseQuery);
 
-    if (searchConditions.containsKey(Constants.START_DATE)
-        && searchConditions.containsKey(Constants.END_DATE)) {
-      sql.append("WHERE b.created_at BETWEEN ? AND ? ");
-      hasWhere = true;
-    }
+    String startDate = searchConditions.getOrDefault(Constants.START_DATE, TimeFormatterUtils.getDefaultStartDate()) + Constants.START_DATE_START_TIME;
+    String endDate = searchConditions.getOrDefault(Constants.END_DATE, TimeFormatterUtils.getDefaultEndDate()) + Constants.END_DATE_END_TIME;
+    queryBuilder.addCondition("b.created_at BETWEEN ? AND ?", startDate, endDate);
 
     if (searchConditions.containsKey(Constants.CATEGORY)) {
-      String connector = hasWhere ? "AND" : "WHERE";
-      sql.append(connector).append(" c.name = ? ");
-      hasWhere = true;
+      queryBuilder.addCondition("c.name = ?", searchConditions.get(Constants.CATEGORY));
     }
 
     if (searchConditions.containsKey(Constants.KEYWORD)) {
-      String connector = hasWhere ? "AND" : "WHERE";
-      sql.append(connector).append(" (b.title LIKE ? OR b.created_by LIKE ? OR b.content LIKE ?) ");
+      String keyword = Constants.PERSENT_SIGN + searchConditions.get(Constants.KEYWORD) + Constants.PERSENT_SIGN;
+      queryBuilder.addCondition("(b.title LIKE ? OR b.created_by LIKE ? OR b.content LIKE ?)",
+        keyword, keyword, keyword);
     }
-    sql.append(" ORDER BY b.created_at DESC ");
-    sql.append(" LIMIT ? OFFSET ?");
+
+    queryBuilder.orderBy("b.created_at DESC").limitOffset(limit, offset);
+
+    String sql = queryBuilder.buildQuery();
+    List<Object> parameters = queryBuilder.getParameters();
 
     try (Connection conn = DriverManagerUtils.getConnection();
-        PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
+      PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-      int index = 0;
-
-      if (searchConditions.containsKey(Constants.START_DATE)
-          && searchConditions.containsKey(Constants.END_DATE)) {
-        pstmt.setString(
-            ++index, searchConditions.get(Constants.START_DATE) + Constants.START_DATE_START_TIME);
-        pstmt.setString(
-            ++index, searchConditions.get(Constants.END_DATE) + Constants.END_DATE_END_TIME);
+      for (int i = 0; i < parameters.size(); i++) {
+        pstmt.setObject(i + 1, parameters.get(i));
       }
-
-      if (searchConditions.containsKey(Constants.CATEGORY)) {
-        pstmt.setString(++index, searchConditions.get(Constants.CATEGORY));
-      }
-
-      if (searchConditions.containsKey(Constants.KEYWORD)) {
-        String keyword =
-            Constants.PERSENT_SIGN
-                + searchConditions.get(Constants.KEYWORD)
-                + Constants.PERSENT_SIGN;
-        pstmt.setString(++index, keyword);
-        pstmt.setString(++index, keyword);
-        pstmt.setString(++index, keyword);
-      }
-
-      pstmt.setInt(++index, limit);
-      pstmt.setInt(++index, offset);
 
       try (ResultSet rs = pstmt.executeQuery()) {
         while (rs.next()) {
           boards.add(
-              new Board(
-                  rs.getLong(Constants.ID_COLUMN),
-                  rs.getString(Constants.TITLE_COLUMN),
-                  rs.getString(Constants.CONTENT_COLUMN),
-                  null,
-                  rs.getInt(Constants.VIEW_COUNT_COLUMN),
-                  rs.getTimestamp(Constants.CREATED_AT_COLUMN).toLocalDateTime(),
-                  rs.getString(Constants.CREATED_BY_COLUMN),
-                  rs.getTimestamp(Constants.UPDATED_AT_COLUMN) != null
-                      ? rs.getTimestamp(Constants.UPDATED_AT_COLUMN).toLocalDateTime()
-                      : null,
-                  rs.getLong(Constants.CATEGORY_ID_COLUMN)));
+            new Board(
+              rs.getLong(Constants.ID_COLUMN),
+              rs.getString(Constants.TITLE_COLUMN),
+              rs.getString(Constants.CONTENT_COLUMN),
+              null,
+              rs.getInt(Constants.VIEW_COUNT_COLUMN),
+              rs.getTimestamp(Constants.CREATED_AT_COLUMN).toLocalDateTime(),
+              rs.getString(Constants.CREATED_BY_COLUMN),
+              rs.getTimestamp(Constants.UPDATED_AT_COLUMN) != null
+                ? rs.getTimestamp(Constants.UPDATED_AT_COLUMN).toLocalDateTime()
+                : null,
+              rs.getLong(Constants.CATEGORY_ID_COLUMN)));
         }
       }
     } catch (SQLException | ClassNotFoundException e) {
@@ -421,53 +395,43 @@ public class BoardDAOImpl implements BoardDAO {
   @Override
   public int getTotals(Map<String, String> searchConditions) {
 
-    StringBuilder sql = new StringBuilder("SELECT COUNT(*) FROM boards b ");
-    sql.append("LEFT JOIN categories c ON b.category_id = c.id ");
+    String baseQuery =
+        """
+        SELECT
+          COUNT(*)
+        FROM
+          boards b
+        LEFT JOIN
+          categories c
+        ON b.category_id = c.id
+    """;
 
-    boolean hasWhere = false;
+    QueryBuilder queryBuilder = QueryBuilder.create(baseQuery);
 
-    if (searchConditions.containsKey(Constants.START_DATE)
-        && searchConditions.containsKey(Constants.END_DATE)) {
-      sql.append("WHERE b.created_at BETWEEN ? AND ? ");
-      hasWhere = true;
-    }
+    String startDate = searchConditions.getOrDefault(Constants.START_DATE, TimeFormatterUtils.getDefaultStartDate()) + Constants.START_DATE_START_TIME;
+    String endDate = searchConditions.getOrDefault(Constants.END_DATE, TimeFormatterUtils.getDefaultEndDate()) + Constants.END_DATE_END_TIME;
+    queryBuilder.addCondition("b.created_at BETWEEN ? AND ?", startDate, endDate);
 
     if (searchConditions.containsKey(Constants.CATEGORY)) {
-      String connector = hasWhere ? "AND " : "WHERE ";
-      sql.append(connector).append("c.name = ? ");
-      hasWhere = true;
+      queryBuilder.addCondition("c.name = ?", searchConditions.get(Constants.CATEGORY));
     }
 
     if (searchConditions.containsKey(Constants.KEYWORD)) {
-      String connector = hasWhere ? "AND " : "WHERE ";
-      sql.append(connector).append("(b.title LIKE ? OR b.created_by LIKE ? OR b.content LIKE ?) ");
+      String keyword = "%" + searchConditions.get(Constants.KEYWORD) + "%";
+      queryBuilder.addCondition("(b.title LIKE ? OR b.created_by LIKE ? OR b.content LIKE ?)",
+        keyword, keyword, keyword);
     }
+
+    String sql = queryBuilder.buildQuery();
+    List<Object> parameters = queryBuilder.getParameters();
 
     try (Connection conn = DriverManagerUtils.getConnection();
         PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
 
-      int index = 0;
-      if (searchConditions.containsKey(Constants.START_DATE)
-          && searchConditions.containsKey(Constants.END_DATE)) {
-        pstmt.setString(
-            ++index, searchConditions.get(Constants.START_DATE) + Constants.START_DATE_START_TIME);
-        pstmt.setString(
-            ++index, searchConditions.get(Constants.END_DATE) + Constants.END_DATE_END_TIME);
+      for (int i = 0; i < parameters.size(); i++) {
+        pstmt.setObject(i + 1, parameters.get(i));
       }
 
-      if (searchConditions.containsKey(Constants.CATEGORY)) {
-        pstmt.setString(++index, searchConditions.get(Constants.CATEGORY));
-      }
-
-      if (searchConditions.containsKey(Constants.KEYWORD)) {
-        String keyword =
-            Constants.PERSENT_SIGN
-                + searchConditions.get(Constants.KEYWORD)
-                + Constants.PERSENT_SIGN;
-        pstmt.setString(++index, keyword);
-        pstmt.setString(++index, keyword);
-        pstmt.setString(++index, keyword);
-      }
       ResultSet rs = pstmt.executeQuery();
       if (rs.next()) {
         return rs.getInt(1);
