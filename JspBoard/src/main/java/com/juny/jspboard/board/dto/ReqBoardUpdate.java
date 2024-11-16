@@ -12,8 +12,6 @@ public record ReqBoardUpdate(
     String content,
     String password,
     String method,
-    List<String> deleteAttachments,
-    List<String> deleteImages,
     List<BoardImage> boardImages,
     List<Attachment> attachments)
     implements ReqBoardForm {}
