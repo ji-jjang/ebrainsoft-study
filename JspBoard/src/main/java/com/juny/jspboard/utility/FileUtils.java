@@ -2,16 +2,15 @@ package com.juny.jspboard.utility;
 
 import com.juny.jspboard.board.entity.Attachment;
 import com.juny.jspboard.board.entity.BoardImage;
-import com.juny.jspboard.constant.Constants;
-import com.juny.jspboard.constant.Env;
-import com.juny.jspboard.utility.dto.ResDeleteFileParsing;
+import com.juny.jspboard.global.constant.Constants;
+import com.juny.jspboard.global.config.Env;
 import com.juny.jspboard.utility.dto.ResFileParsing;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.Part;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
@@ -21,20 +20,24 @@ public final class FileUtils {
   private FileUtils() {}
 
   /**
-   * 첨부 파일과 이미지 파일을 서버 파일 시스템에 저장하고, 파일 정보들을 DB에 저장하기 위한 파싱 처리
    *
-   * @param req
-   * @return
+   *
+   * <h1>첨부 파일과 이미지 파일 처리 </h1>
+   *
+   * <br>
+   * 서버 파일 시스템에 저장하고, 파일 정보들을 DB에 저장하기 위한 파싱 처리
+   *
+   * @param parts
+   * @return 파싱된 이미지 파일과 첨부 파일
    * @throws IOException
    * @throws ServletException
    */
-  public static ResFileParsing parsingFiles(HttpServletRequest req)
-      throws IOException, ServletException {
+  public static ResFileParsing parsingFiles(Collection<Part> parts) throws IOException {
 
     List<Attachment> attachments = new ArrayList<>();
     List<BoardImage> images = new ArrayList<>();
 
-    for (var part : req.getParts()) {
+    for (var part : parts) {
 
       if (part.getSize() > 0) {
         String logicalName = part.getSubmittedFileName();
@@ -58,52 +61,19 @@ public final class FileUtils {
                   uniqueFileName,
                   Env.ATTACHMENT_PATH,
                   extension,
-                  part.getSize()));
+                  part.getSize(),
+                  null));
 
         } else if (part.getName().equals(Constants.IMAGES)) {
 
           filePath = Env.IMAGE_PATH + File.separator + uniqueFileName + extension;
           part.write(filePath);
 
-          images.add(new BoardImage(uniqueFileName, Env.IMAGE_PATH, extension));
+          images.add(new BoardImage(uniqueFileName, Env.IMAGE_PATH, extension, null));
         }
       }
     }
 
     return new ResFileParsing(attachments, images);
-  }
-
-  public static ResDeleteFileParsing parseDeleteFilePaths(HttpServletRequest req) {
-
-    String[] attachmentsFilePath = req.getParameterValues(Constants.ATTACHMENT_FILE_PATH);
-    String[] attachmentsStoredName = req.getParameterValues(Constants.ATTACHMENT_STORED_NAME);
-    String[] attachmentExtensions = req.getParameterValues(Constants.ATTACHMENT_EXTENSION);
-
-    String[] imageFilePath = req.getParameterValues(Constants.IMAGE_FILE_PATH);
-    String[] imageStoredName = req.getParameterValues(Constants.IMAGE_STORED_NAME);
-    String[] imageExtensions = req.getParameterValues(Constants.IMAGE_EXTENSION);
-
-    List<String> deleteImages = createFilePaths(imageFilePath, imageStoredName, imageExtensions);
-    List<String> deleteAttachments =
-        createFilePaths(attachmentsFilePath, attachmentsStoredName, attachmentExtensions);
-    String[] comments = req.getParameterValues(Constants.COMMENT_ID);
-    List<String> deleteComments = null;
-    if (comments != null && comments.length > 0) {
-        deleteComments = Arrays.stream(req.getParameterValues(Constants.COMMENT_ID)).toList();
-    }
-
-    return new ResDeleteFileParsing(deleteImages, deleteAttachments, deleteComments);
-  }
-
-  private static List<String> createFilePaths(
-      String[] filePaths, String[] storedNames, String[] extensions) {
-    List<String> result = new ArrayList<>();
-    if (storedNames != null) {
-      for (int i = 0; i < storedNames.length; ++i) {
-        String filePath = filePaths[i] + storedNames[i] + extensions[i];
-        result.add(filePath);
-      }
-    }
-    return result;
   }
 }

@@ -5,15 +5,34 @@ import java.time.LocalDateTime;
 public class Comment {
 
   private Long id;
-  private String password;
   private String content;
+  private String password;
   private LocalDateTime createdAt;
-  private LocalDateTime createdBy;
+  private String createdBy;
+  private Long boardId;
 
-  public Comment(String password, String content, LocalDateTime createdBy) {
-    this.password = password;
+  public Comment(
+      Long id,
+      String content,
+      String password,
+      LocalDateTime createdAt,
+      String createdBy,
+      Long boardId) {
+    this.id = id;
     this.content = content;
+    this.password = password;
+    this.createdAt = createdAt;
     this.createdBy = createdBy;
+    this.boardId = boardId;
+  }
+
+  public Comment(
+      String content, String password, LocalDateTime createdAt, String createdBy, Long boardId) {
+    this.content = content;
+    this.password = password;
+    this.createdAt = createdAt;
+    this.createdBy = createdBy;
+    this.boardId = boardId;
   }
 
   public Long getId() {
@@ -32,7 +51,11 @@ public class Comment {
     return createdAt;
   }
 
-  public LocalDateTime getCreatedBy() {
+  public String getCreatedBy() {
     return createdBy;
+  }
+
+  public Long getBoardId() {
+    return boardId;
   }
 }

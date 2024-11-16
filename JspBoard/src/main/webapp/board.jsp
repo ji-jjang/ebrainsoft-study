@@ -33,7 +33,7 @@
 <h3>첨부파일</h3>
 <c:forEach var="attachment" items="${board.attachments}">
     <div>
-        <a href="/downloads?fileName=${attachment.storedName}&filePath=${attachment.storedPath}&extension=${attachment.extension}">
+        <a href="/fileDownloads?fileName=${attachment.storedName}&filePath=${attachment.storedPath}&extension=${attachment.extension}&logicalName=${attachment.logicalName}">
                 ${attachment.logicalName}${attachment.extension}
         </a>
     </div>

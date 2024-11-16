@@ -6,8 +6,10 @@ function checkBoardInput(form, type) {
   if (type === "delete") {
     const password = form.password.value;
 
-    if (password.length < MIN_PASSWORD_LENGTH || password.length > MAX_PASSWORD_LENGTH) {
-      alert(`비밀번호 길이는 ${MIN_PASSWORD_LENGTH} ~ ${MAX_PASSWORD_LENGTH} 이어야 합니다.`);
+    if (password.length < MIN_PASSWORD_LENGTH || password.length
+        > MAX_PASSWORD_LENGTH) {
+      alert(
+          `비밀번호 길이는 ${MIN_PASSWORD_LENGTH} ~ ${MAX_PASSWORD_LENGTH} 이어야 합니다.`);
       return false;
     }
     return true;

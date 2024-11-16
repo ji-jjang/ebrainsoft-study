@@ -14,7 +14,7 @@
 </head>
 <h1>게시판 - 수정</h1>
 <body>
-<form action="/processModifyBoard" method="post" enctype="multipart/form-data"
+<form action="/boards/free/modify" method="post" enctype="multipart/form-data"
       onsubmit="return checkBoardInput(this, 'modify')">>
     <input type="hidden" name="boardId" value="${board.id}">
     <p>
@@ -65,7 +65,7 @@
     <h3>첨부 파일</h3>
     <c:forEach var="attachment" items="${board.attachments}">
         <div>
-            <a href="/downloads?fileName=${attachment.storedName}&filePath=${attachment.storedPath}&extension=${attachment.extension}">
+            <a href="/fileDownloads?fileName=${attachment.storedName}&filePath=${attachment.storedPath}&extension=${attachment.extension}">
                     ${attachment.logicalName}${attachment.extension}
             </a>
             <label>

@@ -12,18 +12,39 @@ public class Attachment {
   private Long boardId;
 
   public Attachment(
+      Long id,
       String logicalName,
       String logicalPath,
       String storedName,
       String storedPath,
       String extension,
-      Long size) {
+      Long size,
+      Long boardId) {
+    this.id = id;
     this.logicalName = logicalName;
     this.logicalPath = logicalPath;
     this.storedName = storedName;
     this.storedPath = storedPath;
     this.extension = extension;
     this.size = size;
+    this.boardId = boardId;
+  }
+
+  public Attachment(
+      String logicalName,
+      String logicalPath,
+      String storedName,
+      String storedPath,
+      String extension,
+      Long size,
+      Long boardId) {
+    this.logicalName = logicalName;
+    this.logicalPath = logicalPath;
+    this.storedName = storedName;
+    this.storedPath = storedPath;
+    this.extension = extension;
+    this.size = size;
+    this.boardId = boardId;
   }
 
   public Long getId() {

@@ -1,10 +1,9 @@
-package com.juny.jspboard.constant;
+package com.juny.jspboard.global.constant;
 
 public final class Constants {
 
   public static final Integer BOARD_LIST_PAGE_SIZE = 10;
   public static final Integer FILE_READ_BUFFER_SIZE = 8196;
-
   public static final String EMPTY_STRING = "";
   public static final String DEFAULT_START_DATE = "defaultStartDate";
   public static final String DEFAULT_END_DATE = "defaultEndDate";
@@ -28,8 +27,6 @@ public final class Constants {
   public static final String CREATED_BY_COLUMN = "created_by";
   public static final String CREATED_AT_COLUMN = "created_at";
   public static final String VIEW_COUNT_COLUMN = "view_count";
-  public static final String CATEGORY_NAME_COLUMN = "category_name";
-  public static final String HAS_ATTACHMENT_COLUMN = "has_attachment";
   public static final String CONTENT_COLUMN = "content";
   public static final String CREATED_BY = "createdBy";
   public static final String PASSWORD = "password";
@@ -54,19 +51,22 @@ public final class Constants {
   public static final String EQUALS_SIGN = "=";
   public static final String SLASH_SIGN = "/";
   public static final String DOT_SIGN = ".";
+  public static final String SPACE_SIGN = " ";
   public static final String FILES = "files";
   public static final String IMAGES = "images";
-  public static final String DELETE_ATTACHMENTS = "deleteAttachments";
-  public static final String DELETE_IMAGES = "deleteImages";
-  public static final String ATTACHMENT_FILE_PATH = "attachmentFilePath";
-  public static final String ATTACHMENT_STORED_NAME = "attachmentStoredName";
-  public static final String ATTACHMENT_EXTENSION = "attachmentExtension";
-  public static final String IMAGE_FILE_PATH = "imageFilePath";
-  public static final String IMAGE_STORED_NAME = "imageStoredName";
-  public static final String IMAGE_EXTENSION = "imageExtension";
   public static final String NAME = "name";
-  public static final String COMMENT_ID = "commentId";
-  public static final String DELETE_COMMENTS = "deleteComments";
+  public static final String REDIRECT_PREFIX = "redirect:";
+  public static final int TITLE_MAX_LENGTH = 99;
+  public static final String STORED_PATH_COLUMN = "stored_path";
+  public static final String PASSWORD_COLUMN = "password";
+  public static final String CATEGORY_ID_COLUMN = "category_id";
+  public static final String STORED_NAME_COLUMN = "stored_name";
+  public static final String EXTENSION_COLUMN = "extension";
+  public static final String NAME_COLUMN = "name";
+  public static final String LOGICAL_NAME = "logicalName";
+  public static final String LOGICAL_NAME_COLUMN = "logical_name";
+  public static final String LOGICAL_PATH_COLUMN = "logical_path";
+  public static final String SIZE_COLUMN = "size";
 
   public Constants() {}
 }

@@ -1,37 +1,49 @@
 package com.juny.jspboard.board.dao;
 
-import com.juny.jspboard.board.dto.ReqBoardUpdate;
-import com.juny.jspboard.board.dto.ResBoardDetail;
-import com.juny.jspboard.board.dto.ResBoardViewList;
 import com.juny.jspboard.board.entity.Attachment;
 import com.juny.jspboard.board.entity.Board;
 import com.juny.jspboard.board.entity.BoardImage;
+import java.sql.Connection;
 import java.util.List;
 import java.util.Map;
 
 public interface BoardDAO {
 
-  int getTotalsWithSearchConditions(Map<String, String> searchConditions);
+  Long getCategoryIdByName(String category);
 
-  List<ResBoardViewList> getBoardSearchList(int page, Map<String, String> searchConditions);
+  Long saveBoard(Connection conn, Board board);
+
+  void saveBoardImage(Connection conn, BoardImage boardImage);
+
+  void saveAttachment(Connection conn, Attachment attachment);
+
+  List<String> findImagePathsByBoardId(Connection conn, Long boardId);
+
+  List<String> findAttachmentPathsByBoardId(Connection conn, Long boardId);
+
+  void deleteCommentsByBoardId(Connection conn, Long boardId);
+
+  void deleteAttachmentsByBoardId(Connection conn, Long boardId);
+
+  void deleteImagesByBoardId(Connection conn, Long boardId);
+
+  void deleteBoard(Connection conn, Long boardId);
+
+  void increaseViewCount(Connection conn, Long boardId);
+
+  Board getBoardDetail(Connection conn, Long boardId);
+
+  Board getBoardDetail(Long boardId);
 
   int getTotals();
 
-  List<ResBoardViewList> getBoardList(int page);
+  List<Board> getBoardList(int page);
 
-  Long getCategoryIdByName(String category);
+  int getTotalsWithSearchConditions(Map<String, String> searchConditions);
 
-  ResBoardDetail getBoardDetail(Long boardId);
+  List<Board> getBoardSearchList(int page, Map<String, String> searchConditions);
 
-  ResBoardDetail updateBoard(ReqBoardUpdate reqBoardUpdate);
-
-  void deleteBoard(
-      Long boardId, String[] deleteImages, String[] deleteAttachments, List<Long> deleteCommentsId);
-
-  Long createBoard(
-      String category, Board board, List<BoardImage> images, List<Attachment> attachments);
+  void updateBoard(Connection conn, Board board);
 
   String getStoredPassword(Long boardId);
-
-  void createComment(Long boardId, String name, String password, String content);
 }

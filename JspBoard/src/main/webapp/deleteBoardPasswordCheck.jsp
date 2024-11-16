@@ -13,19 +13,6 @@
 <form action="/boards/free/delete/${param.boardId}" method="post"
       onsubmit="return checkBoardInput(this, 'delete')">
     <input type="hidden" name="boardId" value="${param.boardId}">
-
-    <c:forEach var="deleteImage" items="${deleteImages}">
-        <input type="hidden" name="deleteImages" value="${deleteImage}">
-    </c:forEach>
-
-    <c:forEach var="deleteAttachment" items="${deleteAttachments}">
-        <input type="hidden" name="deleteAttachments" value="${deleteAttachment}">
-    </c:forEach>
-
-    <c:forEach var="deleteComment" items="${deleteComments}">
-        <input type="hidden" name="deleteComments" value="${deleteComment}">
-    </c:forEach>
-
     <label>비밀번호:</label>
     <input type="password" name="password" required>
     <button type="submit">확인</button>

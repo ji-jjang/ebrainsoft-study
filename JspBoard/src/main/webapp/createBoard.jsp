@@ -16,15 +16,15 @@
     <script src="/resources/js/boardInputValidation.js"></script>
 </head>
 <body>
-<form action="/processCreateBoard" method="post" enctype="multipart/form-data"
+<form action="/boards/free/write" method="post" enctype="multipart/form-data"
       onsubmit="return checkBoardInput(this, 'create')">
 
     <label for="category">카테고리:</label>
     <select id="category" name="category" required>
         <option value="">카테고리 선택</option>
         <c:forEach var="category" items="${categories}">
-            <option value="${category}"
-                ${param.category == category ? "selected" : ""}>${category}</option>
+            <option value="${category.categoryName}"
+                ${param.category == category.categoryName ? "selected" : ""}>${category.categoryName}</option>
         </c:forEach>
     </select>
     <br><br>
