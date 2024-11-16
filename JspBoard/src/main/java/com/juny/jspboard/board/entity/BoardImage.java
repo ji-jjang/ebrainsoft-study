@@ -8,10 +8,19 @@ public class BoardImage {
   private String extension;
   private Long boardId;
 
-  public BoardImage(String storedName, String storedPath, String extension) {
+  public BoardImage(Long id, String storedName, String storedPath, String extension, Long boardId) {
+    this.id = id;
     this.storedName = storedName;
     this.storedPath = storedPath;
     this.extension = extension;
+    this.boardId = boardId;
+  }
+
+  public BoardImage(String storedName, String storedPath, String extension, Long boardId) {
+    this.storedName = storedName;
+    this.storedPath = storedPath;
+    this.extension = extension;
+    this.boardId = boardId;
   }
 
   public Long getId() {

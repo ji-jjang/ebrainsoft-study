@@ -15,6 +15,27 @@ public class Board {
   private Long categoryId;
 
   public Board(
+      Long id,
+      String title,
+      String content,
+      String password,
+      Integer viewCount,
+      LocalDateTime createdAt,
+      String createdBy,
+      LocalDateTime updatedAt,
+      Long categoryId) {
+    this.id = id;
+    this.title = title;
+    this.content = content;
+    this.password = password;
+    this.viewCount = viewCount;
+    this.createdAt = createdAt;
+    this.createdBy = createdBy;
+    this.updatedAt = updatedAt;
+    this.categoryId = categoryId;
+  }
+
+  public Board(
       String title,
       String content,
       String password,
