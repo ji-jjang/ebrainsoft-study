@@ -67,6 +67,8 @@ public final class Constants {
   public static final String LOGICAL_NAME_COLUMN = "logical_name";
   public static final String LOGICAL_PATH_COLUMN = "logical_path";
   public static final String SIZE_COLUMN = "size";
+  public static final String DASH_SIGN = "-";
+  public static final String ELLIPSIS_SIGN = "...";
 
   public Constants() {}
 }
