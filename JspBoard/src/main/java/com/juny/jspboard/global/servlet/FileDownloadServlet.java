@@ -14,20 +14,33 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-/** 첨부파일 리스트를 클릭하면 FileDownloadServlet 실행 */
 @WebServlet("/fileDownloads")
 public class FileDownloadServlet extends HttpServlet {
 
   private BoardValidator validator;
 
   @Override
-  public void init() throws ServletException {
+  public void init() {
     BoardControllerFactory factory =
-      (BoardControllerFactory) getServletContext().getAttribute("boardControllerFactory");
+        (BoardControllerFactory) getServletContext().getAttribute("boardControllerFactory");
 
-    this.validator = factory.createBoardValidator();
+    this.validator = factory.getValidator();
   }
 
+  /**
+   *
+   *
+   * <h1>첨부 파일 처리 </h1>
+   *
+   * 첨부 파일을 클릭하면 다운로드 받을 수 있도록 파일을 경로에서 읽어 쓰기
+   *
+   * @param req an {@link HttpServletRequest} object that contains the request the client has made
+   *     of the servlet
+   * @param res an {@link HttpServletResponse} object that contains the response the servlet sends
+   *     to the client
+   * @throws ServletException
+   * @throws IOException
+   */
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse res)
       throws ServletException, IOException {
@@ -35,6 +48,8 @@ public class FileDownloadServlet extends HttpServlet {
     validator.validateFileDownloadServlet(req);
 
     String filePath = req.getParameter(Constants.FILE_PATH);
+    String logicalName =
+        req.getParameter(Constants.LOGICAL_NAME) + req.getParameter(Constants.EXTENSION);
     String fileName = req.getParameter(Constants.FILE_NAME) + req.getParameter(Constants.EXTENSION);
 
     File file = new File(filePath, fileName);
@@ -46,7 +61,7 @@ public class FileDownloadServlet extends HttpServlet {
 
     res.setContentType(Constants.CONTENT_TYPE_OCTET_STREAM);
     res.setHeader(
-        Constants.CONTENT_DISPOSITION, String.format(Constants.ATTACHMENT_FILENAME, fileName));
+        Constants.CONTENT_DISPOSITION, String.format(Constants.ATTACHMENT_FILENAME, logicalName));
 
     try (FileInputStream fileInputStream = new FileInputStream(file);
         OutputStream outputStream = res.getOutputStream()) {
