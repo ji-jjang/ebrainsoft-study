@@ -23,8 +23,8 @@
     <select id="category" name="category" required>
         <option value="">카테고리 선택</option>
         <c:forEach var="category" items="${categories}">
-            <option value="${category}"
-                ${param.category == category ? "selected" : ""}>${category}</option>
+            <option value="${category.categoryName}"
+                ${param.category == category.categoryName ? "selected" : ""}>${category.categoryName}</option>
         </c:forEach>
     </select>
     <br><br>

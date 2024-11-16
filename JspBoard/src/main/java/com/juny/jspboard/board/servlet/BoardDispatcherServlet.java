@@ -1,13 +1,8 @@
 package com.juny.jspboard.board.servlet;
 
-import com.juny.jspboard.board.dao.BoardDAO;
-import com.juny.jspboard.board.dao.BoardDAOImpl;
-import com.juny.jspboard.board.dao.CategoryDAO;
-import com.juny.jspboard.board.dao.CategoryDAOImpl;
 import com.juny.jspboard.board.controller.BoardController;
 import com.juny.jspboard.global.constant.Constants;
 import com.juny.jspboard.global.constant.ErrorMessage;
-import com.juny.jspboard.validator.BoardValidator;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -15,6 +10,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.Objects;
 
 @WebServlet(urlPatterns = "/boards/*")
@@ -24,29 +20,28 @@ public class BoardDispatcherServlet extends HttpServlet {
   private BoardControllerResolver controllerResolver;
 
   /**
-   * /boards 로 시작하는 모든 요청을 처리하는 서블릿 컨트롤러가 사용하는 구현체 직접 생성하여 BoardControllerFactory 전달
-   * ControllerResolver 로부터 실행할 컨트롤러를 넘겨받아 실행하는 역할
    *
-   * <p>필드 주입에서 생성자 주입 방식으로 변경하고, 컨트롤러 인스턴스 생성을 Factory 객체에게 위임 요청 URL 해당하는 컨트롤러를 찾는 로직은
-   * ControllerResolver 객체에게 위임
+   *
+   * <h1>서블릿 초기화 : BoardFactory, ControllerResolver 생성 </h1>
+   *
+   * BoardFactory: 생성자 방식으로 의존성 주입하기 위해 필요한 인스턴스 생성 ControllerResolver: 실행할 컨트롤러를 url, 정규식 매칭을 통해 찾음
    *
    * @throws ServletException
    */
   @Override
   public void init() {
-
-    BoardDAO boardDAO = new BoardDAOImpl();
-    CategoryDAO categoryDAO = new CategoryDAOImpl();
-    BoardValidator validator = new BoardValidator();
-
-    BoardControllerFactory factory = new BoardControllerFactory(categoryDAO, boardDAO, validator);
+    BoardControllerFactory factory = new BoardControllerFactory();
     this.controllerResolver = new BoardControllerResolver(factory);
 
     getServletContext().setAttribute("boardControllerFactory", factory);
   }
 
   /**
-   * Service 함수에서 execute() 함수로 컨트롤러 실행 커맨드 패턴 적용된 컨트롤러는 url 해당하는 역할 수행
+   *
+   *
+   * <h1>커맨드 패턴을 이용하여 Controller.execute()로 특정 기능 수행</h1>
+   *
+   * Controller를 실행하고, 반환된 View 이름이 :redirect로 실행된다면 리다이렉트, 아니라면 포워딩
    *
    * @param request : http 요청
    * @param response : http 응답
@@ -64,7 +59,12 @@ public class BoardDispatcherServlet extends HttpServlet {
       throw new RuntimeException(ErrorMessage.NO_HANDLER_MSG + request.getRequestURI());
     }
 
-    String view = controller.execute(request, response);
+    String view = null;
+    try {
+      view = controller.execute(request, response);
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
 
     if (!Objects.isNull(view) && view.startsWith(Constants.REDIRECT_PREFIX)) {
       response.sendRedirect(view.substring(Constants.REDIRECT_PREFIX.length()));

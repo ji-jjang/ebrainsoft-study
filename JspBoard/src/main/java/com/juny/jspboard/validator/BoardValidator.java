@@ -3,8 +3,10 @@ package com.juny.jspboard.validator;
 import com.juny.jspboard.board.dao.BoardDAO;
 import com.juny.jspboard.board.dao.BoardDAOImpl;
 import com.juny.jspboard.board.dto.ReqBoardDelete;
+import com.juny.jspboard.board.dto.ReqBoardDetail;
 import com.juny.jspboard.board.dto.ReqBoardForm;
 import com.juny.jspboard.board.dto.ReqBoardUpdate;
+import com.juny.jspboard.board.dto.ReqBoardUpdatePre;
 import com.juny.jspboard.board.dto.ReqCommentCreate;
 import com.juny.jspboard.global.constant.Constants;
 import com.juny.jspboard.global.constant.ErrorMessage;
@@ -28,31 +30,31 @@ public class BoardValidator {
   }
 
   /**
-   * url, localhost:8080/boards/free/list
+   * url, /boards/free/list [GET]
    *
-   * @param req
+   * @param method
    */
-  public void validateBoardListParams(HttpServletRequest req) {
+  public void validateBoardListParams(String method) {
 
-    if (!checkHttpMethodMatch(Constants.HTTP_METHOD_GET, req.getMethod())) {
-      throw new RuntimeException(ErrorMessage.HTTP_METHOD_NOT_MATCH_MSG + req.getMethod());
+    if (!checkHttpMethodMatch(Constants.HTTP_METHOD_GET, method)) {
+      throw new RuntimeException(ErrorMessage.HTTP_METHOD_NOT_MATCH_MSG + method);
     }
   }
 
   /**
-   * url, localhost:http://localhost:8080/boards/free/view/{id}
+   * url, /boards/free/view/{id} [GET]
    *
    * @param req
    */
-  public void validateBoardDetailParams(HttpServletRequest req) {
+  public void validateBoardDetailParams(ReqBoardDetail req) {
 
-    if (!checkHttpMethodMatch(Constants.HTTP_METHOD_GET, req.getMethod())) {
-      throw new RuntimeException(ErrorMessage.HTTP_METHOD_NOT_MATCH_MSG + req.getMethod());
+    if (!checkHttpMethodMatch(Constants.HTTP_METHOD_GET, req.method())) {
+      throw new RuntimeException(ErrorMessage.HTTP_METHOD_NOT_MATCH_MSG + req.method());
     }
   }
 
   /**
-   * url, /processCreateBoard
+   * url, /boards/free/write [POST]
    *
    * @param req
    */
@@ -77,7 +79,7 @@ public class BoardValidator {
   }
 
   /**
-   * url, /downloads
+   * url, /fileDownloads [GET]
    *
    * @param req
    */
@@ -89,19 +91,19 @@ public class BoardValidator {
   }
 
   /**
-   * url, /boards/free/modify/{id} [MODIFY FORM}
+   * url, /boards/free/modify/{id} [GET]
    *
    * @param req
    */
-  public void validateModifyBoardServlet(HttpServletRequest req) {
+  public void validateModifyBoardServlet(ReqBoardUpdatePre req) {
 
-    if (!checkHttpMethodMatch(Constants.HTTP_METHOD_GET, req.getMethod())) {
-      throw new RuntimeException(ErrorMessage.HTTP_METHOD_NOT_MATCH_MSG + req.getMethod());
+    if (!checkHttpMethodMatch(Constants.HTTP_METHOD_GET, req.method())) {
+      throw new RuntimeException(ErrorMessage.HTTP_METHOD_NOT_MATCH_MSG + req.method());
     }
   }
 
   /**
-   * url, /processModifyBoard
+   * url, /boards/free/modify [POST]
    *
    * @param reqBoardUpdate
    */
@@ -161,7 +163,7 @@ public class BoardValidator {
   }
 
   /**
-   * /boards/free/delete [POST]
+   * url, /boards/free/delete [POST]
    *
    * @param req
    */
@@ -173,7 +175,7 @@ public class BoardValidator {
   }
 
   /**
-   * /processBoardDelete [POST]
+   * url, /boards/free/delete/{id} [POST]
    *
    * @param reqBoardDelete
    */

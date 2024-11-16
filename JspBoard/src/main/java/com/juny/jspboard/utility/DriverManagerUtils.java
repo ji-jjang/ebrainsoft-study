@@ -1,6 +1,6 @@
 package com.juny.jspboard.utility;
 
-import com.juny.jspboard.global.constant.Env;
+import com.juny.jspboard.global.config.Env;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -10,7 +10,9 @@ public class DriverManagerUtils {
   private DriverManagerUtils() {}
 
   /**
-   * DB 연결 얻는 메서드
+   *
+   *
+   * <h1>DB 연결 얻는 메서드 </h1>
    *
    * @return the connection
    * @throws ClassNotFoundException the class not found exception
