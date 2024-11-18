@@ -2,6 +2,11 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
+  mvc:
+    view:
+      prefix: /WEB-INF/
+      suffix: .jsp
+
 mybatis:
   mapper-locations: classpath:mapper/*.xml
   type-aliases-package: com.juny.jspboardwithmybatis.domain
