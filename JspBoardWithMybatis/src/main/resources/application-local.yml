@@ -1,10 +1,13 @@
 spring:
+
   config:
     import: "classpath:env.properties"
+
   datasource:
     url: ${DB_LOCAL_URL}
     username: ${DB_LOCAL_USERNAME}
     password: ${DB_LOCAL_PASSWORD}
+
   jpa:
     properties:
       hibernate:
@@ -12,3 +15,7 @@ spring:
         format_sql: false
     hibernate:
       ddl-auto: create-drop
+
+  web:
+    resources:
+      static-locations: ${RESOURCE_LOCAL_PATH}
