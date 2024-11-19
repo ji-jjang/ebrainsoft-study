@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.juny.jspboardwithmybatis.domain.board.mapper.BoardMapper">
+  <update id="increaseViewCount">
+    UPDATE
+      boards
+    SET
+      view_count = view_count + 1
+    WHERE
+      id = #{id};
+  </update>
+
+  <select id="findBoardDetailById">
+    SELECT
+      b.id AS boardId,
+      b.title,
+      b.content,
+      b.view_count AS viewCount,
+      DATE_FORMAT(b.created_at, '%Y-%m-%d %H:%i:%s') AS createdAt,
+      b.created_by AS createdBy,
+      DATE_FORMAT(b.updated_at, '%Y-%m-%d %H:%i:%s') AS updatedAt,
+      c.name AS categoryName,
+      bi.id AS boardImageId,
+      bi.stored_name AS storedName,
+      bi.stored_path AS storedPath,
+      bi.extension,
+      a.id AS attachmentId,
+      a.logical_name AS logicalName,
+      a.stored_name AS storedName,
+      a.stored_path AS storedPath,
+      a.extension,
+      a.size,
+      cm.id AS commentId,
+      cm.content,
+      DATE_FORMAT(cm.created_at, '%Y-%m-%d %H:%i:%s') AS createdAt,
+      cm.created_by AS createdBy
+    FROM
+      boards b
+    LEFT JOIN
+      categories c
+    on
+      c.id = b.category_id
+    LEFT JOIN
+      attachments a
+    on
+      b.id = a.board_id
+    LEFT JOIN
+      board_images bi
+    on
+      b.id = bi.board_id
+    LEFT JOIN
+      comments cm
+    on
+      b.id = cm.board_id
+    where
+      b.id = 1;
+  </select>
+</mapper>
