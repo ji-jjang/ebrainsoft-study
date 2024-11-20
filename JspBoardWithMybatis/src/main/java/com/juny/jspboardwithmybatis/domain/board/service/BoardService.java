@@ -120,6 +120,19 @@ public class BoardService {
     searchConditions.put("page", page);
   }
 
+  /**
+   *
+   *
+   * <h1>게시판 생성 </h1>
+   *
+   * <br>
+   * - 게시판, 이미지, 첨부파일 DB에 저장
+   *
+   * @param req
+   * @param images
+   * @param attachments
+   * @return boardId
+   */
   @Transactional
   public Long createBoard(
       ReqBoardCreate req, List<FileDetails> images, List<FileDetails> attachments) {

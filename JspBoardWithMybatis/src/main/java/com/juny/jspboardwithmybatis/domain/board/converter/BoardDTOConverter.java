@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+/** DAO에서 View 의존성을 없애고, Converter 가 View 에 필요한 정보 변환 */
 public class BoardDTOConverter {
 
   /**
@@ -93,6 +94,10 @@ public class BoardDTOConverter {
    *
    *
    * <h1>게시판 목록 조회 쿼리 결과를 View에서 사용할 정보로 변환하는 컨버터</h1>
+   *
+   * <br>
+   * - EXIST 쿼리 결과를 JDBC 에서 tinyInt 또는 bigInt 로 간헐적으로 랜덤하게 처리되는 문제 발생<br>
+   * - InstanceOf로 타입안정성 부여
    *
    * @param boards
    * @param searchConditions

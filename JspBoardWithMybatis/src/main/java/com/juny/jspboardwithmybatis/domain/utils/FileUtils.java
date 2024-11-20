@@ -49,6 +49,15 @@ public class FileUtils {
     }
   }
 
+  /**
+   *
+   *
+   * <h1>파일 세부 정보 저장</h1>
+   *
+   * @param files
+   * @param path
+   * @return FileDetails
+   */
   public static List<FileDetails> saveFileDetails(List<MultipartFile> files, String path) {
 
     String storedPath = "/Users/jijunhyuk/JunyProjects/ebrainsoft/" + path + "/";
