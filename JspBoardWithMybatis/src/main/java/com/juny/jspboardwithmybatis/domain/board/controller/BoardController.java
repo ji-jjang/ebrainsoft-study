@@ -10,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
@@ -59,7 +60,7 @@ public class BoardController {
    * @param keyword
    * @param page
    * @param model
-   * @return ResBoardList (게시판, 검색조건, 페이지, 카테고리 정보)
+   * @return View
    */
   @GetMapping("/boards")
   public String getBoards(
@@ -80,5 +81,40 @@ public class BoardController {
     model.addAttribute("categories", CategoryMapperUtils.getAllCategoryName());
 
     return "boards";
+  }
+
+  /**
+   *
+   *
+   * <h1>게시판 생성 폼</h1>
+   *
+   * @param model
+   * @return View
+   */
+  @GetMapping("/boards/new")
+  public String createBoardForm(Model model) {
+
+    model.addAttribute("categories", CategoryMapperUtils.getAllCategoryName());
+
+    return "createBoardForm";
+  }
+
+  /**
+   *
+   *
+   * <h1>게시판 생성 </h1>
+   *
+   * <br>
+   * - PRG
+   *
+   * @return View
+   */
+  @PostMapping("/boards")
+  public String createBoard() {
+
+    System.out.println("BoardController.createBoard");
+    //
+
+    return "redirect:/boards + boardId";
   }
 }
