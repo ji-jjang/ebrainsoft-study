@@ -18,4 +18,6 @@ spring:
 
   web:
     resources:
-      static-locations: ${RESOURCE_LOCAL_PATH}
+      static-locations:
+        - ${RESOURCE_IMAGE_PATH}
+        - ${RESOURCE_ATTACHMENT_PATH}
