@@ -7,10 +7,9 @@ import lombok.ToString;
 @Getter
 @AllArgsConstructor
 @ToString
-public class ResBoardImage {
+public class ResPageInfo {
 
-  private final Long id;
-  private final String storedName;
-  private final String storedPath;
-  private final String extension;
+  private int totalBoardCount;
+  private int totalPages;
+  private int page;
 }

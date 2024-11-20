@@ -7,10 +7,10 @@ import lombok.ToString;
 @Getter
 @AllArgsConstructor
 @ToString
-public class ResBoardImage {
+public class ResSearchCondition {
 
-  private final Long id;
-  private final String storedName;
-  private final String storedPath;
-  private final String extension;
+  private String startDate;
+  private String endDate;
+  private String keyword;
+  private String categoryName;
 }
