@@ -12,7 +12,7 @@ public class ReqBoardList {
   private final LocalDate endDate;
   private final String categoryName;
   private final String keyword;
-  private final int page;
+  private final Integer page;
 
   /**
    * <h1> AllArgsConstructor, 불변 객체로 만들 때 기본값 설정</h1>
@@ -23,12 +23,12 @@ public class ReqBoardList {
    * @param page
    */
   public ReqBoardList(
-      LocalDate startDate, LocalDate endDate, String categoryName, String keyword, int page) {
+      LocalDate startDate, LocalDate endDate, String categoryName, String keyword, String page) {
 
     this.startDate = (startDate == null) ? LocalDate.now().minusYears(1) : startDate;
     this.endDate = (endDate == null) ? LocalDate.now() : endDate;
     this.categoryName = categoryName;
     this.keyword = keyword;
-    this.page = page;
+    this.page = (page == null) ? 1 : Integer.parseInt(page);
   }
 }

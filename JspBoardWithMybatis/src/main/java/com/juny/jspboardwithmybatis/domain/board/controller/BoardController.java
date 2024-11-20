@@ -1,25 +1,29 @@
 package com.juny.jspboardwithmybatis.domain.board.controller;
 
+import com.github.gavlyukovskiy.boot.jdbc.decorator.DataSourceDecoratorBeanPostProcessor;
+import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardCreate;
 import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardList;
 import com.juny.jspboardwithmybatis.domain.board.dto.ResBoardDetail;
 import com.juny.jspboardwithmybatis.domain.board.dto.ResBoardList;
 import com.juny.jspboardwithmybatis.domain.board.service.BoardService;
 import com.juny.jspboardwithmybatis.domain.utils.CategoryMapperUtils;
-import java.time.LocalDate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class BoardController {
 
   private final BoardService boardService;
+  private final DataSourceDecoratorBeanPostProcessor dataSourceDecoratorBeanPostProcessor;
 
-  public BoardController(BoardService boardService) {
+  public BoardController(BoardService boardService,
+    DataSourceDecoratorBeanPostProcessor dataSourceDecoratorBeanPostProcessor) {
     this.boardService = boardService;
+    this.dataSourceDecoratorBeanPostProcessor = dataSourceDecoratorBeanPostProcessor;
   }
 
   /**
@@ -54,24 +58,11 @@ public class BoardController {
    * <br>
    * - 검색 조건을 유지하며, 페이지 이동 할 수 있어야 함
    *
-   * @param startDate
-   * @param endDate
-   * @param categoryName
-   * @param keyword
-   * @param page
-   * @param model
+   * @param model SearchCondition(startDate, endDate, categoryName, keyword), page
    * @return View
    */
   @GetMapping("/boards")
-  public String getBoards(
-      @RequestParam(required = false) LocalDate startDate,
-      @RequestParam(required = false) LocalDate endDate,
-      @RequestParam(required = false) String categoryName,
-      @RequestParam(required = false) String keyword,
-      @RequestParam(required = false, defaultValue = "1") int page,
-      Model model) {
-
-    ReqBoardList reqBoardList = new ReqBoardList(startDate, endDate, categoryName, keyword, page);
+  public String getBoards(@ModelAttribute ReqBoardList reqBoardList, Model model) {
 
     ResBoardList boardList = boardService.getBoardList(reqBoardList);
 
@@ -110,11 +101,10 @@ public class BoardController {
    * @return View
    */
   @PostMapping("/boards")
-  public String createBoard() {
+  public String createBoard(
+    @ModelAttribute ReqBoardCreate reqBoardCreate) {
 
-    System.out.println("BoardController.createBoard");
-    //
-
+    System.out.println("reqBoardCreate.toString() = " + reqBoardCreate.toString());
     return "redirect:/boards + boardId";
   }
 }
