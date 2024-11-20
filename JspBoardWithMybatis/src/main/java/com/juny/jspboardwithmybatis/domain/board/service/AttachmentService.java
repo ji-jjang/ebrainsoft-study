@@ -14,7 +14,10 @@ public class AttachmentService {
   }
 
   /**
-   * <h1> attachment 엔티티 조회하여 경로 반환 </h1>
+   *
+   *
+   * <h1>attachment 엔티티 조회하여 경로 반환 </h1>
+   *
    * @param id
    * @return path
    */
@@ -22,13 +25,14 @@ public class AttachmentService {
 
     Attachment attachment = getAttachment(id);
 
-    return attachment.getStoredPath()
-      + attachment.getStoredName()
-      + attachment.getExtension();
+    return attachment.getStoredPath() + attachment.getStoredName() + attachment.getExtension();
   }
 
   /**
-   * <h1> attachment id를 받아 엔티티 조회 </h1>
+   *
+   *
+   * <h1>attachment id를 받아 엔티티 조회 </h1>
+   *
    * @param id
    * @return attachment
    */

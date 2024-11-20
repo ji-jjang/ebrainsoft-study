@@ -12,6 +12,7 @@ public class Category {
 
   /**
    * PRIMARY KEY 제외 생성자
+   *
    * @param name
    */
   public Category(String name) {

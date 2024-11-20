@@ -20,6 +20,7 @@ public class Board {
 
   /**
    * PRIMARY KEY 제외 생성자
+   *
    * @param title
    * @param content
    * @param password

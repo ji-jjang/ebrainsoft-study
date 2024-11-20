@@ -1,7 +1,10 @@
 -- 카테고리 데이터 추가
-INSERT INTO categories (name) VALUES ('JAVA');
-INSERT INTO categories (name) VALUES ('Javascript');
-INSERT INTO categories (name) VALUES ('Database');
+INSERT INTO categories (name)
+VALUES ('JAVA');
+INSERT INTO categories (name)
+VALUES ('Javascript');
+INSERT INTO categories (name)
+VALUES ('Database');
 
 -- 게시판 데이터 추가
 INSERT INTO boards (title, content, password, view_count, created_at, updated_at, created_by,

@@ -17,6 +17,7 @@ public class Comment {
 
   /**
    * PRIMARY KEY 제외 생성자
+   *
    * @param content
    * @param password
    * @param createdAt

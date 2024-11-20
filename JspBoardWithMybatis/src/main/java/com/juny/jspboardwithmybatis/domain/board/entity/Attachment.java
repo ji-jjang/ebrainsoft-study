@@ -2,11 +2,9 @@ package com.juny.jspboardwithmybatis.domain.board.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.ToString;
 
 @Getter
 @AllArgsConstructor
-@ToString
 public class Attachment {
 
   private Long id;
@@ -19,6 +17,7 @@ public class Attachment {
 
   /**
    * PRIMARY KEY 제외 생성자
+   *
    * @param logicalName
    * @param storedName
    * @param storedPath
@@ -26,8 +25,13 @@ public class Attachment {
    * @param size
    * @param boardId
    */
-  public Attachment(String logicalName, String storedName, String storedPath, String extension,
-    Long size, Long boardId) {
+  public Attachment(
+      String logicalName,
+      String storedName,
+      String storedPath,
+      String extension,
+      Long size,
+      Long boardId) {
     this.logicalName = logicalName;
     this.storedName = storedName;
     this.storedPath = storedPath;

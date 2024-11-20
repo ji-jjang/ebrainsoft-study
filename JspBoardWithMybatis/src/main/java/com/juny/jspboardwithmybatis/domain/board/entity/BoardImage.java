@@ -15,6 +15,7 @@ public class BoardImage {
 
   /**
    * PRIMARY KEY 제외 생성자
+   *
    * @param storedName
    * @param storedPath
    * @param extension

@@ -1,4 +1,4 @@
-package com.juny.jspboardwithmybatis.domain.util;
+package com.juny.jspboardwithmybatis.domain.utils;
 
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -12,6 +12,14 @@ import org.springframework.stereotype.Service;
 @Service
 public class DownloadService {
 
+  /**
+   *
+   *
+   * <h1>파일 다운로드 처리</h1>
+   *
+   * @param path
+   * @param res
+   */
   public void responseFile(String path, HttpServletResponse res) {
 
     Path filePath = Paths.get(path);
