@@ -15,7 +15,7 @@
 
 <c:forEach var="boardImage" items="${board.boardImages}">
     <div>
-        <img src="/images/${boardImage.storedName}${boardImage.extension}" alt="Board Image"
+        <img src="/${boardImage.storedName}.${boardImage.extension}" alt="Board Image"
              width="300" height="200"/>
     </div>
 </c:forEach>
@@ -27,7 +27,7 @@
 <c:forEach var="attachment" items="${board.attachments}">
     <div>
         <a href="/attachments/${attachment.id}/download">
-                ${attachment.logicalName}${attachment.extension}
+                ${attachment.logicalName}
         </a>
     </div>
 </c:forEach>
@@ -57,8 +57,10 @@
 </form>
 
 <div>
-    <button onclick="location.href='/boards/free/list'">목록</button>
-    <button onclick="location.href='/boards/free/modify/${board.id}'">수정</button>
+    <button onclick="location.href='/boards'">목록</button>
+    <form action="/boards/${board.id}" method="POST">
+        <button type="submit">수정</button>
+    </form>
     <form action="/boards/free/delete" method="post">
         <input type="hidden" name="boardId" value="${board.id}">
         <c:forEach var="attachment" items="${board.attachments}">

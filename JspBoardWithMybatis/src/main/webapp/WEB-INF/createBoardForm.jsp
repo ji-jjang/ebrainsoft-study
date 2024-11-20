@@ -6,7 +6,7 @@
 <html>
 <head>
     <title>Create Board</title>
-<%--    <script src="/resources/js/boardInputValidation.js"></script>--%>
+    <%--    <script src="/resources/js/boardInputValidation.js"></script>--%>
 </head>
 <body>
 <form action="/boards" method="post" enctype="multipart/form-data"
@@ -14,15 +14,15 @@
 
 
     <label for="category">카테고리:</label>
-    <select id="category" name="category" required>
+    <select id="category" name="categoryName" required>
         <option value="">카테고리 선택</option>
         <c:forEach var="category" items="${categories}">
-            <option value="${category}" ${param.category == category ? "selected" : ""}>${category}</option>
+            <option value="${category}" ${param.categoryName == category ? "selected" : ""}>${category}</option>
         </c:forEach>
     </select>
     <br><br>
 
-    <label for="images">대표 이미지 설정:</label>
+    <label for="images">이미지 추가:</label>
     <input type="file" id="images" name="images" multiple>
     <br><br>
 

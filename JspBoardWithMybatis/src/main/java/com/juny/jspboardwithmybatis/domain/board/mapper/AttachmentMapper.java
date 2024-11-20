@@ -7,4 +7,6 @@ import org.apache.ibatis.annotations.Mapper;
 public interface AttachmentMapper {
 
   Attachment findAttachmentById(Long id);
+
+  void saveAttachment(Attachment attachment);
 }

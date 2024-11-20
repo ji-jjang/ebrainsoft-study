@@ -1,5 +1,6 @@
 package com.juny.jspboardwithmybatis.domain.board.mapper;
 
+import com.juny.jspboardwithmybatis.domain.board.entity.Board;
 import java.util.List;
 import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
@@ -14,4 +15,6 @@ public interface BoardMapper {
   long getTotalBoardCount(Map<String, Object> searchConditions);
 
   List<Map<String, Object>> getBoardList(Map<String, Object> searchConditions);
+
+  void saveBoard(Board board);
 }

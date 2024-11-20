@@ -7,6 +7,9 @@ import com.juny.jspboardwithmybatis.domain.board.dto.ResBoardDetail;
 import com.juny.jspboardwithmybatis.domain.board.dto.ResBoardList;
 import com.juny.jspboardwithmybatis.domain.board.service.BoardService;
 import com.juny.jspboardwithmybatis.domain.utils.CategoryMapperUtils;
+import com.juny.jspboardwithmybatis.domain.utils.FileUtils;
+import com.juny.jspboardwithmybatis.domain.utils.dto.FileDetails;
+import java.util.List;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,8 +23,9 @@ public class BoardController {
   private final BoardService boardService;
   private final DataSourceDecoratorBeanPostProcessor dataSourceDecoratorBeanPostProcessor;
 
-  public BoardController(BoardService boardService,
-    DataSourceDecoratorBeanPostProcessor dataSourceDecoratorBeanPostProcessor) {
+  public BoardController(
+      BoardService boardService,
+      DataSourceDecoratorBeanPostProcessor dataSourceDecoratorBeanPostProcessor) {
     this.boardService = boardService;
     this.dataSourceDecoratorBeanPostProcessor = dataSourceDecoratorBeanPostProcessor;
   }
@@ -96,15 +100,21 @@ public class BoardController {
    * <h1>게시판 생성 </h1>
    *
    * <br>
-   * - PRG
+   * - 1. 파일 정보를 파싱하고, 로컬 파일시스템에 저장<br>
+   * - 2. 서비스 트랜잭션으로 게시판 생성(게시판, 이미지, 첨부파일)<br>
+   * - 3. 트랜잭션 실패 시 저장된 파일 삭제
    *
    * @return View
    */
   @PostMapping("/boards")
-  public String createBoard(
-    @ModelAttribute ReqBoardCreate reqBoardCreate) {
+  public String createBoard(@ModelAttribute ReqBoardCreate reqBoardCreate) {
 
-    System.out.println("reqBoardCreate.toString() = " + reqBoardCreate.toString());
-    return "redirect:/boards + boardId";
+    List<FileDetails> images = FileUtils.saveFileDetails(reqBoardCreate.getImages(), "images");
+    List<FileDetails> attachments =
+        FileUtils.saveFileDetails(reqBoardCreate.getFiles(), "attachments");
+
+    Long boardId = boardService.createBoard(reqBoardCreate, images, attachments);
+
+    return "redirect:/boards/" + boardId;
   }
 }
