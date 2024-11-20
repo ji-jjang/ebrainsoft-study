@@ -26,8 +26,8 @@ public class AttachmentController {
    * <h1>첨부 파일 다운로드 컨트롤러 </h1>
    *
    * <br>
-   * - jsp 파일에서 요청된 첨부파일 id를 받아 첨부 파일 정보를 검색한다 <br>
-   * - 서버에 저장된 경로를 downloadService 에 전달한다
+   * - jsp 파일에서 요청된 첨부파일 id를 받아 첨부 파일 정보를 검색 <br>
+   * - 서버에 저장된 경로를 downloadService 에 전달
    *
    * @param id
    * @param res
