@@ -1,30 +1,44 @@
 package com.juny.jspboardwithmybatis.domain.utils;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class DateFormatUtils {
 
   private static DateTimeFormatter simpleFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-  private static DateTimeFormatter detailFormatter =
-      DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+  /**
+   *
+   *
+   * <h1>검색 조건 쿼리를 위해 시간분초를 붙이는 시간 형식 포매터</h1>
+   *
+   * <br>
+   * - 검색 시작 시간에 00:00:00, 검색 종료 시간에 23:59:59 접미사 붙임
+   *
+   * @param startDate
+   * @param hourMinuteSecond
+   * @return
+   */
   public static String toSearchFormat(LocalDate startDate, String hourMinuteSecond) {
     return simpleFormatter.format(startDate) + " " + hourMinuteSecond;
   }
 
-  public static String toOutputFormat(String dateTime) {
+  /**
+   * <h1>View 위한 시간 형식 포맷터</h1>
+   *
+   * <br>
+   * - MySQL, DateFormat(String)으로 반환된 시간형식을 yyyy-MM-dd 로 변환
+   * - 시간분초 접미사가 붙는 경우가 존재
+   * @param dateFormat
+   * @return
+   */
+  public static String toOutputFormat(String dateFormat) {
 
-    LocalDate localDate;
-
-    if (dateTime.split(" ").length == 2) {
-      LocalDateTime localDateTime = LocalDateTime.parse(dateTime, detailFormatter);
-      localDate = localDateTime.toLocalDate();
-    } else {
-      localDate = LocalDate.parse(dateTime, simpleFormatter);
+    String date = dateFormat;
+    if (dateFormat.split(" ").length == 2) {
+      date = dateFormat.split(" ")[0];
     }
 
-    return simpleFormatter.format(localDate);
+    return date;
   }
 }
