@@ -18,7 +18,7 @@ public class BoardDTOConverter {
   /**
    *
    *
-   * <h1> 게시판 상세 조회 쿼리 결과를 View 에서 사용할 정보로 변환하는 컨버터 </h1>
+   * <h1>게시판 상세 조회 쿼리 결과를 View 에서 사용할 정보로 변환하는 컨버터 </h1>
    *
    * <br>
    * - Map에 담긴 자료를 하나씩 꺼내 ResBoardDetail 변환
@@ -104,16 +104,31 @@ public class BoardDTOConverter {
     List<ResBoardViewList> resBoardViewList =
         boards.stream()
             .map(
-                row ->
-                    new ResBoardViewList(
-                        (Long) row.get("board_id"),
-                        (String) row.get("title"),
-                        (Integer) row.get("view_count"),
-                        (String) row.get("created_at"),
-                        (String) row.get("created_by"),
-                        (row.get("updated_at") == null) ? "-" : ((String) row.get("updated_at")),
-                        (String) row.get("name"),
-                        ((Long) row.get("has_attachment")) > 0))
+                row -> {
+                  Long boardId = (Long) row.get("board_id");
+                  String title = (String) row.get("title");
+                  Integer viewCount = (Integer) row.get("view_count");
+                  String createdAt = (String) row.get("created_at");
+                  String createdBy = (String) row.get("created_by");
+                  String updatedAt =
+                      (row.get("updated_at") == null) ? "-" : (String) row.get("updated_at");
+                  String name = (String) row.get("name");
+
+                  Object hasAttachmentObj = row.get("has_attachment");
+                  boolean hasAttachment =
+                      hasAttachmentObj instanceof Number
+                          && ((Number) hasAttachmentObj).longValue() > 0;
+
+                  return new ResBoardViewList(
+                      boardId,
+                      title,
+                      viewCount,
+                      createdAt,
+                      createdBy,
+                      updatedAt,
+                      name,
+                      hasAttachment);
+                })
             .collect(Collectors.toList());
 
     ResSearchCondition resSearchCondition =
