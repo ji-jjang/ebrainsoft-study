@@ -1,6 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
-<%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <html>
 <head>
     <title>게시판 목록 페이지</title>
@@ -9,7 +8,6 @@
 <body>
 <h1>자유 게시판 - 목록</h1>
 
-<p>${searchCondition.startDate}</p>
 <p>총 게시물: ${pageInfo.totalBoardCount}</p>
 
 <form action="/boards" method="get">
@@ -75,6 +73,8 @@
     </c:forEach>
 </div>
 
-<button onclick="location.href='/boards/new'">등록</button>
+<form action="/boards/new" method="get">
+    <button type="submit">등록</button>
+</form>
 </body>
 </html>
