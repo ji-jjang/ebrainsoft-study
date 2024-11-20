@@ -25,7 +25,7 @@ public class ReqBoardList {
   public ReqBoardList(
       LocalDate startDate, LocalDate endDate, String categoryName, String keyword, int page) {
 
-    this.startDate = (startDate == null) ? LocalDate.now().minusYears(2) : startDate;
+    this.startDate = (startDate == null) ? LocalDate.now().minusYears(1) : startDate;
     this.endDate = (endDate == null) ? LocalDate.now() : endDate;
     this.categoryName = categoryName;
     this.keyword = keyword;
