@@ -3,7 +3,12 @@ package com.juny.jspboardwithmybatis.domain.board.converter;
 import com.juny.jspboardwithmybatis.domain.board.dto.ResAttachment;
 import com.juny.jspboardwithmybatis.domain.board.dto.ResBoardDetail;
 import com.juny.jspboardwithmybatis.domain.board.dto.ResBoardImage;
+import com.juny.jspboardwithmybatis.domain.board.dto.ResBoardList;
+import com.juny.jspboardwithmybatis.domain.board.dto.ResBoardViewList;
 import com.juny.jspboardwithmybatis.domain.board.dto.ResComment;
+import com.juny.jspboardwithmybatis.domain.board.dto.ResPageInfo;
+import com.juny.jspboardwithmybatis.domain.board.dto.ResSearchCondition;
+import com.juny.jspboardwithmybatis.domain.utils.DateFormatUtils;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -11,64 +16,74 @@ import java.util.stream.Collectors;
 public class BoardDTOConverter {
 
   /**
-   * <h1> DAO 결과를 View 에서 사용할 정보로 변환하는 컨버터 </h1>
-   * <br>- Map에 담긴 자료를 하나씩 꺼내 ResBoardDetail 변환
+   *
+   *
+   * <h1> 게시판 상세 조회 쿼리 결과를 View 에서 사용할 정보로 변환하는 컨버터 </h1>
+   *
+   * <br>
+   * - Map에 담긴 자료를 하나씩 꺼내 ResBoardDetail 변환
+   *
    * @param boardId
    * @param rows
    * @return ResBoardDetail
    */
-  public static ResBoardDetail convertToResBoardDetail(Long boardId, List<Map<String, Object>> rows) {
+  public static ResBoardDetail convertToResBoardDetail(
+      Long boardId, List<Map<String, Object>> rows) {
 
     Map<String, Object> firstRow = rows.get(0);
 
     List<ResBoardImage> boardImages =
         rows.stream()
-            .filter(row -> row.get("boardImageId") != null)
+            .filter(row -> row.get("board_image_id") != null)
             .map(
                 row ->
                     new ResBoardImage(
-                        (Long) row.get("boardImageId"),
-                        (String) row.get("storedName"),
-                        (String) row.get("storedPath"),
+                        (Long) row.get("board_image_id"),
+                        (String) row.get("stored_name"),
+                        (String) row.get("stored_path"),
                         (String) row.get("extension")))
             .collect(Collectors.toList());
 
     List<ResAttachment> attachments =
         rows.stream()
-            .filter(row -> row.get("attachmentId") != null)
+            .filter(row -> row.get("attachment_id") != null)
             .map(
                 row ->
                     new ResAttachment(
-                        (Long) row.get("attachmentId"),
-                        (String) row.get("logicalName"),
-                        (String) row.get("storedName"),
-                        (String) row.get("storedPath"),
+                        (Long) row.get("attachment_id"),
+                        (String) row.get("logical_name"),
+                        (String) row.get("stored_name"),
+                        (String) row.get("stored_path"),
                         (String) row.get("extension"),
                         (Integer) row.get("size")))
             .collect(Collectors.toList());
 
     List<ResComment> comments =
         rows.stream()
-            .filter(row -> row.get("commentId") != null)
+            .filter(row -> row.get("comment_id") != null)
             .map(
                 row ->
                     new ResComment(
-                        (Long) row.get("commentId"),
+                        (Long) row.get("comment_id"),
                         (String) row.get("content"),
                         (String) row.get("password"),
-                        (String) row.get("createdAt"),
-                        (String) row.get("createdBy")))
+                        (String) row.get("created_at"),
+                        (String) row.get("created_by")))
             .collect(Collectors.toList());
 
     return new ResBoardDetail(
         boardId,
         (String) firstRow.get("title"),
         (String) firstRow.get("content"),
-        (Integer) firstRow.get("viewCount"),
-        (String) firstRow.get("createdAt"),
-        (String) firstRow.get("createdBy"),
-        (String) firstRow.get("updatedAt"),
-        (String) firstRow.get("categoryName"),
+        (Integer) firstRow.get("view_count"),
+        (firstRow.get("created_at") == null)
+            ? null
+            : DateFormatUtils.toOutputFormat((String) firstRow.get("created_at")),
+        (String) firstRow.get("created_by"),
+        (firstRow.get("updated_at") == null)
+            ? "-"
+            : DateFormatUtils.toOutputFormat((String) firstRow.get("updated_at")),
+        (String) firstRow.get("name"),
         boardImages,
         attachments,
         comments);

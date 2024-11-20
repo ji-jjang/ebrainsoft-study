@@ -4,58 +4,121 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="com.juny.jspboardwithmybatis.domain.board.mapper.BoardMapper">
+  <select id="findBoardDetailById" resultType="map">
+    SELECT b.id                                  as board_id,
+           b.title,
+           b.content,
+           b.view_count,
+           DATE_FORMAT(b.created_at, '%Y-%m-%d') as created_at,
+           b.created_by,
+           DATE_FORMAT(b.updated_at, '%Y-%m-%d') as updated_at,
+           c.name,
+           bi.id                                 as board_image_id,
+           bi.stored_name,
+           bi.stored_path,
+           bi.extension,
+           a.id                                  as attachment_id,
+           a.logical_name,
+           a.stored_name,
+           a.stored_path,
+           a.extension,
+           a.size,
+           cm.id                                 as comment_id,
+           cm.content,
+           DATE_FORMAT(cm.created_at, '%Y-%m-%d %H:%i:%s'),
+           cm.created_by
+    FROM boards b
+           LEFT JOIN
+         categories c
+         on
+           c.id = b.category_id
+           LEFT JOIN
+         attachments a
+         on
+           b.id = a.board_id
+           LEFT JOIN
+         board_images bi
+         on
+           b.id = bi.board_id
+           LEFT JOIN
+         comments cm
+         on
+           b.id = cm.board_id
+    where b.id = #{id};
+  </select>
+
+  <select id="getTotalBoardCount" parameterType="map" resultType="long">
+    SELECT
+    COUNT(*)
+    FROM
+    boards b
+    <if test="categoryName != null and categoryName != ''">
+      INNER JOIN
+      categories c
+      ON
+      b.category_id = c.id
+    </if>
+    WHERE
+    1 = 1
+    <if test="categoryName != null and categoryName != ''">
+      AND
+      c.name = #{categoryName}
+    </if>
+    <if test="keyword != null and keyword != ''">
+      AND
+      (
+      b.title LIKE CONCAT('%', #{keyword}, '%')
+      OR b.created_by LIKE CONCAT('%', #{keyword}, '%')
+      OR b.content LIKE CONCAT('%', #{keyword}, '%')
+      )
+    </if>
+    <if test="startDate != null and startDate != ''">
+      AND
+      b.created_at &gt;= #{startDate}
+    </if>
+    <if test="endDate != null and endDate != ''">
+      AND
+      b.created_at &lt;= #{endDate}
+    </if>
+  </select>
+
+  <select id="getBoardList" parameterType="map" resultType="map">
+    SELECT b.id as board_id,
+    b.title,
+    b.content,
+    b.view_count,
+    DATE_FORMAT(b.created_at, '%Y-%m-%d') AS created_at,
+    b.created_by,
+    DATE_FORMAT(b.updated_at, '%Y-%m-%d') AS updated_at,
+    c.name,
+    (SELECT EXISTS (SELECT 1 FROM attachments a WHERE a.board_id = b.id)) AS has_attachment
+    FROM boards b
+    INNER JOIN categories c ON b.category_id = c.id
+    WHERE 1 = 1
+    <if test="categoryName != null and categoryName != ''">
+      AND c.name = #{categoryName}
+    </if>
+    <if test="keyword != null and keyword != ''">
+      AND (
+      b.title LIKE CONCAT('%', #{keyword}, '%')
+      OR b.created_by LIKE CONCAT('%', #{keyword}, '%')
+      OR b.content LIKE CONCAT('%', #{keyword}, '%')
+      )
+    </if>
+    <if test="startDate != null and startDate != ''">
+      AND b.created_at &gt; #{startDate}
+    </if>
+    <if test="endDate != null and endDate != ''">
+      AND b.created_at &lt; #{endDate}
+    </if>
+    ORDER BY b.created_at DESC
+    LIMIT #{limit} OFFSET #{offset}
+  </select>
+
   <update id="increaseViewCount">
     UPDATE
       boards
-    SET
-      view_count = view_count + 1
-    WHERE
-      id = #{id};
+    SET view_count = view_count + 1
+    WHERE id = #{id};
   </update>
-
-  <select id="findBoardDetailById">
-    SELECT
-      b.id AS boardId,
-      b.title,
-      b.content,
-      b.view_count AS viewCount,
-      DATE_FORMAT(b.created_at, '%Y-%m-%d %H:%i:%s') AS createdAt,
-      b.created_by AS createdBy,
-      DATE_FORMAT(b.updated_at, '%Y-%m-%d %H:%i:%s') AS updatedAt,
-      c.name AS categoryName,
-      bi.id AS boardImageId,
-      bi.stored_name AS storedName,
-      bi.stored_path AS storedPath,
-      bi.extension,
-      a.id AS attachmentId,
-      a.logical_name AS logicalName,
-      a.stored_name AS storedName,
-      a.stored_path AS storedPath,
-      a.extension,
-      a.size,
-      cm.id AS commentId,
-      cm.content,
-      DATE_FORMAT(cm.created_at, '%Y-%m-%d %H:%i:%s') AS createdAt,
-      cm.created_by AS createdBy
-    FROM
-      boards b
-    LEFT JOIN
-      categories c
-    on
-      c.id = b.category_id
-    LEFT JOIN
-      attachments a
-    on
-      b.id = a.board_id
-    LEFT JOIN
-      board_images bi
-    on
-      b.id = bi.board_id
-    LEFT JOIN
-      comments cm
-    on
-      b.id = cm.board_id
-    where
-      b.id = 1;
-  </select>
 </mapper>
