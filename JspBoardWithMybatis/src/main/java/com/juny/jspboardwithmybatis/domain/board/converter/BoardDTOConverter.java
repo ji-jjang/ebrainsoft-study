@@ -88,4 +88,51 @@ public class BoardDTOConverter {
         attachments,
         comments);
   }
+
+  /**
+   *
+   *
+   * <h1>게시판 목록 조회 쿼리 결과를 View에서 사용할 정보로 변환하는 컨버터</h1>
+   *
+   * @param boards
+   * @param searchConditions
+   * @return
+   */
+  public static ResBoardList convertToResBoardList(
+      List<Map<String, Object>> boards, Map<String, Object> searchConditions) {
+
+    List<ResBoardViewList> resBoardViewList =
+        boards.stream()
+            .map(
+                row ->
+                    new ResBoardViewList(
+                        (Long) row.get("board_id"),
+                        (String) row.get("title"),
+                        (Integer) row.get("view_count"),
+                        (String) row.get("created_at"),
+                        (String) row.get("created_by"),
+                        (row.get("updated_at") == null) ? "-" : ((String) row.get("updated_at")),
+                        (String) row.get("name"),
+                        ((Long) row.get("has_attachment")) > 0))
+            .collect(Collectors.toList());
+
+    ResSearchCondition resSearchCondition =
+        new ResSearchCondition(
+            (searchConditions.get("startDate") == null)
+                ? null
+                : DateFormatUtils.toOutputFormat((String) searchConditions.get("startDate")),
+            (searchConditions.get("endDate") == null)
+                ? null
+                : DateFormatUtils.toOutputFormat((String) searchConditions.get("endDate")),
+            (String) searchConditions.get("keyword"),
+            (String) searchConditions.get("categoryName"));
+
+    ResPageInfo resPageInfo =
+        new ResPageInfo(
+            Integer.parseInt(searchConditions.get("totalBoardCount").toString()),
+            Integer.parseInt(searchConditions.get("totalPages").toString()),
+            Integer.parseInt(searchConditions.get("page").toString()));
+
+    return new ResBoardList(resBoardViewList, resSearchCondition, resPageInfo);
+  }
 }
