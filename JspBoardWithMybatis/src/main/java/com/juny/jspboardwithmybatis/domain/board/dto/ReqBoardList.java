@@ -15,7 +15,10 @@ public class ReqBoardList {
   private final Integer page;
 
   /**
-   * <h1> AllArgsConstructor, 불변 객체로 만들 때 기본값 설정</h1>
+   *
+   *
+   * <h1>AllArgsConstructor, 불변 객체로 만들 때 기본값 설정</h1>
+   *
    * @param startDate
    * @param endDate
    * @param categoryName

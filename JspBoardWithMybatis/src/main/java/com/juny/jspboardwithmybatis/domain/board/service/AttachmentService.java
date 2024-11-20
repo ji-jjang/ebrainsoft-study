@@ -2,6 +2,7 @@ package com.juny.jspboardwithmybatis.domain.board.service;
 
 import com.juny.jspboardwithmybatis.domain.board.entity.Attachment;
 import com.juny.jspboardwithmybatis.domain.board.mapper.AttachmentMapper;
+import com.juny.jspboardwithmybatis.domain.utils.dto.ResFileDownload;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -19,13 +20,17 @@ public class AttachmentService {
    * <h1>attachment 엔티티 조회하여 경로 반환 </h1>
    *
    * @param id
-   * @return path
+   * @return ResFileDownload (FilePath, logicalName)
    */
-  public String getAttachmentPath(Long id) {
+  public ResFileDownload getAttachmentPath(Long id) {
 
     Attachment attachment = getAttachment(id);
 
-    return attachment.getStoredPath() + attachment.getStoredName() + attachment.getExtension();
+    String path =
+        attachment.getStoredPath() + attachment.getStoredName() + "." + attachment.getExtension();
+    String logicalName = attachment.getLogicalName();
+
+    return new ResFileDownload(path, logicalName);
   }
 
   /**

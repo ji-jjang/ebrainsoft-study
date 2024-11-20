@@ -1,7 +1,8 @@
 package com.juny.jspboardwithmybatis.domain.board.controller;
 
 import com.juny.jspboardwithmybatis.domain.board.service.AttachmentService;
-import com.juny.jspboardwithmybatis.domain.utils.DownloadService;
+import com.juny.jspboardwithmybatis.domain.utils.FileUtils;
+import com.juny.jspboardwithmybatis.domain.utils.dto.ResFileDownload;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,12 +13,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class AttachmentController {
 
   private final AttachmentService attachmentService;
-  private final DownloadService downloadService;
 
-  public AttachmentController(
-      AttachmentService attachmentService, DownloadService downloadService) {
+  public AttachmentController(AttachmentService attachmentService) {
     this.attachmentService = attachmentService;
-    this.downloadService = downloadService;
   }
 
   /**
@@ -36,8 +34,8 @@ public class AttachmentController {
   @ResponseBody
   public void downloadAttachment(@PathVariable Long id, HttpServletResponse res) {
 
-    String path = attachmentService.getAttachmentPath(id);
+    ResFileDownload path = attachmentService.getAttachmentPath(id);
 
-    downloadService.responseFile(path, res);
+    FileUtils.responseFile(path, res);
   }
 }

@@ -24,11 +24,14 @@ public class DateFormatUtils {
   }
 
   /**
+   *
+   *
    * <h1>View 위한 시간 형식 포맷터</h1>
    *
    * <br>
-   * - MySQL, DateFormat(String)으로 반환된 시간형식을 yyyy-MM-dd 로 변환
+   * - MySQL, DateFormat(String)으로 반환된 시간형식을 yyyy-MM-dd 로 변환<br>
    * - 시간분초 접미사가 붙는 경우가 존재
+   *
    * @param dateFormat
    * @return
    */
