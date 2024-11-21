@@ -1,5 +1,6 @@
 package com.juny.jspboardwithmybatis.domain.utils;
 
+import com.juny.jspboardwithmybatis.global.Constants;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -20,7 +21,7 @@ public class DateFormatUtils {
    * @return
    */
   public static String toSearchFormat(LocalDate startDate, String hourMinuteSecond) {
-    return simpleFormatter.format(startDate) + " " + hourMinuteSecond;
+    return simpleFormatter.format(startDate) + Constants.SPACE_SIGN + hourMinuteSecond;
   }
 
   /**

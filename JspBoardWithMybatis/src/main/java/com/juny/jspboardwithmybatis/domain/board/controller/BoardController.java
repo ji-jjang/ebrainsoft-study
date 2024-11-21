@@ -11,6 +11,7 @@ import com.juny.jspboardwithmybatis.domain.board.dto.ResBoardList;
 import com.juny.jspboardwithmybatis.domain.board.service.BoardService;
 import com.juny.jspboardwithmybatis.domain.utils.CategoryMapperUtils;
 import com.juny.jspboardwithmybatis.domain.utils.FileUtils;
+import com.juny.jspboardwithmybatis.global.Constants;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -114,7 +115,7 @@ public class BoardController {
     FileUtils.saveFile(reqBoardCreate.getImages(), reqBoardCreate.getImageDetails());
     FileUtils.saveFile(reqBoardCreate.getAttachments(), reqBoardCreate.getAttachmentDetails());
 
-    return "redirect:/boards/" + boardId;
+    return Constants.REDIRECT_PREFIX + "/boards/" + boardId;
   }
 
   /**
@@ -160,7 +161,7 @@ public class BoardController {
     FileUtils.saveFile(reqBoardUpdate.getAttachments(), reqBoardUpdate.getAttachmentDetails());
     FileUtils.deleteFile(reqBoardUpdate.getDeleteFilePaths());
 
-    return "redirect:/boards/" + id;
+    return Constants.REDIRECT_PREFIX + "/boards/" + id;
   }
 
   /**
@@ -208,6 +209,6 @@ public class BoardController {
 
     FileUtils.deleteFile(reqBoardDelete.getDeleteFilePaths());
 
-    return "redirect:/boards";
+    return Constants.REDIRECT_PREFIX + "/boards";
   }
 }

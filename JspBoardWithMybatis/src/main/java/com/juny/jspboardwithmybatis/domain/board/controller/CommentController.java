@@ -2,6 +2,7 @@ package com.juny.jspboardwithmybatis.domain.board.controller;
 
 import com.juny.jspboardwithmybatis.domain.board.dto.ReqCommentCreate;
 import com.juny.jspboardwithmybatis.domain.board.service.CommentService;
+import com.juny.jspboardwithmybatis.global.Constants;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,6 +32,6 @@ public class CommentController {
 
     commentService.createComment(boardId, reqCommentCreate);
 
-    return "redirect:/boards/{boardId}";
+    return Constants.REDIRECT_PREFIX + "/boards/{boardId}";
   }
 }

@@ -9,6 +9,7 @@ import com.juny.jspboardwithmybatis.domain.board.dto.ResComment;
 import com.juny.jspboardwithmybatis.domain.board.dto.ResPageInfo;
 import com.juny.jspboardwithmybatis.domain.board.dto.ResSearchCondition;
 import com.juny.jspboardwithmybatis.domain.utils.DateFormatUtils;
+import com.juny.jspboardwithmybatis.global.Constants;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -36,13 +37,13 @@ public class BoardDTOConverter {
 
     return new ResBoardDetail(
         boardId,
-        (String) row.get("board_title"),
-        (String) row.get("board_content"),
-        (Integer) row.get("board_view_count"),
-        (String) row.get("board_created_at"),
-        (String) row.get("board_created_by"),
-        (String) row.get("board_updated_at"),
-        (String) row.get("category_name"),
+        (String) row.get(Constants.BOARD_TITLE_COLUMN),
+        (String) row.get(Constants.BOARD_CONTENT_COLUMN),
+        (Integer) row.get(Constants.BOARD_VIEW_COUNT_COLUMN),
+        (String) row.get(Constants.BOARD_CREATED_AT_COLUMN),
+        (String) row.get(Constants.BOARD_CREATED_BY_COLUMN),
+        (String) row.get(Constants.BOARD_UPDATED_AT_COLUMN),
+        (String) row.get(Constants.CATEGORY_NAME_COLUMN),
         parseBoardImages((String) row.get("board_images")),
         parseAttachments((String) row.get("attachments")),
         parseComments((String) row.get("comments")));
@@ -52,7 +53,7 @@ public class BoardDTOConverter {
 
     if (data == null || data.isEmpty()) return Collections.emptyList();
 
-    return Arrays.stream(data.split(","))
+    return Arrays.stream(data.split(Constants.COMMA_SIGN))
         .map(
             entry -> {
               var tokens = entry.split("\\|");
@@ -63,7 +64,7 @@ public class BoardDTOConverter {
 
   private static List<ResAttachment> parseAttachments(String data) {
     if (data == null || data.isEmpty()) return Collections.emptyList();
-    return Arrays.stream(data.split(","))
+    return Arrays.stream(data.split(Constants.COMMA_SIGN))
         .map(
             entry -> {
               String[] tokens = entry.split("\\|");
@@ -82,7 +83,7 @@ public class BoardDTOConverter {
 
     if (data == null || data.isEmpty()) return Collections.emptyList();
 
-    return Arrays.stream(data.split(","))
+    return Arrays.stream(data.split(Constants.COMMA_SIGN))
         .map(
             entry -> {
               var tokens = entry.split("\\|");

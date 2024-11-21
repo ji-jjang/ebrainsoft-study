@@ -2,6 +2,7 @@ package com.juny.jspboardwithmybatis.domain.utils;
 
 import com.juny.jspboardwithmybatis.domain.utils.dto.FileDetails;
 import com.juny.jspboardwithmybatis.domain.utils.dto.ResFileDownload;
+import com.juny.jspboardwithmybatis.global.Constants;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,14 +34,15 @@ public class FileUtils {
       throw new RuntimeException("File not found: " + resFileDownload.getPath());
     }
 
-    res.setContentType("application/octet-stream");
+    res.setContentType(Constants.APPLICATION_OCTET_STREAM);
     res.setHeader(
-        "Content-Disposition", "attachment; filename=\"" + resFileDownload.getLogicalName() + "\"");
+        Constants.CONTENT_DISPOSITION,
+        Constants.ATTACHMENT_FILENAME + resFileDownload.getLogicalName() + "\"");
 
     try (InputStream inputStream = Files.newInputStream(filePath);
         OutputStream outputStream = res.getOutputStream()) {
 
-      byte[] buffer = new byte[4096];
+      byte[] buffer = new byte[Constants.READ_BUFFER_SIZE];
       int bytesRead;
       while ((bytesRead = inputStream.read(buffer)) != -1) {
         outputStream.write(buffer, 0, bytesRead);
@@ -63,7 +65,7 @@ public class FileUtils {
    */
   public static List<FileDetails> parseFileDetails(List<MultipartFile> files, String path) {
 
-    String storedPath = "/Users/jijunhyuk/JunyProjects/ebrainsoft/" + path + "/";
+    String storedPath = Constants.RESOURCE_ROOT_PATH + path + Constants.SLASH_SIGN;
     List<FileDetails> fileDetailsList = new ArrayList<>();
 
     for (var file : files) {
@@ -72,11 +74,12 @@ public class FileUtils {
         continue;
       }
 
-      String extension = "";
+      String extension = Constants.EMPTY_SIGN;
       String fileName = file.getOriginalFilename();
-      String storedName = UUID.randomUUID().toString().replace("-", "");
-      if (fileName.contains(".")) {
-        extension = fileName.substring(fileName.lastIndexOf(".") + 1);
+      String storedName =
+          UUID.randomUUID().toString().replace(Constants.DASH_SIGN, Constants.EMPTY_SIGN);
+      if (fileName.contains(Constants.DOT_SIGN)) {
+        extension = fileName.substring(fileName.lastIndexOf(Constants.DOT_SIGN) + 1);
       }
       fileDetailsList.add(
           new FileDetails(fileName, storedName, storedPath, extension, file.getSize()));
@@ -105,8 +108,9 @@ public class FileUtils {
               String extension = fileDetails.getExtension();
               String storedName = fileDetails.getStoredName();
               String storedPath = fileDetails.getStoredPath();
-              String delimiter = ".";
-              if (fileDetails.getExtension().equals("")) delimiter = "";
+              String delimiter = Constants.DOT_SIGN;
+              if (fileDetails.getExtension().equals(Constants.EMPTY_SIGN))
+                delimiter = Constants.EMPTY_SIGN;
 
               try {
                 file.transferTo(Paths.get(storedPath, storedName + delimiter + extension));

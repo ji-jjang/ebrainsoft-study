@@ -1,5 +1,6 @@
 package com.juny.jspboardwithmybatis.domain.board.dto;
 
+import com.juny.jspboardwithmybatis.global.Constants;
 import java.time.LocalDate;
 import lombok.Getter;
 import lombok.ToString;
@@ -32,6 +33,6 @@ public class ReqBoardList {
     this.endDate = (endDate == null) ? LocalDate.now() : endDate;
     this.categoryName = categoryName;
     this.keyword = keyword;
-    this.page = (page == null) ? 1 : Integer.parseInt(page);
+    this.page = (page == null) ? Constants.DEFAULT_PAGE_NUMBER : Integer.parseInt(page);
   }
 }
