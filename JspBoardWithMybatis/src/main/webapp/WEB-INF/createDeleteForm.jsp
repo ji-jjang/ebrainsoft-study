@@ -1,7 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <head>
-<%--    <script src="/resources/js/boardInputValidation.js"></script>--%>
+    <%--    <script src="/resources/js/boardInputValidation.js"></script>--%>
 </head>
 <form action="/boards/${id}/delete" method="post"
       onsubmit="return checkBoardInput(this, 'delete')">

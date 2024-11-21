@@ -44,9 +44,6 @@
     <h3>게시판 이미지</h3>
     <c:forEach var="boardImage" items="${board.boardImages}">
         <div>
-            <p>storedName: ${boardImage.storedName}</p>
-            <p>id: ${boardImage.id}</p>
-
             <img src="/${boardImage.storedName}.${boardImage.extension}" alt="Board Image"
                  width="300" height="200"/>
             <label>

@@ -18,41 +18,6 @@
             #{createdBy}, #{categoryId});
   </insert>
 
-  <select id="getTotalBoardCount" parameterType="map" resultType="long">
-    SELECT
-    COUNT(*)
-    FROM
-    boards b
-    <if test="categoryName != null and categoryName != ''">
-      INNER JOIN
-      categories c
-      ON
-      b.category_id = c.id
-    </if>
-    WHERE
-    1 = 1
-    <if test="categoryName != null and categoryName != ''">
-      AND
-      c.name = #{categoryName}
-    </if>
-    <if test="keyword != null and keyword != ''">
-      AND
-      (
-      b.title LIKE CONCAT('%', #{keyword}, '%')
-      OR b.created_by LIKE CONCAT('%', #{keyword}, '%')
-      OR b.content LIKE CONCAT('%', #{keyword}, '%')
-      )
-    </if>
-    <if test="startDate != null and startDate != ''">
-      AND
-      b.created_at &gt;= #{startDate}
-    </if>
-    <if test="endDate != null and endDate != ''">
-      AND
-      b.created_at &lt;= #{endDate}
-    </if>
-  </select>
-
   <select id="getBoardList" parameterType="map" resultType="map">
     SELECT b.id as board_id,
     b.title,
@@ -120,9 +85,57 @@
          comments cm
          on
            b.id = cm.board_id
-    where b.id = #{id}
+    WHERE b.id = #{id}
     GROUP BY b.id, c.id
   </select>
+
+  <select id="getBoardPassword" parameterType="long" resultType="string">
+    SELECT password
+    FROM boards
+    WHERE id = #{id}
+  </select>
+
+  <select id="getTotalBoardCount" parameterType="map" resultType="long">
+    SELECT
+    COUNT(*)
+    FROM
+    boards b
+    <if test="categoryName != null and categoryName != ''">
+      INNER JOIN
+      categories c
+      ON
+      b.category_id = c.id
+    </if>
+    WHERE
+    1 = 1
+    <if test="categoryName != null and categoryName != ''">
+      AND
+      c.name = #{categoryName}
+    </if>
+    <if test="keyword != null and keyword != ''">
+      AND
+      (
+      b.title LIKE CONCAT('%', #{keyword}, '%')
+      OR b.created_by LIKE CONCAT('%', #{keyword}, '%')
+      OR b.content LIKE CONCAT('%', #{keyword}, '%')
+      )
+    </if>
+    <if test="startDate != null and startDate != ''">
+      AND
+      b.created_at &gt;= #{startDate}
+    </if>
+    <if test="endDate != null and endDate != ''">
+      AND
+      b.created_at &lt;= #{endDate}
+    </if>
+  </select>
+
+  <update id="increaseViewCount">
+    UPDATE
+      boards
+    SET view_count = view_count + 1
+    WHERE id = #{id}
+  </update>
 
   <update id="updateBoard" parameterType="Board">
     UPDATE boards
@@ -134,10 +147,4 @@
     WHERE id = #{id}
   </update>
 
-  <update id="increaseViewCount">
-    UPDATE
-      boards
-    SET view_count = view_count + 1
-    WHERE id = #{id}
-  </update>
 </mapper>
