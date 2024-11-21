@@ -9,6 +9,8 @@ import com.juny.jspboardwithmybatis.domain.board.dto.ResComment;
 import com.juny.jspboardwithmybatis.domain.board.dto.ResPageInfo;
 import com.juny.jspboardwithmybatis.domain.board.dto.ResSearchCondition;
 import com.juny.jspboardwithmybatis.domain.utils.DateFormatUtils;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -22,72 +24,72 @@ public class BoardDTOConverter {
    * <h1>게시판 상세 조회 쿼리 결과를 View 에서 사용할 정보로 변환하는 컨버터 </h1>
    *
    * <br>
-   * - Map에 담긴 자료를 하나씩 꺼내 ResBoardDetail 변환
+   * - Map 담긴 자료를 하나씩 꺼내 ResBoardDetail 변환<br>
+   * - 일대다 관계에 있는 엔티티는 GROUP_CONCAT 으로 가져오기 때문에 파싱 로직 필요<br>
+   * - 예시 데이터:
+   * board_images=79|0de8253db47a49b2b0551b148124e60f|/Users/jijunhyuk/JunyProjects/ebrainsoft/images/|png,80|d9b121fe88c749cf85887eaa0ba01fda|/Users/jijunhyuk/JunyProjects/ebrainsoft/images/|webp
    *
-   * @param boardId
-   * @param rows
+   * @param boardId @Param row
    * @return ResBoardDetail
    */
-  public static ResBoardDetail convertToResBoardDetail(
-      Long boardId, List<Map<String, Object>> rows) {
-
-    Map<String, Object> firstRow = rows.get(0);
-
-    List<ResBoardImage> boardImages =
-        rows.stream()
-            .filter(row -> row.get("board_image_id") != null)
-            .map(
-                row ->
-                    new ResBoardImage(
-                        (Long) row.get("board_image_id"),
-                        (String) row.get("stored_name"),
-                        (String) row.get("stored_path"),
-                        (String) row.get("extension")))
-            .collect(Collectors.toList());
-
-    List<ResAttachment> attachments =
-        rows.stream()
-            .filter(row -> row.get("attachment_id") != null)
-            .map(
-                row ->
-                    new ResAttachment(
-                        (Long) row.get("attachment_id"),
-                        (String) row.get("logical_name"),
-                        (String) row.get("stored_name"),
-                        (String) row.get("stored_path"),
-                        (String) row.get("extension"),
-                        (Integer) row.get("size")))
-            .collect(Collectors.toList());
-
-    List<ResComment> comments =
-        rows.stream()
-            .filter(row -> row.get("comment_id") != null)
-            .map(
-                row ->
-                    new ResComment(
-                        (Long) row.get("comment_id"),
-                        (String) row.get("content"),
-                        (String) row.get("password"),
-                        (String) row.get("created_at"),
-                        (String) row.get("created_by")))
-            .collect(Collectors.toList());
+  public static ResBoardDetail convertToResBoardDetail(Long boardId, Map<String, Object> row) {
 
     return new ResBoardDetail(
         boardId,
-        (String) firstRow.get("title"),
-        (String) firstRow.get("content"),
-        (Integer) firstRow.get("view_count"),
-        (firstRow.get("created_at") == null)
-            ? null
-            : DateFormatUtils.toOutputFormat((String) firstRow.get("created_at")),
-        (String) firstRow.get("created_by"),
-        (firstRow.get("updated_at") == null)
-            ? "-"
-            : DateFormatUtils.toOutputFormat((String) firstRow.get("updated_at")),
-        (String) firstRow.get("name"),
-        boardImages,
-        attachments,
-        comments);
+        (String) row.get("board_title"),
+        (String) row.get("board_content"),
+        (Integer) row.get("board_view_count"),
+        (String) row.get("board_created_at"),
+        (String) row.get("board_created_by"),
+        (String) row.get("board_updated_at"),
+        (String) row.get("category_name"),
+        parseBoardImages((String) row.get("board_images")),
+        parseAttachments((String) row.get("attachments")),
+        parseComments((String) row.get("comments")));
+  }
+
+  private static List<ResBoardImage> parseBoardImages(String data) {
+
+    if (data == null || data.isEmpty()) return Collections.emptyList();
+
+    return Arrays.stream(data.split(","))
+        .map(
+            entry -> {
+              var tokens = entry.split("\\|");
+              return new ResBoardImage(Long.parseLong(tokens[0]), tokens[1], tokens[2], tokens[3]);
+            })
+        .collect(Collectors.toList());
+  }
+
+  private static List<ResAttachment> parseAttachments(String data) {
+    if (data == null || data.isEmpty()) return Collections.emptyList();
+    return Arrays.stream(data.split(","))
+        .map(
+            entry -> {
+              String[] tokens = entry.split("\\|");
+              return new ResAttachment(
+                  Long.parseLong(tokens[0]),
+                  tokens[1],
+                  tokens[2],
+                  tokens[3],
+                  tokens[4],
+                  Integer.parseInt(tokens[5]));
+            })
+        .collect(Collectors.toList());
+  }
+
+  private static List<ResComment> parseComments(String data) {
+
+    if (data == null || data.isEmpty()) return Collections.emptyList();
+
+    return Arrays.stream(data.split(","))
+        .map(
+            entry -> {
+              var tokens = entry.split("\\|");
+              return new ResComment(
+                  Long.parseLong(tokens[0]), tokens[1], tokens[2], tokens[3], tokens[4]);
+            })
+        .collect(Collectors.toList());
   }
 
   /**
