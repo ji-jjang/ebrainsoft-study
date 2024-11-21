@@ -3,6 +3,7 @@ package com.juny.jspboardwithmybatis.domain.board.controller;
 import com.github.gavlyukovskiy.boot.jdbc.decorator.DataSourceDecoratorBeanPostProcessor;
 import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardCreate;
 import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardList;
+import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardUpdate;
 import com.juny.jspboardwithmybatis.domain.board.dto.ResBoardDetail;
 import com.juny.jspboardwithmybatis.domain.board.dto.ResBoardList;
 import com.juny.jspboardwithmybatis.domain.board.service.BoardService;
@@ -100,21 +101,61 @@ public class BoardController {
    * <h1>게시판 생성 </h1>
    *
    * <br>
-   * - 1. 파일 정보를 파싱하고, 로컬 파일시스템에 저장<br>
+   * - 1. 파일 정보를 파싱 (storedName, storedPath, extension ...)<br>
    * - 2. 서비스 트랜잭션으로 게시판 생성(게시판, 이미지, 첨부파일)<br>
-   * - 3. 트랜잭션 실패 시 저장된 파일 삭제
+   * - 3. 트랜잭션 성공 시 파일 시스템에 저장
    *
    * @return View
    */
   @PostMapping("/boards")
   public String createBoard(@ModelAttribute ReqBoardCreate reqBoardCreate) {
 
-    List<FileDetails> images = FileUtils.saveFileDetails(reqBoardCreate.getImages(), "images");
+    List<FileDetails> images = FileUtils.parseFileDetails(reqBoardCreate.getImages(), "images");
     List<FileDetails> attachments =
-        FileUtils.saveFileDetails(reqBoardCreate.getFiles(), "attachments");
+        FileUtils.parseFileDetails(reqBoardCreate.getFiles(), "attachments");
 
     Long boardId = boardService.createBoard(reqBoardCreate, images, attachments);
 
+    FileUtils.saveFile(reqBoardCreate.getImages(), images);
+    FileUtils.saveFile(reqBoardCreate.getFiles(), images);
+
     return "redirect:/boards/" + boardId;
+  }
+
+  /**
+   *
+   *
+   * <h1>게시판 수정 폼 생성</h1>
+   *
+   * @return View
+   */
+  @GetMapping("/boards/{id}/update")
+  public String createEditForm(@PathVariable Long id, Model model) {
+
+    ResBoardDetail board = boardService.getBoard(id);
+
+    model.addAttribute("board", board);
+
+    return "createUpdateForm";
+  }
+
+  /**
+   *
+   *
+   * <h1>게시판 수정 </h1>
+   *
+   * <br>
+   * - 폼 메서드에선 [PUT, PATCH]를 사용할 수 없어 [POST] 사용<br>
+   * - 게시판에 있지 않은 파일 ID 삭제 시도 시 에러
+   *
+   * @return View
+   */
+  @PostMapping("/boards/{id}")
+  public String updateBoard(@ModelAttribute ReqBoardUpdate reqBoardUpdate) {
+
+    System.out.println("reqBoardUpdate.toString() = " + reqBoardUpdate.toString());
+    boardService.updateBoard(reqBoardUpdate);
+
+    return null;
   }
 }

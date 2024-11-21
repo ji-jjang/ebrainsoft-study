@@ -3,6 +3,7 @@ package com.juny.jspboardwithmybatis.domain.board.service;
 import com.juny.jspboardwithmybatis.domain.board.converter.BoardDTOConverter;
 import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardCreate;
 import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardList;
+import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardUpdate;
 import com.juny.jspboardwithmybatis.domain.board.dto.ResBoardDetail;
 import com.juny.jspboardwithmybatis.domain.board.dto.ResBoardList;
 import com.juny.jspboardwithmybatis.domain.board.entity.Attachment;
@@ -174,5 +175,26 @@ public class BoardService {
     }
 
     return boardId;
+  }
+
+  @Transactional
+  public void updateBoard(ReqBoardUpdate req) {
+
+    Board board =
+        new Board(
+            req.getTitle(),
+            req.getContent(),
+            req.getPassword(),
+            null,
+            null,
+            req.getCreatedBy(),
+            LocalDateTime.now(),
+            null);
+
+//    boardMapper.updateBoard(board);
+
+    // 1. 게시판 아이디로 보드 이미지 조회
+    // 2. 게시판 아이디로 첨부 파일 조회
+
   }
 }
