@@ -1,6 +1,7 @@
 package com.juny.jspboardwithmybatis.domain.board.controller;
 
 import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardCreate;
+import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardDelete;
 import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardList;
 import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardUpdate;
 import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardPreUpdate;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class BoardController {
@@ -128,7 +130,6 @@ public class BoardController {
   @GetMapping("/boards/{id}/update")
   public String createEditForm(@PathVariable Long id, Model model) {
 
-    System.out.println("BoardController.createEditForm");
     ResBoardDetail board = boardService.getBoard(id);
 
     model.addAttribute("board", board);
@@ -165,5 +166,53 @@ public class BoardController {
     FileUtils.deleteFile(reqBoardUpdate.getDeleteFilePaths());
 
     return "redirect:/boards/" + id;
+  }
+
+  /**
+   *
+   *
+   * <h1>게시판 삭제 폼 생성 </h1>
+   *
+   * <br>
+   * - 게시판 비밀번호를 입력받아 게시판 삭제 로직 실행
+   *
+   * @param id
+   * @param model
+   * @return View
+   */
+  @GetMapping("/boards/{id}/deleteForm")
+  public String deleteBoard(@PathVariable Long id, Model model) {
+
+    model.addAttribute("id", id);
+
+    return "createDeleteForm";
+  }
+
+  /**
+   *
+   *
+   * <h1>게시판 삭제 </h1>
+   *
+   * <br>
+   * - 삭제하기 전 삭제할 이미지, 첨부파일 경로 전처리<br>
+   * - 트랜잭션 안에서 댓글 -> 첨부파일 -> 게시판 이미지 -> 게시판 순으로 삭제<br>
+   * - 트랜잭션이 성공했다면 파일 삭제
+   *
+   * @param id
+   * @param password
+   * @return View
+   */
+  @PostMapping("/boards/{id}/delete")
+  public String deleteBoard(@PathVariable Long id, @RequestParam String password) {
+
+    ResBoardDetail board = boardService.getBoard(id);
+
+    ReqBoardDelete reqBoardDelete = boardService.preProcessDelete(id, password, board);
+
+    boardService.deleteBoard(reqBoardDelete);
+
+    FileUtils.deleteFile(reqBoardDelete.getDeleteFilePaths());
+
+    return "redirect:/boards";
   }
 }

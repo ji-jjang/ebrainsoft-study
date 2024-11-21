@@ -87,7 +87,7 @@ public class BoardDTOConverter {
             entry -> {
               var tokens = entry.split("\\|");
               return new ResComment(
-                  Long.parseLong(tokens[0]), tokens[1], tokens[2], tokens[3], tokens[4]);
+                  Long.parseLong(tokens[0]), tokens[1], tokens[2], tokens[3]);
             })
         .collect(Collectors.toList());
   }

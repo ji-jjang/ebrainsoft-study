@@ -2,6 +2,7 @@ package com.juny.jspboardwithmybatis.domain.board.service;
 
 import com.juny.jspboardwithmybatis.domain.board.converter.BoardDTOConverter;
 import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardCreate;
+import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardDelete;
 import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardList;
 import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardPreUpdate;
 import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardUpdate;
@@ -13,6 +14,7 @@ import com.juny.jspboardwithmybatis.domain.board.entity.BoardImage;
 import com.juny.jspboardwithmybatis.domain.board.mapper.AttachmentMapper;
 import com.juny.jspboardwithmybatis.domain.board.mapper.BoardImageMapper;
 import com.juny.jspboardwithmybatis.domain.board.mapper.BoardMapper;
+import com.juny.jspboardwithmybatis.domain.board.mapper.CommentMapper;
 import com.juny.jspboardwithmybatis.domain.utils.CategoryMapperUtils;
 import com.juny.jspboardwithmybatis.domain.utils.DateFormatUtils;
 import com.juny.jspboardwithmybatis.domain.utils.FileUtils;
@@ -31,14 +33,17 @@ public class BoardService {
   private final BoardMapper boardMapper;
   private final BoardImageMapper boardImageMapper;
   private final AttachmentMapper attachmentMapper;
+  private final CommentMapper commentMapper;
 
   public BoardService(
       BoardMapper boardMapper,
       BoardImageMapper boardImageMapper,
-      AttachmentMapper attachmentMapper) {
+      AttachmentMapper attachmentMapper,
+      CommentMapper commentMapper) {
     this.boardMapper = boardMapper;
     this.boardImageMapper = boardImageMapper;
     this.attachmentMapper = attachmentMapper;
+    this.commentMapper = commentMapper;
   }
 
   /**
@@ -53,9 +58,6 @@ public class BoardService {
 
     Map<String, Object> board = boardMapper.findBoardDetailById(id);
 
-    for (var e : board.entrySet()) {
-      System.out.println("e = " + e);
-    }
     return BoardDTOConverter.convertToResBoardDetail(id, board);
   }
 
@@ -298,5 +300,76 @@ public class BoardService {
     for (var attId : req.getDeleteAttachmentIds()) {
       attachmentMapper.deleteAttachmentById(attId);
     }
+  }
+
+  /**
+   *
+   *
+   * <h1>게시판 삭제 전처리</h1>
+   *
+   * <br>
+   * - 삭제할 파일(이미지, 첨부파일) 경로 파싱
+   *
+   * @param boardId
+   * @param password
+   * @param board
+   * @return
+   */
+  public ReqBoardDelete preProcessDelete(Long boardId, String password, ResBoardDetail board) {
+
+    List<String> deleteFilePaths =
+        Stream.concat(
+                board.getBoardImages().stream()
+                    .map(
+                        boardImage -> {
+                          String delimiter = boardImage.getExtension().isEmpty() ? "" : ".";
+                          return boardImage.getStoredPath()
+                              + boardImage.getStoredName()
+                              + delimiter
+                              + boardImage.getExtension();
+                        }),
+                board.getAttachments().stream()
+                    .map(
+                        attachment -> {
+                          String delimiter = attachment.getExtension().isEmpty() ? "" : ".";
+                          return attachment.getStoredPath()
+                              + attachment.getStoredName()
+                              + delimiter
+                              + attachment.getExtension();
+                        }))
+            .toList();
+
+    return new ReqBoardDelete(
+        boardId,
+        password,
+        board.getBoardImages(),
+        board.getAttachments(),
+        board.getComments(),
+        deleteFilePaths);
+  }
+
+  /**
+   *
+   *
+   * <h1>게시판 삭제 DB 반영 </h1>
+   *
+   * <br>
+   * - 생성의 역순으로 삭제 (댓글 -> 첨부파일 -> 이미지 -> 게시판)
+   *
+   * @param reqBoardDelete
+   */
+  @Transactional
+  public void deleteBoard(ReqBoardDelete reqBoardDelete) {
+
+    for (var comment : reqBoardDelete.getComments()) {
+      commentMapper.deleteCommentById(comment.getId());
+    }
+    for (var att : reqBoardDelete.getAttachments()) {
+      attachmentMapper.deleteAttachmentById(att.getId());
+    }
+    for (var image : reqBoardDelete.getBoardImages()) {
+      boardImageMapper.deleteBoardImageById(image.getId());
+    }
+    boardMapper.deleteBoardById(reqBoardDelete.getBoardId());
   }
 }
