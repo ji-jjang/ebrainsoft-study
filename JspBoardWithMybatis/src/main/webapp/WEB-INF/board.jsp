@@ -44,8 +44,8 @@
 
 <form action="/boards/${board.id}/comments" method="post">
     <p>
-        <label for="name">이름:</label>
-        <input type="text" id="name" name="name" required>
+        <label for="createdBy">이름:</label>
+        <input type="text" id="createdBy" name="createdBy" required>
         <label for="password">비밀번호:</label>
         <input type="password" id="password" name="password" required>
     </p>
@@ -63,22 +63,7 @@
         <button type="submit">수정</button>
     </form>
 
-    <form action="/boards/free/delete" method="post">
-        <input type="hidden" name="boardId" value="${board.id}">
-        <c:forEach var="attachment" items="${board.attachments}">
-            <input type="hidden" name="attachmentFilePath" value="${attachment.storedPath}">
-            <input type="hidden" name="attachmentStoredName" value="${attachment.storedName}">
-            <input type="hidden" name="attachmentExtension" value="${attachment.extension}">
-        </c:forEach>
-        <c:forEach var="boardImage" items="${board.boardImages}">
-            <input type="hidden" name="imageFilePath" value="${boardImage.storedPath}">
-            <input type="hidden" name="imageStoredName" value="${boardImage.storedName}">
-            <input type="hidden" name="imageExtension" value="${boardImage.extension}">
-        </c:forEach>
-        <c:forEach var="comment" items="${board.comments}">
-            <input type="hidden" name="commentId" value="${comment.id}">
-        </c:forEach>
-
+    <form action="/boards/${board.id}/deleteForm" method="get">
         <button type="submit">삭제</button>
     </form>
 </div>

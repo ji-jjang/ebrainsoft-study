@@ -11,7 +11,6 @@ public class ResComment {
 
   private final Long id;
   private final String content;
-  private final String password;
   private final String createdAt;
   private final String createdBy;
 }
