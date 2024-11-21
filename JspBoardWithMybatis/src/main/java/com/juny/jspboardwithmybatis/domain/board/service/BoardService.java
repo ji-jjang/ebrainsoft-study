@@ -3,6 +3,7 @@ package com.juny.jspboardwithmybatis.domain.board.service;
 import com.juny.jspboardwithmybatis.domain.board.converter.BoardDTOConverter;
 import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardCreate;
 import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardList;
+import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardPreUpdate;
 import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardUpdate;
 import com.juny.jspboardwithmybatis.domain.board.dto.ResBoardDetail;
 import com.juny.jspboardwithmybatis.domain.board.dto.ResBoardList;
@@ -14,11 +15,13 @@ import com.juny.jspboardwithmybatis.domain.board.mapper.BoardImageMapper;
 import com.juny.jspboardwithmybatis.domain.board.mapper.BoardMapper;
 import com.juny.jspboardwithmybatis.domain.utils.CategoryMapperUtils;
 import com.juny.jspboardwithmybatis.domain.utils.DateFormatUtils;
+import com.juny.jspboardwithmybatis.domain.utils.FileUtils;
 import com.juny.jspboardwithmybatis.domain.utils.dto.FileDetails;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,10 +51,10 @@ public class BoardService {
    */
   public ResBoardDetail getBoard(Long id) {
 
-    List<Map<String, Object>> board = boardMapper.findBoardDetailById(id);
+    Map<String, Object> board = boardMapper.findBoardDetailById(id);
 
-    for (var e : board) {
-      System.out.println("e.entrySet() = " + e.entrySet());
+    for (var e : board.entrySet()) {
+      System.out.println("e = " + e);
     }
     return BoardDTOConverter.convertToResBoardDetail(id, board);
   }
@@ -177,11 +180,85 @@ public class BoardService {
     return boardId;
   }
 
+  /**
+   *
+   *
+   * <h1>게시판 수정 전처리 </h1>
+   *
+   * - 전처리 과정: 추가할 파일 상세 정보와 제거할 파일 경로 DTO 추가<br>
+   *
+   * @param board
+   * @param reqBoardPreUpdate
+   * @return reqBoardUpdate
+   */
+  public ReqBoardUpdate preProcessUpdate(
+      ResBoardDetail board, ReqBoardPreUpdate reqBoardPreUpdate) {
+
+    List<String> deleteFilePaths =
+        Stream.concat(
+                board.getBoardImages().stream()
+                    .filter(
+                        boardImage ->
+                            reqBoardPreUpdate.getDeleteImageIds().contains(boardImage.getId()))
+                    .map(
+                        boardImage -> {
+                          String delimiter = boardImage.getExtension().isEmpty() ? "" : ".";
+                          return boardImage.getStoredPath()
+                              + boardImage.getStoredName()
+                              + delimiter
+                              + boardImage.getExtension();
+                        }),
+                board.getAttachments().stream()
+                    .filter(
+                        attachment ->
+                            reqBoardPreUpdate.getDeleteAttachmentIds().contains(attachment.getId()))
+                    .map(
+                        attachment -> {
+                          String delimiter = attachment.getExtension().isEmpty() ? "" : ".";
+                          return attachment.getStoredPath()
+                              + attachment.getStoredName()
+                              + delimiter
+                              + attachment.getExtension();
+                        }))
+            .toList();
+
+    List<FileDetails> imageDetails =
+        FileUtils.parseFileDetails(reqBoardPreUpdate.getImages(), "images");
+    List<FileDetails> attachmentDetails =
+        FileUtils.parseFileDetails(reqBoardPreUpdate.getAttachments(), "attachments");
+
+    return new ReqBoardUpdate(
+        reqBoardPreUpdate.getTitle(),
+        reqBoardPreUpdate.getContent(),
+        reqBoardPreUpdate.getPassword(),
+        reqBoardPreUpdate.getCreatedBy(),
+        reqBoardPreUpdate.getDeleteImageIds(),
+        reqBoardPreUpdate.getDeleteAttachmentIds(),
+        reqBoardPreUpdate.getImages(),
+        reqBoardPreUpdate.getAttachments(),
+        imageDetails,
+        attachmentDetails,
+        deleteFilePaths);
+  }
+
+  /**
+   *
+   *
+   * <h1>게시판 수정 DB 반영 </h1>
+   *
+   * <br>
+   * - 게시판 생성, 파일(이미지, 첨부파일) 추가 및 제거<br>
+   * - 추후 Batch Insert 적용 가능
+   *
+   * @param boardId
+   * @param req
+   */
   @Transactional
-  public void updateBoard(ReqBoardUpdate req) {
+  public void updateBoard(Long boardId, ReqBoardUpdate req) {
 
     Board board =
         new Board(
+            boardId,
             req.getTitle(),
             req.getContent(),
             req.getPassword(),
@@ -191,10 +268,35 @@ public class BoardService {
             LocalDateTime.now(),
             null);
 
-//    boardMapper.updateBoard(board);
+    boardMapper.updateBoard(board);
 
-    // 1. 게시판 아이디로 보드 이미지 조회
-    // 2. 게시판 아이디로 첨부 파일 조회
+    for (var image : req.getImageDetails()) {
+      BoardImage boardImage =
+          new BoardImage(
+              image.getStoredName(), image.getStoredPath(), image.getExtension(), boardId);
 
+      boardImageMapper.saveBoardImage(boardImage);
+    }
+
+    for (var att : req.getAttachmentDetails()) {
+      Attachment attachment =
+          new Attachment(
+              att.getLogicalName(),
+              att.getStoredName(),
+              att.getStoredPath(),
+              att.getExtension(),
+              att.getSize(),
+              boardId);
+
+      attachmentMapper.saveAttachment(attachment);
+    }
+
+    for (var imageId : req.getDeleteImageIds()) {
+      boardImageMapper.deleteBoardImageById(imageId);
+    }
+
+    for (var attId : req.getDeleteAttachmentIds()) {
+      attachmentMapper.deleteAttachmentById(attId);
+    }
   }
 }

@@ -9,4 +9,6 @@ public interface AttachmentMapper {
   Attachment findAttachmentById(Long id);
 
   void saveAttachment(Attachment attachment);
+
+  void deleteAttachmentById(Long id);
 }

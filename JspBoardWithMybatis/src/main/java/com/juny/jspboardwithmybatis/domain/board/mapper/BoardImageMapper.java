@@ -7,4 +7,6 @@ import org.apache.ibatis.annotations.Mapper;
 public interface BoardImageMapper {
 
   void saveBoardImage(BoardImage boardImage);
+
+  void deleteBoardImageById(Long id);
 }

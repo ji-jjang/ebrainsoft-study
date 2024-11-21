@@ -10,11 +10,13 @@ public interface BoardMapper {
 
   void increaseViewCount(Long boardId);
 
-  List<Map<String, Object>> findBoardDetailById(Long id);
+  Map<String, Object> findBoardDetailById(Long id);
 
   long getTotalBoardCount(Map<String, Object> searchConditions);
 
   List<Map<String, Object>> getBoardList(Map<String, Object> searchConditions);
 
   void saveBoard(Board board);
+
+  void updateBoard(Board board);
 }

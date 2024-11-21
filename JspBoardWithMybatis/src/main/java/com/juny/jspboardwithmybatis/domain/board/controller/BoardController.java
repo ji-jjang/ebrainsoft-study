@@ -1,9 +1,9 @@
 package com.juny.jspboardwithmybatis.domain.board.controller;
 
-import com.github.gavlyukovskiy.boot.jdbc.decorator.DataSourceDecoratorBeanPostProcessor;
 import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardCreate;
 import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardList;
 import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardUpdate;
+import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardPreUpdate;
 import com.juny.jspboardwithmybatis.domain.board.dto.ResBoardDetail;
 import com.juny.jspboardwithmybatis.domain.board.dto.ResBoardList;
 import com.juny.jspboardwithmybatis.domain.board.service.BoardService;
@@ -22,13 +22,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class BoardController {
 
   private final BoardService boardService;
-  private final DataSourceDecoratorBeanPostProcessor dataSourceDecoratorBeanPostProcessor;
 
-  public BoardController(
-      BoardService boardService,
-      DataSourceDecoratorBeanPostProcessor dataSourceDecoratorBeanPostProcessor) {
+  public BoardController(BoardService boardService) {
     this.boardService = boardService;
-    this.dataSourceDecoratorBeanPostProcessor = dataSourceDecoratorBeanPostProcessor;
   }
 
   /**
@@ -112,12 +108,12 @@ public class BoardController {
 
     List<FileDetails> images = FileUtils.parseFileDetails(reqBoardCreate.getImages(), "images");
     List<FileDetails> attachments =
-        FileUtils.parseFileDetails(reqBoardCreate.getFiles(), "attachments");
+        FileUtils.parseFileDetails(reqBoardCreate.getAttachments(), "attachments");
 
     Long boardId = boardService.createBoard(reqBoardCreate, images, attachments);
 
     FileUtils.saveFile(reqBoardCreate.getImages(), images);
-    FileUtils.saveFile(reqBoardCreate.getFiles(), images);
+    FileUtils.saveFile(reqBoardCreate.getAttachments(), attachments);
 
     return "redirect:/boards/" + boardId;
   }
@@ -132,6 +128,7 @@ public class BoardController {
   @GetMapping("/boards/{id}/update")
   public String createEditForm(@PathVariable Long id, Model model) {
 
+    System.out.println("BoardController.createEditForm");
     ResBoardDetail board = boardService.getBoard(id);
 
     model.addAttribute("board", board);
@@ -145,17 +142,28 @@ public class BoardController {
    * <h1>게시판 수정 </h1>
    *
    * <br>
+   * - 요청 검증 위해 먼저 게시판 상세 조회 쿼리 실행<br>
+   * - 전처리 과정: 추가할 파일 상세 정보와 제거할 파일 경로 DTO 추가<br>
+   * - 트랜잭션 성공 시 파일 시스템에 파일 추가 및 삭제<br>
    * - 폼 메서드에선 [PUT, PATCH]를 사용할 수 없어 [POST] 사용<br>
-   * - 게시판에 있지 않은 파일 ID 삭제 시도 시 에러
+   * - 게시판에 있지 않은 파일 ID 삭제 시도 시 에러 - 중복한 아이디 삭제 요청 시 에러
    *
    * @return View
    */
   @PostMapping("/boards/{id}")
-  public String updateBoard(@ModelAttribute ReqBoardUpdate reqBoardUpdate) {
+  public String updateBoard(
+      @PathVariable Long id, @ModelAttribute ReqBoardPreUpdate reqBoardPreUpdate) {
 
-    System.out.println("reqBoardUpdate.toString() = " + reqBoardUpdate.toString());
-    boardService.updateBoard(reqBoardUpdate);
+    ResBoardDetail board = boardService.getBoard(id);
 
-    return null;
+    ReqBoardUpdate reqBoardUpdate = boardService.preProcessUpdate(board, reqBoardPreUpdate);
+
+    boardService.updateBoard(id, reqBoardUpdate);
+
+    FileUtils.saveFile(reqBoardUpdate.getImages(), reqBoardUpdate.getImageDetails());
+    FileUtils.saveFile(reqBoardUpdate.getAttachments(), reqBoardUpdate.getAttachmentDetails());
+    FileUtils.deleteFile(reqBoardUpdate.getDeleteFilePaths());
+
+    return "redirect:/boards/" + id;
   }
 }

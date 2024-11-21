@@ -5,9 +5,15 @@
 
 <mapper namespace="com.juny.jspboardwithmybatis.domain.board.mapper.BoardImageMapper">
 
+  <delete id="deleteBoardImageById" parameterType="long">
+    DELETE
+    FROM board_images
+    WHERE id = #{id}
+  </delete>
+
   <insert id="saveBoardImage" keyProperty="id" parameterType="BoardImage" useGeneratedKeys="true">
     INSERT INTO board_images (stored_name, stored_path, extension, board_id)
-    VALUES (#{storedName}, #{storedPath}, #{extension}, #{boardId});
+    VALUES (#{storedName}, #{storedPath}, #{extension}, #{boardId})
   </insert>
 
 </mapper>

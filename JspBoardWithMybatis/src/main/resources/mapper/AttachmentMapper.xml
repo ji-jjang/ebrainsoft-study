@@ -5,6 +5,12 @@
 
 <mapper namespace="com.juny.jspboardwithmybatis.domain.board.mapper.AttachmentMapper">
 
+  <delete id="deleteAttachmentById" parameterType="long">
+    DELETE
+    FROM attachments
+    WHERE id = #{id}
+  </delete>
+
   <insert id="saveAttachment" keyProperty="id" parameterType="Attachment" useGeneratedKeys="true">
     INSERT INTO attachments (logical_name, stored_name, stored_path, extension, size, board_id)
     VALUES (#{logicalName}, #{storedName}, #{storedPath}, #{extension}, #{size}, #{boardId});
@@ -19,6 +25,6 @@
     FROM
       attachments
     where
-      id = #{id};
+      id = #{id}
   </select>
 </mapper>
