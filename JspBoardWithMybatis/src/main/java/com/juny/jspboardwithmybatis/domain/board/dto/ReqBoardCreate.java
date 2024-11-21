@@ -18,5 +18,5 @@ public class ReqBoardCreate {
   private final String title;
   private final String content;
   private final List<MultipartFile> images;
-  private final List<MultipartFile> files;
+  private final List<MultipartFile> attachments;
 }

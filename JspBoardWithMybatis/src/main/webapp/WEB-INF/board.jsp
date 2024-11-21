@@ -58,9 +58,11 @@
 
 <div>
     <button onclick="location.href='/boards'">목록</button>
-    <form action="/boards/${board.id}" method="POST">
+
+    <form action="/boards/${board.id}/update" method="get">
         <button type="submit">수정</button>
     </form>
+
     <form action="/boards/free/delete" method="post">
         <input type="hidden" name="boardId" value="${board.id}">
         <c:forEach var="attachment" items="${board.attachments}">

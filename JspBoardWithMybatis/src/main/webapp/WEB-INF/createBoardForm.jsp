@@ -47,10 +47,11 @@
     <br><br>
 
     <label>파일 첨부:</label><br>
-    <input type="file" name="files" multiple>
+    <input type="file" name="attachments" multiple>
     <br><br>
 
     <button onclick="location.href='/boards'">취소</button>
+
     <button type="submit">저장</button>
 
 </form>
