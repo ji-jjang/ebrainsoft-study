@@ -21,4 +21,6 @@ public interface BoardMapper {
   void updateBoard(Board board);
 
   void deleteBoardById(Long id);
+
+  String getBoardPassword(Long id);
 }

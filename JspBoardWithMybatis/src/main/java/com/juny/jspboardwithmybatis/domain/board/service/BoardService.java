@@ -2,6 +2,7 @@ package com.juny.jspboardwithmybatis.domain.board.service;
 
 import com.juny.jspboardwithmybatis.domain.board.converter.BoardDTOConverter;
 import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardCreate;
+import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardPreCreate;
 import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardDelete;
 import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardList;
 import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardPreUpdate;
@@ -15,6 +16,7 @@ import com.juny.jspboardwithmybatis.domain.board.mapper.AttachmentMapper;
 import com.juny.jspboardwithmybatis.domain.board.mapper.BoardImageMapper;
 import com.juny.jspboardwithmybatis.domain.board.mapper.BoardMapper;
 import com.juny.jspboardwithmybatis.domain.board.mapper.CommentMapper;
+import com.juny.jspboardwithmybatis.domain.board.validator.BoardValidator;
 import com.juny.jspboardwithmybatis.domain.utils.CategoryMapperUtils;
 import com.juny.jspboardwithmybatis.domain.utils.DateFormatUtils;
 import com.juny.jspboardwithmybatis.domain.utils.FileUtils;
@@ -34,16 +36,19 @@ public class BoardService {
   private final BoardImageMapper boardImageMapper;
   private final AttachmentMapper attachmentMapper;
   private final CommentMapper commentMapper;
+  private final BoardValidator boardValidator;
 
   public BoardService(
       BoardMapper boardMapper,
       BoardImageMapper boardImageMapper,
       AttachmentMapper attachmentMapper,
-      CommentMapper commentMapper) {
+      CommentMapper commentMapper,
+      BoardValidator boardValidator) {
     this.boardMapper = boardMapper;
     this.boardImageMapper = boardImageMapper;
     this.attachmentMapper = attachmentMapper;
     this.commentMapper = commentMapper;
+    this.boardValidator = boardValidator;
   }
 
   /**
@@ -57,6 +62,10 @@ public class BoardService {
   public ResBoardDetail getBoard(Long id) {
 
     Map<String, Object> board = boardMapper.findBoardDetailById(id);
+
+    if (board == null) {
+      throw new RuntimeException("Board not found");
+    }
 
     return BoardDTOConverter.convertToResBoardDetail(id, board);
   }
@@ -86,6 +95,8 @@ public class BoardService {
    */
   public ResBoardList getBoardList(ReqBoardList req) {
 
+    boardValidator.validateBoardList(req);
+
     Map<String, Object> searchConditions = buildSearchConditions(req);
     long totalBoardCount = boardMapper.getTotalBoardCount(searchConditions);
     addPageParams(searchConditions, totalBoardCount, req.getPage());
@@ -112,7 +123,7 @@ public class BoardService {
     return searchConditions;
   }
 
-  public void addPageParams(Map<String, Object> searchConditions, long totalBoardCount, int page) {
+  private void addPageParams(Map<String, Object> searchConditions, long totalBoardCount, int page) {
 
     int limit = 10;
     int offset = (page - 1) * limit;
@@ -129,19 +140,47 @@ public class BoardService {
   /**
    *
    *
+   * <h1>게시판 생성 전처리</h1>
+   *
+   * @param reqBoardPreCreate
+   * @return ReqBoardCreate (파일시스템에 저장할 이미지, 첨부파일 경로 추가)
+   */
+  public ReqBoardCreate preProcessCreate(ReqBoardPreCreate reqBoardPreCreate) {
+
+    boardValidator.validateBoardCreate(reqBoardPreCreate);
+
+    List<FileDetails> imageDetails =
+        FileUtils.parseFileDetails(reqBoardPreCreate.getImages(), "images");
+
+    List<FileDetails> attachmentsDetails =
+        FileUtils.parseFileDetails(reqBoardPreCreate.getAttachments(), "attachments");
+
+    return new ReqBoardCreate(
+        reqBoardPreCreate.getCategoryName(),
+        reqBoardPreCreate.getCreatedBy(),
+        reqBoardPreCreate.getPassword(),
+        reqBoardPreCreate.getPasswordConfirm(),
+        reqBoardPreCreate.getTitle(),
+        reqBoardPreCreate.getContent(),
+        reqBoardPreCreate.getImages(),
+        reqBoardPreCreate.getAttachments(),
+        imageDetails,
+        attachmentsDetails);
+  }
+
+  /**
+   *
+   *
    * <h1>게시판 생성 </h1>
    *
    * <br>
    * - 게시판, 이미지, 첨부파일 DB에 저장
    *
    * @param req
-   * @param images
-   * @param attachments
    * @return boardId
    */
   @Transactional
-  public Long createBoard(
-      ReqBoardCreate req, List<FileDetails> images, List<FileDetails> attachments) {
+  public Long createBoard(ReqBoardCreate req) {
 
     Long categoryId = CategoryMapperUtils.getCategoryIdByName(req.getCategoryName());
 
@@ -160,14 +199,14 @@ public class BoardService {
 
     Long boardId = board.getId();
 
-    for (var image : images) {
+    for (var image : req.getImageDetails()) {
       BoardImage boardImage =
           new BoardImage(
               image.getStoredName(), image.getStoredPath(), image.getExtension(), boardId);
       boardImageMapper.saveBoardImage(boardImage);
     }
 
-    for (var att : attachments) {
+    for (var att : req.getAttachmentDetails()) {
       Attachment attachment =
           new Attachment(
               att.getLogicalName(),
@@ -187,14 +226,17 @@ public class BoardService {
    *
    * <h1>게시판 수정 전처리 </h1>
    *
-   * - 전처리 과정: 추가할 파일 상세 정보와 제거할 파일 경로 DTO 추가<br>
+   * <p>- 전처리 과정: 추가할 파일 상세 정보와 제거할 파일 경로 DTO 추가<br>
    *
+   * @param id
    * @param board
    * @param reqBoardPreUpdate
    * @return reqBoardUpdate
    */
   public ReqBoardUpdate preProcessUpdate(
-      ResBoardDetail board, ReqBoardPreUpdate reqBoardPreUpdate) {
+      Long id, ResBoardDetail board, ReqBoardPreUpdate reqBoardPreUpdate) {
+
+    boardValidator.validateBoardUpdate(id, reqBoardPreUpdate, board);
 
     List<String> deleteFilePaths =
         Stream.concat(
@@ -316,6 +358,8 @@ public class BoardService {
    * @return
    */
   public ReqBoardDelete preProcessDelete(Long boardId, String password, ResBoardDetail board) {
+
+    boardValidator.validateBoardDelete(boardId, password);
 
     List<String> deleteFilePaths =
         Stream.concat(
