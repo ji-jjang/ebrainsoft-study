@@ -1,14 +1,9 @@
 spring:
+
   config:
     import: "classpath:env.properties"
+
   datasource:
     url: ${DB_TEST_URL}
     username: ${DB_TEST_USERNAME}
     password: ${DB_TEST_PASSWORD}
-  jpa:
-    properties:
-      hibernate:
-        show_sql: false
-        format_sql: false
-    hibernate:
-      ddl-auto: create-drop

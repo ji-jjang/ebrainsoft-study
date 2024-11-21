@@ -8,14 +8,6 @@ spring:
     username: ${DB_LOCAL_USERNAME}
     password: ${DB_LOCAL_PASSWORD}
 
-  jpa:
-    properties:
-      hibernate:
-        show_sql: false
-        format_sql: false
-    hibernate:
-      ddl-auto: create-drop
-
   web:
     resources:
       static-locations:
