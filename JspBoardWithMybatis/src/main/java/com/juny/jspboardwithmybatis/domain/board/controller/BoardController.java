@@ -1,6 +1,7 @@
 package com.juny.jspboardwithmybatis.domain.board.controller;
 
 import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardCreate;
+import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardPreCreate;
 import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardDelete;
 import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardList;
 import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardUpdate;
@@ -10,8 +11,6 @@ import com.juny.jspboardwithmybatis.domain.board.dto.ResBoardList;
 import com.juny.jspboardwithmybatis.domain.board.service.BoardService;
 import com.juny.jspboardwithmybatis.domain.utils.CategoryMapperUtils;
 import com.juny.jspboardwithmybatis.domain.utils.FileUtils;
-import com.juny.jspboardwithmybatis.domain.utils.dto.FileDetails;
-import java.util.List;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -99,23 +98,21 @@ public class BoardController {
    * <h1>게시판 생성 </h1>
    *
    * <br>
-   * - 1. 파일 정보를 파싱 (storedName, storedPath, extension ...)<br>
+   * - 1. 생성 전처리(저장할 파일 정보 파싱)<br>
    * - 2. 서비스 트랜잭션으로 게시판 생성(게시판, 이미지, 첨부파일)<br>
    * - 3. 트랜잭션 성공 시 파일 시스템에 저장
    *
    * @return View
    */
   @PostMapping("/boards")
-  public String createBoard(@ModelAttribute ReqBoardCreate reqBoardCreate) {
+  public String createBoard(@ModelAttribute ReqBoardPreCreate reqBoardPreCreate) {
 
-    List<FileDetails> images = FileUtils.parseFileDetails(reqBoardCreate.getImages(), "images");
-    List<FileDetails> attachments =
-        FileUtils.parseFileDetails(reqBoardCreate.getAttachments(), "attachments");
+    ReqBoardCreate reqBoardCreate = boardService.preProcessCreate(reqBoardPreCreate);
 
-    Long boardId = boardService.createBoard(reqBoardCreate, images, attachments);
+    Long boardId = boardService.createBoard(reqBoardCreate);
 
-    FileUtils.saveFile(reqBoardCreate.getImages(), images);
-    FileUtils.saveFile(reqBoardCreate.getAttachments(), attachments);
+    FileUtils.saveFile(reqBoardCreate.getImages(), reqBoardCreate.getImageDetails());
+    FileUtils.saveFile(reqBoardCreate.getAttachments(), reqBoardCreate.getAttachmentDetails());
 
     return "redirect:/boards/" + boardId;
   }
@@ -146,8 +143,6 @@ public class BoardController {
    * - 요청 검증 위해 먼저 게시판 상세 조회 쿼리 실행<br>
    * - 전처리 과정: 추가할 파일 상세 정보와 제거할 파일 경로 DTO 추가<br>
    * - 트랜잭션 성공 시 파일 시스템에 파일 추가 및 삭제<br>
-   * - 폼 메서드에선 [PUT, PATCH]를 사용할 수 없어 [POST] 사용<br>
-   * - 게시판에 있지 않은 파일 ID 삭제 시도 시 에러 - 중복한 아이디 삭제 요청 시 에러
    *
    * @return View
    */
@@ -157,7 +152,7 @@ public class BoardController {
 
     ResBoardDetail board = boardService.getBoard(id);
 
-    ReqBoardUpdate reqBoardUpdate = boardService.preProcessUpdate(board, reqBoardPreUpdate);
+    ReqBoardUpdate reqBoardUpdate = boardService.preProcessUpdate(id, board, reqBoardPreUpdate);
 
     boardService.updateBoard(id, reqBoardUpdate);
 

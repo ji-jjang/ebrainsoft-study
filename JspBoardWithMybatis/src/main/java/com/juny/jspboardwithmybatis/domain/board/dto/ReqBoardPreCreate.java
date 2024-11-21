@@ -1,6 +1,5 @@
 package com.juny.jspboardwithmybatis.domain.board.dto;
 
-import com.juny.jspboardwithmybatis.domain.utils.dto.FileDetails;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,7 +9,8 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter
 @AllArgsConstructor
 @ToString
-public class ReqBoardCreate {
+public class ReqBoardPreCreate implements ReqForm {
+
   private final String categoryName;
   private final String createdBy;
   private final String password;
@@ -19,6 +19,4 @@ public class ReqBoardCreate {
   private final String content;
   private final List<MultipartFile> images;
   private final List<MultipartFile> attachments;
-  private final List<FileDetails> imageDetails;
-  private final List<FileDetails> attachmentDetails;
 }

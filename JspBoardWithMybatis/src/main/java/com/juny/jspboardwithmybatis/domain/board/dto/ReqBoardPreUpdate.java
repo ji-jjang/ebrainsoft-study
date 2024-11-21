@@ -8,19 +8,23 @@ import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @ToString
-public class ReqBoardPreUpdate {
+public class ReqBoardPreUpdate implements ReqForm {
 
   private final String title;
   private final String content;
   private final String password;
   private final String createdBy;
+
   private final List<Long> deleteImageIds;
   private final List<Long> deleteAttachmentIds;
   private final List<MultipartFile> images;
   private final List<MultipartFile> attachments;
 
   /**
-   * <h1> AllArgsConstructor, 불변 객체로 만들 때 기본값 설정</h1>
+   *
+   *
+   * <h1>AllArgsConstructor, 불변 객체로 만들 때 기본값 설정</h1>
+   *
    * @param title
    * @param content
    * @param password
