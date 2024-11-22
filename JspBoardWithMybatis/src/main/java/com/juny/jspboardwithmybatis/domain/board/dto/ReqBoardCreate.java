@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 @ToString
 public class ReqBoardCreate {
+
   private final String categoryName;
   private final String createdBy;
   private final String password;
