@@ -23,4 +23,9 @@ public class Constants {
   public static final String RESOURCE_ROOT_PATH = "/Users/jijunhyuk/JunyProjects/ebrainsoft/";
   public static final String DOT_SIGN = ".";
   public static final String SPACE_SIGN = " ";
+  public static final String BOARD_NOT_FOUND_CODE = "B1";
+  public static final String INTERNAL_SERVER_ERROR_CODE = "C1";
+  public static final String INVALID_PARAM_CODE = "P1";
+  public static final String ATTACHMENT_NOT_FOUND_CODE = "A1";
+  public static final String PASSWORD_NOT_MATCH_CODE = "PA1";
 }

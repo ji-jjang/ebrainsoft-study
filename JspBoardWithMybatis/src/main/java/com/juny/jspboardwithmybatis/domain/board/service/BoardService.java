@@ -21,15 +21,19 @@ import com.juny.jspboardwithmybatis.domain.utils.CategoryMapperUtils;
 import com.juny.jspboardwithmybatis.domain.utils.DateFormatUtils;
 import com.juny.jspboardwithmybatis.domain.utils.FileUtils;
 import com.juny.jspboardwithmybatis.domain.utils.dto.FileDetails;
+import com.juny.jspboardwithmybatis.global.exception.ErrorCode;
+import com.juny.jspboardwithmybatis.global.exception.hierachy.board.BoardNotFoundException;
 import java.time.LocalDateTime;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@RequiredArgsConstructor
 public class BoardService {
 
   private final BoardMapper boardMapper;
@@ -37,19 +41,6 @@ public class BoardService {
   private final AttachmentMapper attachmentMapper;
   private final CommentMapper commentMapper;
   private final BoardValidator boardValidator;
-
-  public BoardService(
-      BoardMapper boardMapper,
-      BoardImageMapper boardImageMapper,
-      AttachmentMapper attachmentMapper,
-      CommentMapper commentMapper,
-      BoardValidator boardValidator) {
-    this.boardMapper = boardMapper;
-    this.boardImageMapper = boardImageMapper;
-    this.attachmentMapper = attachmentMapper;
-    this.commentMapper = commentMapper;
-    this.boardValidator = boardValidator;
-  }
 
   /**
    *
@@ -64,7 +55,7 @@ public class BoardService {
     Map<String, Object> board = boardMapper.findBoardDetailById(id);
 
     if (board == null) {
-      throw new RuntimeException("Board not found");
+      throw new BoardNotFoundException(ErrorCode.BOARD_NOT_FOUND);
     }
 
     return BoardDTOConverter.convertToResBoardDetail(id, board);

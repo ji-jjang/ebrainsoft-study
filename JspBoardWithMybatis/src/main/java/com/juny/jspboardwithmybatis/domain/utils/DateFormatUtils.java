@@ -39,8 +39,8 @@ public class DateFormatUtils {
   public static String toOutputFormat(String dateFormat) {
 
     String date = dateFormat;
-    if (dateFormat.split(" ").length == 2) {
-      date = dateFormat.split(" ")[0];
+    if (dateFormat.split(Constants.SPACE_SIGN).length == 2) {
+      date = dateFormat.split(Constants.SPACE_SIGN)[0];
     }
 
     return date;

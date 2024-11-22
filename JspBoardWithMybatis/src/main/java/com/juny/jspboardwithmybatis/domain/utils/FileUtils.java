@@ -3,6 +3,7 @@ package com.juny.jspboardwithmybatis.domain.utils;
 import com.juny.jspboardwithmybatis.domain.utils.dto.FileDetails;
 import com.juny.jspboardwithmybatis.domain.utils.dto.ResFileDownload;
 import com.juny.jspboardwithmybatis.global.Constants;
+import com.juny.jspboardwithmybatis.global.exception.ErrorMessage;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,7 +32,7 @@ public class FileUtils {
     Path filePath = Paths.get(resFileDownload.getPath());
 
     if (!Files.exists(filePath)) {
-      throw new RuntimeException("File not found: " + resFileDownload.getPath());
+      throw new RuntimeException(ErrorMessage.FILE_NOT_FOUND_MSG + resFileDownload.getPath());
     }
 
     res.setContentType(Constants.APPLICATION_OCTET_STREAM);
@@ -48,7 +49,7 @@ public class FileUtils {
         outputStream.write(buffer, 0, bytesRead);
       }
     } catch (IOException e) {
-      throw new RuntimeException("Error while processing file: " + e.getMessage(), e);
+      throw new RuntimeException(ErrorMessage.FILE_INPUT_OUTPUT_ERROR + e.getMessage());
     }
   }
 
@@ -115,7 +116,7 @@ public class FileUtils {
               try {
                 file.transferTo(Paths.get(storedPath, storedName + delimiter + extension));
               } catch (IOException e) {
-                throw new RuntimeException(e);
+                throw new RuntimeException(ErrorMessage.FILE_INPUT_OUTPUT_ERROR);
               }
             });
   }
@@ -126,7 +127,7 @@ public class FileUtils {
       try {
         Files.delete(Path.of(path));
       } catch (IOException e) {
-        throw new RuntimeException(e);
+        throw new RuntimeException(ErrorMessage.FILE_INPUT_OUTPUT_ERROR);
       }
     }
   }
