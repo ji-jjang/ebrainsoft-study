@@ -6,7 +6,7 @@
 <html>
 <head>
     <title>Create Board</title>
-    <%--    <script src="/resources/js/boardInputValidation.js"></script>--%>
+    <script src="/js/boardInputValidation.js"></script>
 </head>
 <body>
 <form action="/boards" method="post" enctype="multipart/form-data"

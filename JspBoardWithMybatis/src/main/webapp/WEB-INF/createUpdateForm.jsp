@@ -3,7 +3,7 @@
 <html>
 <head>
     <title>게시판 수정 폼</title>
-    <%--    <script src="/resources/js/boardInputValidation.js"></script>--%>
+    <script src="/js/boardInputValidation.js"></script>
 </head>
 <h1>게시판 - 수정</h1>
 <body>
