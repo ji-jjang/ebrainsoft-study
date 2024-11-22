@@ -86,7 +86,6 @@
          on
            b.id = cm.board_id
     WHERE b.id = #{id}
-    GROUP BY b.id, c.id
   </select>
 
   <select id="getBoardPassword" parameterType="long" resultType="string">
