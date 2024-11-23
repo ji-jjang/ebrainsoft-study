@@ -1,17 +1,23 @@
 package com.juny.jspboardwithmybatis.domain.board.controller;
 
 import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardCreate;
+import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardList;
 import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardPreCreate;
 import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardDelete;
-import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardList;
+import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardPreList;
 import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardUpdate;
 import com.juny.jspboardwithmybatis.domain.board.dto.ReqBoardPreUpdate;
 import com.juny.jspboardwithmybatis.domain.board.dto.ResBoardDetail;
 import com.juny.jspboardwithmybatis.domain.board.dto.ResBoardList;
+import com.juny.jspboardwithmybatis.domain.board.dto.ResPageInfo;
+import com.juny.jspboardwithmybatis.domain.board.dto.ResSearchCondition;
 import com.juny.jspboardwithmybatis.domain.board.service.BoardService;
 import com.juny.jspboardwithmybatis.domain.utils.CategoryMapperUtils;
 import com.juny.jspboardwithmybatis.domain.utils.FileUtils;
 import com.juny.jspboardwithmybatis.global.Constants;
+import jakarta.servlet.http.HttpSession;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -59,15 +65,22 @@ public class BoardController {
    * <h1>게시판 목록 페이지 조회 </h1>
    *
    * <br>
-   * - 검색 조건을 유지하며, 페이지 이동 할 수 있어야 함
+   * - 검색 조건을 유지하며, 페이지 이동 할 수 있어야 함<br>
+   * - 검색 조건이 세션에 있다면, 갱신
    *
    * @param model SearchCondition(startDate, endDate, categoryName, keyword), page
    * @return View
    */
   @GetMapping("/boards")
-  public String getBoards(@ModelAttribute ReqBoardList reqBoardList, Model model) {
+  public String getBoards(
+      @ModelAttribute ReqBoardPreList reqBoardPreList, Model model, HttpSession session) {
+
+    ReqBoardList reqBoardList = setSession(reqBoardPreList, session);
 
     ResBoardList boardList = boardService.getBoardList(reqBoardList);
+
+    session.setAttribute("searchCondition", boardList.getSearchCondition());
+    session.setAttribute("pageInfo", boardList.getPageInfo());
 
     model.addAttribute("boards", boardList.getBoards());
     model.addAttribute("searchCondition", boardList.getSearchCondition());
@@ -75,6 +88,66 @@ public class BoardController {
     model.addAttribute("categories", CategoryMapperUtils.getAllCategoryName());
 
     return "boards";
+  }
+
+  private ReqBoardList setSession(ReqBoardPreList reqBoardPreList, HttpSession session) {
+
+    LocalDate startDate = reqBoardPreList.getStartDate();
+    LocalDate endDate = reqBoardPreList.getEndDate();
+    String categoryName = reqBoardPreList.getCategoryName();
+    String keyword = reqBoardPreList.getKeyword();
+    int page = 0;
+
+    ResSearchCondition searchConditionSession =
+        (ResSearchCondition) session.getAttribute("searchCondition");
+
+    ResPageInfo pageInfoSession = (ResPageInfo) session.getAttribute("pageInfo");
+
+    if (startDate == null
+        && searchConditionSession != null
+        && searchConditionSession.getStartDate() != null) {
+      startDate =
+          LocalDate.parse(
+              searchConditionSession.getStartDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    }
+
+    if (endDate == null
+        && searchConditionSession != null
+        && searchConditionSession.getEndDate() != null) {
+      endDate =
+          LocalDate.parse(
+              searchConditionSession.getEndDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+    }
+
+    if (categoryName == null
+        && searchConditionSession != null
+        && searchConditionSession.getCategoryName() != null) {
+      categoryName = searchConditionSession.getCategoryName();
+    }
+
+    if (keyword == null
+        && searchConditionSession != null
+        && searchConditionSession.getKeyword() != null) {
+      keyword = searchConditionSession.getKeyword();
+    }
+
+    if (page == 0 && pageInfoSession != null) {
+      page = pageInfoSession.getPage();
+    }
+
+    if (startDate == null) {
+      startDate = LocalDate.now().minusYears(1);
+    }
+
+    if (endDate == null) {
+      endDate = LocalDate.now();
+    }
+
+    if (page == 0) {
+      page = Constants.DEFAULT_PAGE_NUMBER;
+    }
+
+    return new ReqBoardList(startDate, endDate, categoryName, keyword, page);
   }
 
   /**
