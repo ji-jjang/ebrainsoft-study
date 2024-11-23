@@ -28,4 +28,5 @@ public class Constants {
   public static final String INVALID_PARAM_CODE = "P1";
   public static final String ATTACHMENT_NOT_FOUND_CODE = "A1";
   public static final String PASSWORD_NOT_MATCH_CODE = "PA1";
+  public static final int SESSION_ACTIVE_TIME_SECOND = 600;
 }

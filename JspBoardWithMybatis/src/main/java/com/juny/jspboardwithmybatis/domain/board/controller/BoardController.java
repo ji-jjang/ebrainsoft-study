@@ -81,6 +81,7 @@ public class BoardController {
 
     session.setAttribute("searchCondition", boardList.getSearchCondition());
     session.setAttribute("pageInfo", boardList.getPageInfo());
+    session.setMaxInactiveInterval(Constants.SESSION_ACTIVE_TIME_SECOND);
 
     model.addAttribute("boards", boardList.getBoards());
     model.addAttribute("searchCondition", boardList.getSearchCondition());
@@ -96,7 +97,7 @@ public class BoardController {
     LocalDate endDate = reqBoardPreList.getEndDate();
     String categoryName = reqBoardPreList.getCategoryName();
     String keyword = reqBoardPreList.getKeyword();
-    int page = 0;
+    int page = reqBoardPreList.getPage() == null ? 1 : reqBoardPreList.getPage();
 
     ResSearchCondition searchConditionSession =
         (ResSearchCondition) session.getAttribute("searchCondition");
