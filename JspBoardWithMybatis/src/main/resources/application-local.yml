@@ -1,14 +1,19 @@
 spring:
+
   config:
     import: "classpath:env.properties"
+
   datasource:
     url: ${DB_LOCAL_URL}
     username: ${DB_LOCAL_USERNAME}
     password: ${DB_LOCAL_PASSWORD}
-  jpa:
-    properties:
-      hibernate:
-        show_sql: false
-        format_sql: false
-    hibernate:
-      ddl-auto: create-drop
+
+  web:
+    resources:
+      static-locations:
+        - classpath:/static/
+        - classpath:/public/
+        - classpath:/resources/
+        - classpath:/META-INF/resources/
+        - ${RESOURCE_IMAGE_PATH}
+        - ${RESOURCE_ATTACHMENT_PATH}

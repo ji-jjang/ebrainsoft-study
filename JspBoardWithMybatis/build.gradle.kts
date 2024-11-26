@@ -18,6 +18,8 @@ repositories {
 }
 
 dependencies {
+    implementation("com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.10.0")
+
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3")
     implementation("org.apache.tomcat.embed:tomcat-embed-jasper")
