@@ -1,0 +1,41 @@
+networks:
+  juny:
+    driver: bridge
+
+services:
+  mysql:
+    image: mysql:9.1
+    container_name: MyMysql
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      TZ: Asia/Seoul
+    command:
+      - --character-set-server=UTF8MB4
+      - --collation-server=UTF8MB4_UNICODE_CI
+    networks:
+      - juny
+
+  nginx:
+    build:
+      context: Dockerfiles/nginx
+      dockerfile: Dockerfile
+    container_name: MyNginx
+    ports:
+      - 80:80
+    volumes:
+      - ../frontend/dist:/usr/share/nginx/html
+    restart: unless-stopped
+    networks:
+      - juny
+
+  app:
+    build:
+      context: ./
+      dockerfile: Dockerfiles/app/Dockerfile
+    container_name: MyApp
+    ports:
+      - 8080:8080
+    networks:
+      - juny
