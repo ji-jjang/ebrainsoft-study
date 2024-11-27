@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.juny.board.domain.board.repository.BoardRepository">
+
+  <delete id="deleteBoardById" parameterType="long">
+    DELETE
+    FROM boards
+    WHERE id = #{id}
+  </delete>
+
+  <insert id="saveBoard" keyProperty="id" parameterType="Board" useGeneratedKeys="true">
+    INSERT INTO boards (title, content, password, view_count, created_at, updated_at, created_by,
+                        category_id)
+    VALUES (#{title}, #{content}, #{password}, #{viewCount}, #{createdAt}, #{updatedAt},
+            #{createdBy}, #{categoryId});
+  </insert>
+
+  <select id="getBoardList" parameterType="map" resultType="map">
+    SELECT b.id as board_id,
+    b.title,
+    b.content,
+    b.view_count,
+    DATE_FORMAT(b.created_at, '%Y-%m-%d') AS created_at,
+    b.created_by,
+    DATE_FORMAT(b.updated_at, '%Y-%m-%d') AS updated_at,
+    c.name,
+    (SELECT EXISTS (SELECT 1 FROM attachments a WHERE a.board_id = b.id)) AS has_attachment
+    FROM boards b
+    INNER JOIN categories c ON b.category_id = c.id
+    WHERE 1 = 1
+    <if test="categoryName != null and categoryName != ''">
+      AND c.name = #{categoryName}
+    </if>
+    <if test="keyword != null and keyword != ''">
+      AND (
+      b.title LIKE CONCAT('%', #{keyword}, '%')
+      OR b.created_by LIKE CONCAT('%', #{keyword}, '%')
+      OR b.content LIKE CONCAT('%', #{keyword}, '%')
+      )
+    </if>
+    <if test="startDate != null and startDate != ''">
+      AND b.created_at &gt; #{startDate}
+    </if>
+    <if test="endDate != null and endDate != ''">
+      AND b.created_at &lt; #{endDate}
+    </if>
+    ORDER BY b.created_at DESC
+    LIMIT #{limit} OFFSET #{offset}
+  </select>
+
+  <select id="findBoardDetailById" resultType="map">
+    SELECT b.id                                                                                                                     as board_id,
+           b.title                                                                                                                  as board_title,
+           b.content                                                                                                                as board_content,
+           b.view_count                                                                                                             as board_view_count,
+           DATE_FORMAT(b.created_at, '%Y-%m-%d')                                                                                    as board_created_at,
+           b.created_by                                                                                                             as board_created_by,
+           DATE_FORMAT(b.updated_at, '%Y-%m-%d')                                                                                    as board_updated_at,
+
+           c.name                                                                                                                   as category_name,
+
+           GROUP_CONCAT(DISTINCT CONCAT_WS('|', bi.id, bi.stored_name, bi.stored_path, bi.extension))                               AS board_images,
+
+           GROUP_CONCAT(DISTINCT CONCAT_WS('|', a.id, a.logical_name, a.stored_name, a.stored_path, a.extension, a.size))           AS attachments,
+
+           GROUP_CONCAT(DISTINCT CONCAT_WS('|', cm.id, cm.content, DATE_FORMAT(cm.created_at, '%Y-%m-%d %H:%i:%s'), cm.created_by)) AS comments
+
+    FROM boards b
+           LEFT JOIN
+         categories c
+         on
+           c.id = b.category_id
+           LEFT JOIN
+         attachments a
+         on
+           b.id = a.board_id
+           LEFT JOIN
+         board_images bi
+         on
+           b.id = bi.board_id
+           LEFT JOIN
+         comments cm
+         on
+           b.id = cm.board_id
+    WHERE b.id = #{id}
+  </select>
+
+  <select id="getBoardPassword" parameterType="long" resultType="string">
+    SELECT password
+    FROM boards
+    WHERE id = #{id}
+  </select>
+
+  <select id="getTotalBoardCount" parameterType="map" resultType="long">
+    SELECT
+    COUNT(*)
+    FROM
+    boards b
+    <if test="categoryName != null and categoryName != ''">
+      INNER JOIN
+      categories c
+      ON
+      b.category_id = c.id
+    </if>
+    WHERE
+    1 = 1
+    <if test="categoryName != null and categoryName != ''">
+      AND
+      c.name = #{categoryName}
+    </if>
+    <if test="keyword != null and keyword != ''">
+      AND
+      (
+      b.title LIKE CONCAT('%', #{keyword}, '%')
+      OR b.created_by LIKE CONCAT('%', #{keyword}, '%')
+      OR b.content LIKE CONCAT('%', #{keyword}, '%')
+      )
+    </if>
+    <if test="startDate != null and startDate != ''">
+      AND
+      b.created_at &gt;= #{startDate}
+    </if>
+    <if test="endDate != null and endDate != ''">
+      AND
+      b.created_at &lt;= #{endDate}
+    </if>
+  </select>
+
+  <update id="increaseViewCount">
+    UPDATE
+      boards
+    SET view_count = view_count + 1
+    WHERE id = #{id}
+  </update>
+
+  <update id="updateBoard" parameterType="Board">
+    UPDATE boards
+    SET title      = #{title},
+        content    = #{content},
+        password   = #{password},
+        created_by = #{createdBy},
+        updated_at = #{updatedAt}
+    WHERE id = #{id}
+  </update>
+
+</mapper>
