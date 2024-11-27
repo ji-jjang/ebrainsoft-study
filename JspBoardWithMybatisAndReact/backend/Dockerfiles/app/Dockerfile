@@ -1,4 +1,4 @@
-FROM gradle:jdk21 as builder
+FROM gradle:jdk21 AS builder
 
 WORKDIR /build
 
@@ -16,4 +16,4 @@ EXPOSE 8080
 
 USER nobody
 
-ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=local", "app.jar"]
+ENTRYPOINT ["java", "-jar", "-Dspring.profiles.active=prod", "app.jar"]

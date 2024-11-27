@@ -5,9 +5,9 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${DB_LOCAL_URL}
-    username: ${DB_LOCAL_USERNAME}
-    password: ${DB_LOCAL_PASSWORD}
+    url: ${DB_PROD_URL}
+    username: ${DB_PROD_USERNAME}
+    password: ${DB_PROD_PASSWORD}
 
 mybatis:
 
