@@ -1,0 +1,9 @@
+spring:
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+mybatis:
+
+  mapper-locations: classpath:repository/*.xml
+  type-aliases-package: com.juny.board.domain
