@@ -2,17 +2,20 @@ package com.juny.jspboardwithmybatis.domain.board.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 @Getter
-@AllArgsConstructor
 @ToString
+@AllArgsConstructor
+@NoArgsConstructor
 public class ResAttachment {
 
-  private final Long id;
-  private final String logicalName;
-  private final String storedName;
-  private final String storedPath;
-  private final String extension;
-  private final Integer size;
+  private Long id;
+  private String logicalName;
+  private String storedName;
+  private String storedPath;
+  private String extension;
+  private Integer size;
 }
