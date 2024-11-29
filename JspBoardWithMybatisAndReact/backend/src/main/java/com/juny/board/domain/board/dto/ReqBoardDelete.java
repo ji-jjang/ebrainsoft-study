@@ -15,5 +15,5 @@ public class ReqBoardDelete {
   @NotNull(message = "not null")
   @NotEmpty(message = "password not empty")
   @Size(min = 4, max = 15, message = "password min 4, max 15")
-  private final String password;
+  private String password;
 }
