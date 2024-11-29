@@ -17,3 +17,7 @@ spring:
         - classpath:/META-INF/resources/
         - ${RESOURCE_IMAGE_PATH}
         - ${RESOURCE_ATTACHMENT_PATH}
+
+decorator:
+  datasource:
+    enabled: false

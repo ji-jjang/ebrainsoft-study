@@ -9,6 +9,10 @@ spring:
     username: ${DB_PROD_USERNAME}
     password: ${DB_PROD_PASSWORD}
 
+decorator:
+  datasource:
+    enabled: false
+
 mybatis:
 
   mapper-locations: classpath:mapper/*.xml
