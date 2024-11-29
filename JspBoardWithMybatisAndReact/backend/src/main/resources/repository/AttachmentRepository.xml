@@ -7,21 +7,26 @@
 
   <delete id="deleteAttachmentById" parameterType="long">
     DELETE
-    FROM attachments
-    WHERE id = #{id}
+    FROM
+      attachments
+    WHERE
+      id = #{id}
   </delete>
 
   <insert id="saveAttachment" keyProperty="id" parameterType="Attachment" useGeneratedKeys="true">
-    INSERT INTO attachments (logical_name, stored_name, stored_path, extension, size, board_id)
-    VALUES (#{logicalName}, #{storedName}, #{storedPath}, #{extension}, #{size}, #{boardId});
+    INSERT INTO
+      attachments (logical_name, stored_name, stored_path, extension, size, board_id)
+    VALUES
+      (#{logicalName}, #{storedName}, #{storedPath}, #{extension}, #{size}, #{boardId});
   </insert>
 
   <select id="findAttachmentById">
-    SELECT id,
-           logical_name,
-           stored_name,
-           stored_path,
-           extension, size, board_id
+    SELECT
+      id,
+      logical_name,
+      stored_name,
+      stored_path,
+      extension, size, board_id
     FROM
       attachments
     where

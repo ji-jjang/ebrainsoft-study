@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.juny.board.domain.board.repository.CommentRepository">
+
+  <delete id="deleteCommentById" parameterType="long">
+    DELETE FROM
+      comments
+    WHERE
+      id = #{id}
+  </delete>
+
+  <insert id="saveComment" keyProperty="id" parameterType="Comment" useGeneratedKeys="true">
+    INSERT INTO
+      comments (content, password, created_at, created_by, board_id)
+    VALUES
+      (#{content}, #{password}, #{createdAt}, #{createdBy}, #{boardId});
+  </insert>
+
+</mapper>

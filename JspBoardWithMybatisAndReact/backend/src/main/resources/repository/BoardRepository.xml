@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.juny.board.domain.board.repository.BoardRepository">
+
+  <delete id="deleteBoardById" parameterType="long">
+    DELETE FROM
+      boards
+    WHERE
+      id = #{id}
+  </delete>
+
+  <insert id="saveBoard" keyProperty="id" parameterType="Board" useGeneratedKeys="true">
+    INSERT INTO
+      boards (title, content, password, view_count, created_at, updated_at, created_by,
+                        category_id)
+    VALUES
+      (#{title}, #{content}, #{password}, #{viewCount}, #{createdAt}, #{updatedAt},
+            #{createdBy}, #{categoryId});
+  </insert>
+
+  <resultMap id="BoardDetailResultMap" type="com.juny.board.domain.board.entity.Board">
+
+    <id column="board_id" property="id"/>
+    <result column="board_title" property="title"/>
+    <result column="board_content" property="content"/>
+    <result column="board_password" property="password"/>
+    <result column="board_view_count" property="viewCount"/>
+    <result column="board_created_at" javaType="java.time.LocalDateTime" property="createdAt"/>
+    <result column="board_created_by" property="createdBy"/>
+    <result column="board_updated_at" javaType="java.time.LocalDateTime" property="updatedAt"/>
+    <result column="has_attachment" property="hasAttachment"/>
+
+    <association javaType="com.juny.board.domain.board.entity.Category" property="category">
+      <result column="category_name" property="name"/>
+    </association>
+
+    <collection ofType="com.juny.board.domain.board.entity.BoardImage" property="boardImages">
+      <id column="board_image_id" property="id"/>
+      <result column="board_image_stored_name" property="storedName"/>
+      <result column="board_image_stored_path" property="storedPath"/>
+      <result column="board_image_extension" property="extension"/>
+    </collection>
+
+    <collection ofType="com.juny.board.domain.board.entity.Attachment" property="attachments">
+      <id column="attachment_id" property="id"/>
+      <result column="attachment_logical_name" property="logicalName"/>
+      <result column="attachment_stored_name" property="storedName"/>
+      <result column="attachment_stored_path" property="storedPath"/>
+      <result column="attachment_extension" property="extension"/>
+      <result column="attachment_size" property="size"/>
+    </collection>
+
+    <collection ofType="com.juny.board.domain.board.entity.Comment" property="comments">
+      <id column="comment_id" property="id"/>
+      <result column="comment_content" property="content"/>
+      <result column="comment_created_at" javaType="java.time.LocalDateTime" property="createdAt"/>
+      <result column="comment_created_by" property="createdBy"/>
+    </collection>
+
+  </resultMap>
+
+  <select id="getTotalBoardCount" parameterType="SearchConditionVO" resultType="long">
+    SELECT
+        COUNT(*)
+    FROM
+        boards b
+    <if test="categoryName != null and categoryName != ''">
+      INNER JOIN
+        categories c
+      ON
+        b.category_id = c.id
+    </if>
+    <include refid="boardListWhereClause"/>
+  </select>
+
+  <select id="getBoardList" parameterType="SearchConditionVO" resultMap="BoardDetailResultMap">
+    SELECT
+      b.id AS board_id,
+      b.title AS board_title,
+      b.content AS board_content,
+      b.view_count AS board_view_count,
+      DATE_FORMAT(b.created_at, '%Y-%m-%d') AS board_created_at,
+      b.created_by AS board_created_by,
+      DATE_FORMAT(b.updated_at, '%Y-%m-%d') AS board_updated_at,
+      (SELECT EXISTS (SELECT 1 FROM attachments a WHERE a.board_id = b.id)) AS has_attachment,
+      c.name AS category_name
+
+    FROM
+      boards b
+    INNER JOIN
+      categories c ON b.category_id = c.id
+    <include refid="boardListWhereClause"/>
+    ORDER BY
+      b.created_at DESC
+    LIMIT
+      #{limit} OFFSET #{offset}
+  </select>
+
+  <select id="findBoardDetailById" resultMap="BoardDetailResultMap">
+    SELECT
+           b.id           AS board_id,
+           b.title        AS board_title,
+           b.content      AS board_content,
+           b.password     AS board_password,
+           b.view_count   AS board_view_count,
+           b.created_at   AS board_created_at,
+           b.created_by   AS board_created_by,
+           b.updated_at   AS board_updated_at,
+
+           c.name         AS category_name,
+
+           a.id           AS attachment_id,
+           a.logical_name AS attachment_logical_name,
+           a.stored_name  AS attachment_stored_name,
+           a.stored_path  AS attachment_stored_path,
+           a.extension    AS attachment_extension,
+           a.size         AS attachment_size,
+
+           cm.id          AS comment_id,
+           cm.content     AS comment_content,
+           cm.created_at  AS comment_created_at,
+           cm.created_by  AS comment_created_by,
+
+           bi.id          AS board_image_id,
+           bi.stored_name AS board_image_stored_name,
+           bi.stored_path AS board_image_stored_path,
+           bi.extension   AS board_image_extension
+    FROM
+      boards b
+    LEFT JOIN
+      categories c ON c.id = b.category_id
+    LEFT JOIN
+      attachments a ON a.board_id = b.id
+    LEFT JOIN
+      board_images bi ON bi.board_id = b.id
+    LEFT JOIN
+      comments cm ON cm.board_id = b.id
+    WHERE
+      b.id = #{id}
+  </select>
+
+  <select id="getBoardPassword" parameterType="long" resultType="string">
+    SELECT
+      password
+    FROM
+      boards
+    WHERE
+      id = #{id}
+  </select>
+
+  <sql id="boardListWhereClause">
+    WHERE 1 = 1
+
+    <if test="categoryName != null and categoryName != ''">
+      AND c.name = #{categoryName}
+    </if>
+
+    <if test="keyword != null and keyword != ''">
+      AND (
+      b.title LIKE CONCAT('%', #{keyword}, '%')
+      OR b.created_by LIKE CONCAT('%', #{keyword}, '%')
+      OR b.content LIKE CONCAT('%', #{keyword}, '%')
+      )
+    </if>
+
+    <if test="startDate != null and startDate != ''">
+      AND b.created_at &gt;= #{startDate}
+    </if>
+
+    <if test="endDate != null and endDate != ''">
+      AND b.created_at &lt;= #{endDate}
+    </if>
+  </sql>
+
+  <update id="increaseViewCount" parameterType="Long">
+    UPDATE
+      boards
+    SET
+      view_count = view_count + 1
+    WHERE
+      id = #{id}
+  </update>
+
+  <update id="updateBoard" parameterType="Board">
+    UPDATE
+      boards
+    SET
+      title      = #{title},
+      content    = #{content},
+      password   = #{password},
+      created_by = #{createdBy},
+      updated_at = #{updatedAt}
+    WHERE
+      id = #{id}
+  </update>
+
+</mapper>
