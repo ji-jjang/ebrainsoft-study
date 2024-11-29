@@ -1,0 +1,23 @@
+spring:
+
+  config:
+    import: "classpath:env.properties"
+
+  datasource:
+    url: ${DB_PROD_URL}
+    username: ${DB_PROD_USERNAME}
+    password: ${DB_PROD_PASSWORD}
+
+  web:
+    resources:
+      static-locations:
+        - classpath:/static/
+        - classpath:/public/
+        - classpath:/resources/
+        - classpath:/META-INF/resources/
+        - ${RESOURCE_IMAGE_PATH}
+        - ${RESOURCE_ATTACHMENT_PATH}
+
+decorator:
+  datasource:
+    enabled: false

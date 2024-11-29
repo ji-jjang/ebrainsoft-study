@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.juny.board.domain.board.repository.AttachmentRepository">
+
+  <delete id="deleteAttachmentById" parameterType="long">
+    DELETE
+    FROM
+      attachments
+    WHERE
+      id = #{id}
+  </delete>
+
+  <insert id="saveAttachment" keyProperty="id" parameterType="Attachment" useGeneratedKeys="true">
+    INSERT INTO
+      attachments (logical_name, stored_name, stored_path, extension, size, board_id)
+    VALUES
+      (#{logicalName}, #{storedName}, #{storedPath}, #{extension}, #{size}, #{boardId});
+  </insert>
+
+  <select id="findAttachmentById">
+    SELECT
+      id,
+      logical_name,
+      stored_name,
+      stored_path,
+      extension, size, board_id
+    FROM
+      attachments
+    where
+      id = #{id}
+  </select>
+</mapper>

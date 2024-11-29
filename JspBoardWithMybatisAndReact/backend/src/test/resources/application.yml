@@ -1,0 +1,19 @@
+spring:
+
+  config:
+    import: "classpath:env.properties"
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_PROD_URL}
+    username: ${DB_PROD_USERNAME}
+    password: ${DB_PROD_PASSWORD}
+
+decorator:
+  datasource:
+    enabled: false
+
+mybatis:
+
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.juny.spacestory.domain

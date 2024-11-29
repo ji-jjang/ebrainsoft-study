@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,6 +52,7 @@ public class BoardService {
    * @param id
    * @return ResBoardDetail
    */
+  @Cacheable(cacheNames = "boardDetails", key = "#id")
   public ResBoardDetail getBoard(Long id) {
 
     Map<String, Object> board = boardMapper.findBoardDetailById(id);
@@ -393,18 +396,19 @@ public class BoardService {
    *
    * @param reqBoardDelete
    */
-  @Transactional
-  public void deleteBoard(ReqBoardDelete reqBoardDelete) {
+@CacheEvict(cacheNames = "boardDetails", key = "#reqBoardDelete.boardId")
+@Transactional
+public void deleteBoard(ReqBoardDelete reqBoardDelete) {
 
-    for (var comment : reqBoardDelete.getComments()) {
-      commentMapper.deleteCommentById(comment.getId());
-    }
-    for (var att : reqBoardDelete.getAttachments()) {
-      attachmentMapper.deleteAttachmentById(att.getId());
-    }
-    for (var image : reqBoardDelete.getBoardImages()) {
-      boardImageMapper.deleteBoardImageById(image.getId());
-    }
-    boardMapper.deleteBoardById(reqBoardDelete.getBoardId());
+  for (var comment : reqBoardDelete.getComments()) {
+    commentMapper.deleteCommentById(comment.getId());
   }
+  for (var att : reqBoardDelete.getAttachments()) {
+    attachmentMapper.deleteAttachmentById(att.getId());
+  }
+  for (var image : reqBoardDelete.getBoardImages()) {
+    boardImageMapper.deleteBoardImageById(image.getId());
+  }
+  boardMapper.deleteBoardById(reqBoardDelete.getBoardId());
+}
 }
