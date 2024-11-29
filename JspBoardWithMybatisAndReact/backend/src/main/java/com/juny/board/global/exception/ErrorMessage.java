@@ -15,4 +15,5 @@ public class ErrorMessage {
       "Attachments not associated with the board cannot be deleted";
   public static final String FILE_NOT_FOUND_MSG = "File not found";
   public static final String FILE_INPUT_OUTPUT_ERROR = "File input/output error";
+  public static final String VALIDATION_FAILED_MSG = "Validation failed";
 }

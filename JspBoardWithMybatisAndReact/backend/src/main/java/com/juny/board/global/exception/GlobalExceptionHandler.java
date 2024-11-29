@@ -1,11 +1,35 @@
 package com.juny.board.global.exception;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+  /**
+   *
+   *
+   * <h1>컨트롤러 Bean Validation 에러 처리</h1>
+   *
+   * @param e
+   * @return ErrorResponse
+   */
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
+      MethodArgumentNotValidException e) {
+
+    String defaultMessage =
+        e.getBindingResult().getFieldErrors().stream()
+            .findFirst()
+            .map(fieldError -> fieldError.getDefaultMessage())
+            .orElse(ErrorMessage.VALIDATION_FAILED_MSG);
+
+    return new ResponseEntity<>(
+        new ErrorResponse(ErrorCode.REQUEST_PARAMETER_INVALID, defaultMessage),
+        ErrorCode.REQUEST_PARAMETER_INVALID.getHttpStatus());
+  }
 
   /**
    *
