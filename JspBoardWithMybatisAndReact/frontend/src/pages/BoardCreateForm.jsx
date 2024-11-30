@@ -9,6 +9,7 @@ const api = axios.create({
 });
 
 const BoardCreateForm = () => {
+
   const navigate = useNavigate();
 
   const [categories, setCategories] = useState([]);

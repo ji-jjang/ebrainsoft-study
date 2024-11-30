@@ -8,6 +8,7 @@ const api = axios.create({
 });
 
 const BoardList = () => {
+
   const navigate = useNavigate();
   const location = useLocation();
 
