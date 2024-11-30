@@ -23,10 +23,11 @@
   <select id="findAttachmentById">
     SELECT
       id,
-      logical_name,
-      stored_name,
-      stored_path,
-      extension, size, board_id
+      logical_name as logicalName,
+      stored_name  as storedName,
+      stored_path  as storedPath,
+      extension, size,
+      board_id     as boardId
     FROM
       attachments
     where

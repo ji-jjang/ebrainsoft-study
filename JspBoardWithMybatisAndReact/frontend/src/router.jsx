@@ -1,5 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import BoardList from "./pages/BoardList.jsx";
+import BoardDetail from "./pages/BoardDetail.jsx";
 
 const router = createBrowserRouter([
   {
@@ -9,6 +10,10 @@ const router = createBrowserRouter([
   {
     path: "/boards",
     element: <BoardList />,
+  },
+  {
+    path: "/boards/:id",
+    element: <BoardDetail />,
   },
 ]);
 
