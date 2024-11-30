@@ -9,7 +9,6 @@ const api = axios.create({
 });
 
 const BoardDeleteForm = () => {
-
   const navigate = useNavigate();
 
   const { id } = useParams();

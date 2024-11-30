@@ -8,7 +8,6 @@ const api = axios.create({
 });
 
 const BoardDetail = () => {
-
   const navigate = useNavigate();
   const { id } = useParams();
   const [board, setBoard] = useState({
@@ -89,10 +88,18 @@ const BoardDetail = () => {
           목록
         </button>
 
-        <button onClick={() => navigate(`/boards/${board.id}/update${location.search}`)}>
+        <button
+          onClick={() =>
+            navigate(`/boards/${board.id}/update${location.search}`)
+          }
+        >
           수정
         </button>
-        <button onClick={() => navigate(`/boards/${board.id}/delete${location.search}`)}>
+        <button
+          onClick={() =>
+            navigate(`/boards/${board.id}/delete${location.search}`)
+          }
+        >
           삭제
         </button>
       </div>

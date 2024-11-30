@@ -29,8 +29,8 @@ const router = createBrowserRouter([
   },
   {
     path: "/boards/:id/delete",
-    element: <BoardDeleteForm />
-  }
+    element: <BoardDeleteForm />,
+  },
 ]);
 
 export default router;
