@@ -32,8 +32,6 @@ export function checkBoardInput(form, type) {
   const title = form.title.value;
   const content = form.content.value;
 
-  console.log("hello checker");
-
   if (
     createdBy.length < MIN_AUTHOR_LENGTH ||
     createdBy.length > MAX_AUTHOR_LENGTH
