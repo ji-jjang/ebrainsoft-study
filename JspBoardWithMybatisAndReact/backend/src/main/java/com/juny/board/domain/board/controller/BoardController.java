@@ -13,11 +13,11 @@ import com.juny.board.domain.board.entity.vo.BoardUpdateVO;
 import com.juny.board.domain.board.entity.vo.SearchConditionVO;
 import com.juny.board.domain.board.mapper.BoardMapper;
 import com.juny.board.domain.board.service.BoardService;
-import com.juny.board.domain.utils.DateFormatUtils;
 import com.juny.board.domain.utils.FileService;
 import com.juny.board.domain.utils.dto.FileDetails;
 import com.juny.board.global.Constants;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Stream;
 import org.springframework.validation.annotation.Validated;
@@ -25,9 +25,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/api")
 public class BoardController {
 
   private final BoardService boardService;
@@ -53,7 +55,7 @@ public class BoardController {
    * @param id
    * @return ResBoardDetail
    */
-  @GetMapping("/boards/{id}")
+  @GetMapping("/v1/boards/{id}")
   public ResBoardDetail getBoard(@PathVariable Long id) {
 
     Board board = Board.builder().id(id).build();
@@ -76,13 +78,13 @@ public class BoardController {
    *
    * @return ResBoardList (게시판 정보, 검색 조건, 페이지 파라미터)
    */
-  @GetMapping("/boards")
+  @GetMapping("/v1/boards")
   public ResBoardList getBoards(@ModelAttribute ReqBoardList req) {
 
     SearchConditionVO searchConditionVO =
         SearchConditionVO.builder()
-            .startDate(DateFormatUtils.toSearchFormat(req.getStartDate(), "00:00:00"))
-            .endDate(DateFormatUtils.toSearchFormat(req.getEndDate(), "23:59:59"))
+            .startDate(DateTimeFormatter.ofPattern("yyyy-MM-dd").format(req.getStartDate()))
+            .endDate(DateTimeFormatter.ofPattern("yyyy-MM-dd").format(req.getEndDate()))
             .categoryName(req.getCategoryName())
             .keyword(req.getKeyword())
             .page(req.getPage())
@@ -105,7 +107,7 @@ public class BoardController {
    *
    * @return void
    */
-  @PostMapping("/boards")
+  @PostMapping("/v1/boards")
   public void createBoard(@Validated @ModelAttribute ReqBoardCreate req) {
 
     Board board = boardMapper.toBoardEntity(req, fileService);
@@ -128,7 +130,7 @@ public class BoardController {
    *
    * @return void
    */
-  @PostMapping("/boards/{id}")
+  @PostMapping("/v1/boards/{id}")
   public void updateBoard(@Validated @PathVariable Long id, @ModelAttribute ReqBoardUpdate req) {
 
     Board savedBoard = boardService.getBoard(Board.builder().id(id).build());
@@ -218,7 +220,7 @@ public class BoardController {
    * @param req (password)
    * @return void
    */
-  @PostMapping("/boards/{id}/delete")
+  @PostMapping("/v1/boards/{id}/delete")
   public void deleteBoard(@Validated @PathVariable Long id, @ModelAttribute ReqBoardDelete req) {
 
     Board savedBoard = boardService.getBoard(Board.builder().id(id).build());
