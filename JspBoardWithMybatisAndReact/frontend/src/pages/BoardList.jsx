@@ -182,9 +182,7 @@ const BoardList = () => {
                   href={`/boards/${board.id}`}
                   onClick={(e) => {
                     e.preventDefault();
-                    navigate(`/boards/${board.id}`, {
-                      state: { prevSearchCondition: location.search },
-                    });
+                    navigate(`/boards/${board.id}${location.search}`);
                   }}
                 >
                   {board.title}
@@ -218,11 +216,10 @@ const BoardList = () => {
       <form action="/boards/new" method="get">
         <button
           type="button"
-          onClick={() =>
-            navigate("/boards/new", {
-              state: { prevSearchCondition: location.search },
-            })
-          }
+          onClick={(e) => {
+            e.preventDefault();
+            navigate(`/boards/new${location.search}`);
+          }}
         >
           등록
         </button>
