@@ -82,9 +82,9 @@
       b.title AS board_title,
       b.content AS board_content,
       b.view_count AS board_view_count,
-      DATE_FORMAT(b.created_at, '%Y-%m-%d') AS board_created_at,
+      DATE_FORMAT(b.created_at, '%Y-%m-%d %H:%i:%s') AS board_created_at,
       b.created_by AS board_created_by,
-      DATE_FORMAT(b.updated_at, '%Y-%m-%d') AS board_updated_at,
+      DATE_FORMAT(b.updated_at, '%Y-%m-%d %H:%i:%s') AS board_updated_at,
       (SELECT EXISTS (SELECT 1 FROM attachments a WHERE a.board_id = b.id)) AS has_attachment,
       c.name AS category_name
 

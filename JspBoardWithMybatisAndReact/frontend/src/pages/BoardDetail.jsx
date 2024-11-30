@@ -89,7 +89,11 @@ const BoardDetail = () => {
           목록
         </button>
 
-        <button onClick={() => navigate(`/boards/${board.id}/update${location.search}`)}>
+        <button
+          onClick={() =>
+            navigate(`/boards/${board.id}/update${location.search}`)
+          }
+        >
           수정
         </button>
         <button onClick={() => navigate(`/boards/${board.id}/delete${location.search}`)}>

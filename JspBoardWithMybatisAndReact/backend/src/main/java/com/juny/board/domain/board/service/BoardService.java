@@ -15,6 +15,7 @@ import com.juny.board.domain.board.validator.BoardValidator;
 import com.juny.board.global.Constants;
 import com.juny.board.global.exception.ErrorCode;
 import com.juny.board.global.exception.hierachy.board.BoardNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -144,7 +145,7 @@ public class BoardService {
    * @param updateVO
    */
   @Transactional
-  public void updateBoard(Board board, BoardUpdateVO updateVO) {
+  public Board updateBoard(Board board, BoardUpdateVO updateVO) {
 
     boardValidator.validateBoardUpdate(board, updateVO);
 
@@ -152,6 +153,7 @@ public class BoardService {
 
     boardRepository.updateBoard(board);
 
+    List<BoardImage> boardImages = new ArrayList<>();
     for (var image : updateVO.getAddImageDetails()) {
 
       BoardImage boardImage =
@@ -163,8 +165,10 @@ public class BoardService {
               .build();
 
       boardImageRepository.saveBoardImage(boardImage);
+      boardImages.add(boardImage);
     }
 
+    List<Attachment> attachments = new ArrayList<>();
     for (var att : updateVO.getAddAttachmentDetails()) {
 
       Attachment attachment =
@@ -178,6 +182,7 @@ public class BoardService {
               .build();
 
       attachmentRepository.saveAttachment(attachment);
+      attachments.add(attachment);
     }
 
     for (var imageId : updateVO.getDeleteImageIds()) {
@@ -187,6 +192,8 @@ public class BoardService {
     for (var attId : updateVO.getDeleteAttachmentIds()) {
       attachmentRepository.deleteAttachmentById(attId);
     }
+
+    return board.toBuilder().boardImages(boardImages).attachments(attachments).build();
   }
 
   /**
