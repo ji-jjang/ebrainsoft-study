@@ -7,9 +7,11 @@ import com.juny.board.domain.utils.dto.ResFileDownload;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/api")
 public class AttachmentController {
 
   private final AttachmentService attachmentService;
@@ -32,7 +34,7 @@ public class AttachmentController {
    * @param id
    * @param res
    */
-  @GetMapping("/attachments/{id}/download")
+  @GetMapping("/v1/attachments/{id}/download")
   public void downloadAttachment(@PathVariable Long id, HttpServletResponse res) {
 
     Attachment attachment = Attachment.builder().id(id).build();

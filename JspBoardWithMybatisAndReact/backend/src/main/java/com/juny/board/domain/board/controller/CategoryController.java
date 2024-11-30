@@ -4,9 +4,11 @@ import com.juny.board.domain.board.dto.ResCategoryNames;
 import com.juny.board.domain.utils.CategoryMapperUtils;
 import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@RequestMapping("/api")
 public class CategoryController {
 
   /**
@@ -19,7 +21,7 @@ public class CategoryController {
    *
    * @return ResCategoryNames
    */
-  @GetMapping("/api/v1/categories")
+  @GetMapping("/v1/categories")
   public ResCategoryNames getCategories() {
 
     List<String> categoryNames = CategoryMapperUtils.getAllCategoryName();

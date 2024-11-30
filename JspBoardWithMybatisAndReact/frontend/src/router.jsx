@@ -1,4 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
+import BoardList from "./pages/BoardList.jsx";
 
 const router = createBrowserRouter([
   {
@@ -6,12 +7,8 @@ const router = createBrowserRouter([
     element: <div>Hello world!</div>,
   },
   {
-    path: "/login",
-    element: <div>login</div>,
-  },
-  {
-    path: "/register",
-    element: <div>register</div>,
+    path: "/boards",
+    element: <BoardList />,
   },
 ]);
 

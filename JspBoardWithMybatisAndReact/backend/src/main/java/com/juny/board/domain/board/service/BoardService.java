@@ -74,23 +74,21 @@ public class BoardService {
    */
   public BoardListVO getBoardList(SearchConditionVO req) {
 
-    long totalBoardCount = boardRepository.getTotalBoardCount(req);
-
     SearchConditionVO searchConditionVO =
         req.toBuilder()
+            .startDate(req.getStartDate() + " 00:00:00")
+            .endDate(req.getEndDate() + " 23:59:59")
             .limit(Constants.LIMIT)
             .offset((req.getPage() - 1) * Constants.LIMIT)
             .build();
+
+    long totalBoardCount = boardRepository.getTotalBoardCount(searchConditionVO);
 
     List<Board> boards = boardRepository.getBoardList(searchConditionVO);
 
     PageInfoVO pageInfo = createPageInfo(totalBoardCount, searchConditionVO.getPage());
 
-    return BoardListVO.builder()
-        .searchCondition(searchConditionVO)
-        .boards(boards)
-        .pageInfo(pageInfo)
-        .build();
+    return BoardListVO.builder().searchCondition(req).boards(boards).pageInfo(pageInfo).build();
   }
 
   private PageInfoVO createPageInfo(long totalBoardCount, int page) {
