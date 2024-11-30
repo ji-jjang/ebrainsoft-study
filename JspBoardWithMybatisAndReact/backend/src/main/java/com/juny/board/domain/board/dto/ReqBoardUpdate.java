@@ -37,8 +37,8 @@ public class ReqBoardUpdate implements ReqForm {
 
   private List<Long> deleteImageIds;
   private List<Long> deleteAttachmentIds;
-  private List<MultipartFile> images;
-  private List<MultipartFile> attachments;
+  private List<MultipartFile> addImages;
+  private List<MultipartFile> addAttachments;
 
   /**
    *
@@ -51,8 +51,8 @@ public class ReqBoardUpdate implements ReqForm {
    * @param createdBy
    * @param deleteImageIds
    * @param deleteAttachmentIds
-   * @param images
-   * @param attachments
+   * @param addImages
+   * @param addAttachments
    */
   public ReqBoardUpdate(
       String title,
@@ -61,8 +61,8 @@ public class ReqBoardUpdate implements ReqForm {
       String createdBy,
       List<Long> deleteImageIds,
       List<Long> deleteAttachmentIds,
-      List<MultipartFile> images,
-      List<MultipartFile> attachments) {
+      List<MultipartFile> addImages,
+      List<MultipartFile> addAttachments) {
 
     this.title = title;
     this.content = content;
@@ -71,7 +71,7 @@ public class ReqBoardUpdate implements ReqForm {
     this.deleteImageIds = deleteImageIds != null ? deleteImageIds : new ArrayList<>();
     this.deleteAttachmentIds =
         deleteAttachmentIds != null ? deleteAttachmentIds : new ArrayList<>();
-    this.images = images != null ? images : new ArrayList<>();
-    this.attachments = attachments != null ? attachments : new ArrayList<>();
+    this.addImages = addImages != null ? addImages : new ArrayList<>();
+    this.addAttachments = addAttachments != null ? addAttachments : new ArrayList<>();
   }
 }
