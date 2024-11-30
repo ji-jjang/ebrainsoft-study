@@ -3,6 +3,7 @@ import BoardList from "./pages/BoardList.jsx";
 import BoardDetail from "./pages/BoardDetail.jsx";
 import BoardCreateForm from "./pages/BoardCreateForm.jsx";
 import BoardDeleteForm from "./pages/BoardDeleteForm.jsx";
+import BoardUpdateForm from "./pages/BoardUpdateForm.jsx";
 
 const router = createBrowserRouter([
   {
@@ -26,6 +27,10 @@ const router = createBrowserRouter([
   {
     path: "/boards/new",
     element: <BoardCreateForm />,
+  },
+  {
+    path: "/boards/:id/update",
+    element: <BoardUpdateForm />,
   },
   {
     path: "/boards/:id/delete",
