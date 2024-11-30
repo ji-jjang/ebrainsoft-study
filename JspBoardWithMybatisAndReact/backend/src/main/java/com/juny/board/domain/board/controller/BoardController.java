@@ -21,10 +21,12 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Stream;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -220,8 +222,8 @@ public class BoardController {
    * @param req (password)
    * @return void
    */
-  @PostMapping("/v1/boards/{id}/delete")
-  public void deleteBoard(@Validated @PathVariable Long id, @ModelAttribute ReqBoardDelete req) {
+  @DeleteMapping("/v1/boards/{id}")
+  public void deleteBoard(@Validated @PathVariable Long id, @RequestBody ReqBoardDelete req) {
 
     Board savedBoard = boardService.getBoard(Board.builder().id(id).build());
 

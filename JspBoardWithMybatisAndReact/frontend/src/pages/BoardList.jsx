@@ -8,6 +8,7 @@ const api = axios.create({
 });
 
 const BoardList = () => {
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -80,7 +81,7 @@ const BoardList = () => {
         totalBoardCount: data.pageInfo.totalBoardCount,
       });
     } catch (error) {
-      console.error("Error fetching boards:", error);
+      console.error("api 호출 실패 -> /api/v1/boards", error);
     }
   };
 
