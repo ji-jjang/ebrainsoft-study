@@ -52,8 +52,8 @@ public class BoardValidator {
       List<Long> attIds = board.getAttachments().stream().map(att -> att.getId()).toList();
 
       boolean isValid =
-          updateVO.getDeleteImageIds().stream()
-              .allMatch(deleteImageId -> attIds.contains(deleteImageId));
+          updateVO.getDeleteAttachmentIds().stream()
+              .allMatch(deleteAttachmentId -> attIds.contains(deleteAttachmentId));
 
       if (!isValid)
         throw new RequestParameterInvalidException(
