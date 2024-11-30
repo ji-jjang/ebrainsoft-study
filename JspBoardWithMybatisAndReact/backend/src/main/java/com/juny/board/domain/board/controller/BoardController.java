@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -132,7 +133,7 @@ public class BoardController {
    *
    * @return void
    */
-  @PostMapping("/v1/boards/{id}")
+  @PutMapping("/v1/boards/{id}")
   public void updateBoard(@Validated @PathVariable Long id, @ModelAttribute ReqBoardUpdate req) {
 
     Board savedBoard = boardService.getBoard(Board.builder().id(id).build());
@@ -148,10 +149,10 @@ public class BoardController {
 
     BoardUpdateVO boardUpdateVO = processFileChanges(board, req);
 
-    boardService.updateBoard(board, boardUpdateVO);
+    board = boardService.updateBoard(board, boardUpdateVO);
 
-    fileService.saveFile(req.getImages(), board.getBoardImages());
-    fileService.saveFile(req.getAttachments(), board.getAttachments());
+    fileService.saveFile(req.getAddImages(), board.getBoardImages());
+    fileService.saveFile(req.getAddAttachments(), board.getAttachments());
     fileService.deleteFile(boardUpdateVO.getDeleteFilePaths());
   }
 
@@ -196,9 +197,9 @@ public class BoardController {
                         }))
             .toList();
 
-    List<FileDetails> imageDetails = fileService.parseFileDetails(req.getImages(), "images");
+    List<FileDetails> imageDetails = fileService.parseFileDetails(req.getAddImages(), "images");
     List<FileDetails> attachmentDetails =
-        fileService.parseFileDetails(req.getAttachments(), "attachments");
+        fileService.parseFileDetails(req.getAddAttachments(), "attachments");
 
     return new BoardUpdateVO(
         req.getDeleteImageIds(),
