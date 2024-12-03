@@ -17,3 +17,6 @@ spring:
         - classpath:/META-INF/resources/
         - ${RESOURCE_IMAGE_PATH}
         - ${RESOURCE_ATTACHMENT_PATH}
+
+resources:
+  root_path: ${RESOURCE_LOCAL_ROOT_PATH}

@@ -15,9 +15,12 @@ spring:
         - classpath:/public/
         - classpath:/resources/
         - classpath:/META-INF/resources/
-        - ${RESOURCE_IMAGE_PATH}
-        - ${RESOURCE_ATTACHMENT_PATH}
+        - ${RESOURCE_PROD_IMAGE_PATH}
+        - ${RESOURCE_PROD_ATTACHMENT_PATH}
 
 decorator:
   datasource:
     enabled: false
+
+resources:
+  root_path: ${RESOURCE_PROD_ROOT_PATH}
