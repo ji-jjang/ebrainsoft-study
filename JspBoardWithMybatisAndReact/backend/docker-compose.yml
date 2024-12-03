@@ -14,6 +14,8 @@ services:
     command:
       - --character-set-server=UTF8MB4
       - --collation-server=UTF8MB4_UNICODE_CI
+    volumes:
+      - ../../mysql:/var/lib/mysql
     networks:
       - juny
 
@@ -35,6 +37,9 @@ services:
       context: ./
       dockerfile: Dockerfiles/app/Dockerfile
     container_name: MyApp
+    volumes:
+      - ../../images:/images
+      - ../../attachments:/attachments
     ports:
       - 8080:8080
     networks:
