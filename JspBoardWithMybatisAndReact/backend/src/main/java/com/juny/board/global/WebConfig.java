@@ -26,10 +26,10 @@ public class WebConfig implements WebMvcConfigurer {
 
     registry
         .addMapping("/**")
+        .allowedOrigins("http://localhost:5173", "http://localhost")
         .allowedHeaders("*")
         .allowedMethods("*")
-        .allowedOrigins("http://localhost:5173")
-        .allowCredentials(true);
+        .allowCredentials(false);
   }
 
   /**
@@ -45,12 +45,8 @@ public class WebConfig implements WebMvcConfigurer {
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
-    registry
-        .addResourceHandler("/images/**")
-        .addResourceLocations(resourceImagePath);
+    registry.addResourceHandler("/images/**").addResourceLocations(resourceImagePath);
 
-    registry
-        .addResourceHandler("/attachments/**")
-        .addResourceLocations(resourceAttachmentPath);
+    registry.addResourceHandler("/attachments/**").addResourceLocations(resourceAttachmentPath);
   }
 }
