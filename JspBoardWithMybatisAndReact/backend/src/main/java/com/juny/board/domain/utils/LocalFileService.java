@@ -1,7 +1,7 @@
 package com.juny.board.domain.utils;
 
-import com.juny.board.domain.utils.dto.FileDetails;
 import com.juny.board.domain.board.entity.FileInfo;
+import com.juny.board.domain.utils.dto.FileDetails;
 import com.juny.board.domain.utils.dto.ResFileDownload;
 import com.juny.board.global.Constants;
 import com.juny.board.global.exception.ErrorMessage;
@@ -16,11 +16,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.IntStream;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class LocalFileService implements FileService {
+
+  @Value("${resources.root_path}")
+  private String RESOURCE_ROOT_PATH;
 
   /**
    *
@@ -71,7 +75,7 @@ public class LocalFileService implements FileService {
   @Override
   public List<FileDetails> parseFileDetails(List<MultipartFile> files, String path) {
 
-    String storedPath = Constants.RESOURCE_ROOT_PATH + path + Constants.SLASH_SIGN;
+    String storedPath = RESOURCE_ROOT_PATH + path + Constants.SLASH_SIGN;
     List<FileDetails> fileDetailsList = new ArrayList<>();
 
     for (var file : files) {
