@@ -1,6 +1,12 @@
 package com.juny.finalboard.global.security;
 
-import com.juny.finalboard.global.security.admin.Filter.AdminLoginFilter;
+import com.juny.finalboard.global.security.admin.filter.AdminLoginFilter;
+import com.juny.finalboard.global.security.user.filter.JwtFilter;
+import com.juny.finalboard.global.security.user.filter.UserLoginFilter;
+import com.juny.finalboard.global.security.user.jwt.JwtUtil;
+import java.util.Collections;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,10 +17,14 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
+
+  private final JwtUtil jwtUtil;
 
   @Bean
   public BCryptPasswordEncoder bCryptPasswordEncoder() {
@@ -29,16 +39,31 @@ public class SecurityConfig {
     return configuration.getAuthenticationManager();
   }
 
+  /**
+   *
+   *
+   * <h1>어드민 Security Filter Chain </h1>
+   *
+   * <br>
+   * - 세션 로그인 방식<br>
+   * - 배포 시에 CSRF 토큰 활성화할 것
+   *
+   * @param http HttpSecurity
+   * @param authenticationConfiguration AuthenticationConfiguration
+   * @return SecurityFilterChain
+   * @throws Exception SecurityMatcher, formLogin, AuthenticationManager Exception
+   */
   @Bean
   public SecurityFilterChain adminFilterChain(
       HttpSecurity http, AuthenticationConfiguration authenticationConfiguration) throws Exception {
 
-    http.authorizeHttpRequests(
-        (auth) ->
-            auth.requestMatchers("/admin/login")
-                .permitAll()
-                .requestMatchers("/admin/**")
-                .hasAuthority("ADMIN"));
+    http.securityMatcher("/admin/**")
+        .authorizeHttpRequests(
+            auth ->
+                auth.requestMatchers("/admin/login")
+                    .permitAll()
+                    .anyRequest()
+                    .hasAuthority("ADMIN"));
 
     http.formLogin(AbstractHttpConfigurer::disable).httpBasic(AbstractHttpConfigurer::disable);
 
@@ -51,4 +76,55 @@ public class SecurityConfig {
     return http.build();
   }
 
+  /**
+   *
+   *
+   * <h1>유저 Security Filter Chain</h1>
+   *
+   * <br>
+   * - 로그인 성공 시 Access Token 발급<br>
+   * - 추후 Refresh Token 및 Refresh refreshRotate, blacklisting 전략 사용 가능
+   *
+   * @param http HttpSecurity
+   * @param authenticationConfiguration AuthenticationConfiguration
+   * @return SecurityFilterChain
+   * @throws Exception SecurityMatcher, formLogin, AuthenticationManager Exception
+   */
+  @Bean
+  public SecurityFilterChain userFilterChain(
+      HttpSecurity http, AuthenticationConfiguration authenticationConfiguration) throws Exception {
+
+    http.cors(
+        (cors) ->
+            cors.configurationSource(
+                req -> {
+                  CorsConfiguration corsConfiguration = new CorsConfiguration();
+
+                  corsConfiguration.setAllowedHeaders(Collections.singletonList("*"));
+                  corsConfiguration.setAllowedOrigins(List.of("http://localhost:5173"));
+                  corsConfiguration.setAllowedMethods(Collections.singletonList("*"));
+
+                  return corsConfiguration;
+                }));
+
+    http.securityMatcher("/api/**")
+        .authorizeHttpRequests(
+            auth ->
+                auth.requestMatchers("/api/v1/auth/login")
+                    .permitAll()
+                    .anyRequest()
+                    .hasAnyAuthority("ADMIN", "USER"));
+
+    http.formLogin(AbstractHttpConfigurer::disable).httpBasic(AbstractHttpConfigurer::disable);
+
+    http.addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+
+    http.addFilterAt(
+        new UserLoginFilter(authenticationManager(authenticationConfiguration), jwtUtil),
+        UsernamePasswordAuthenticationFilter.class);
+
+    http.csrf(AbstractHttpConfigurer::disable);
+
+    return http.build();
+  }
 }

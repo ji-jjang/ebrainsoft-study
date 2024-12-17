@@ -1,4 +1,4 @@
-package com.juny.finalboard.global.security.admin.service;
+package com.juny.finalboard.global.security.common.service;
 
 import com.juny.finalboard.domain.user.User;
 import java.util.ArrayList;
@@ -42,16 +42,34 @@ public class CustomUserDetails implements UserDetails {
 
   @Override
   public boolean isAccountNonLocked() {
+
     return UserDetails.super.isAccountNonLocked();
   }
 
   @Override
   public boolean isCredentialsNonExpired() {
+
     return UserDetails.super.isCredentialsNonExpired();
   }
 
   @Override
   public boolean isEnabled() {
+
     return UserDetails.super.isEnabled();
+  }
+
+  public long getId() {
+
+    return user.getId();
+  }
+
+  public String getEmail() {
+
+    return user.getEmail();
+  }
+
+  public String getRole() {
+
+    return user.getRole();
   }
 }

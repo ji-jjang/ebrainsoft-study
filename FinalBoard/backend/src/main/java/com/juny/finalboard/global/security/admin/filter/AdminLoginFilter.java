@@ -1,5 +1,8 @@
-package com.juny.finalboard.global.security.admin.Filter;
+package com.juny.finalboard.global.security.admin.filter;
 
+import com.juny.finalboard.global.constant.Constants;
+import com.juny.finalboard.global.security.admin.handler.AdminAuthenticationFailureHandler;
+import com.juny.finalboard.global.security.admin.handler.AdminAuthenticationSuccessHandler;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,19 +25,59 @@ public class AdminLoginFilter extends UsernamePasswordAuthenticationFilter {
 
   private final AuthenticationManager authenticationManager;
 
+  /**
+   *
+   *
+   * <h1>관리자 로그인 필터 생성자 </h1>
+   *
+   * <br>
+   * - USERNAME_PARAMETER, LOGIN ENDPOINT 재정의
+   *
+   * @param authenticationManager AuthenticationManager
+   */
   public AdminLoginFilter(AuthenticationManager authenticationManager) {
 
-    String USERNAME_PARAMETER = "email";
+    String USERNAME_PARAMETER = Constants.EMAIL;
     String LOGIN_ENDPOINT = "/admin/login";
-    String LOGIN_ENDPOINT_METHOD = "POST";
+    String LOGIN_ENDPOINT_METHOD = Constants.HTTP_POST_METHOD;
 
     this.authenticationManager = authenticationManager;
-    this.setAuthenticationSuccessHandler(new CustomAuthenticationSuccessHandler());
-    this.setAuthenticationFailureHandler(new CustomAuthenticationFailureHandler());
+    this.setAuthenticationSuccessHandler(new AdminAuthenticationSuccessHandler());
+    this.setAuthenticationFailureHandler(new AdminAuthenticationFailureHandler());
 
     setUsernameParameter(USERNAME_PARAMETER);
     setRequiresAuthenticationRequestMatcher(
         new AntPathRequestMatcher(LOGIN_ENDPOINT, LOGIN_ENDPOINT_METHOD));
+  }
+
+  /**
+   *
+   *
+   * <h1>폼 로그인 방식으로 인증 </h1>
+   *
+   * @param req HttpServletRequest
+   * @param authenticationManager AuthenticationManager
+   * @return Authentication
+   */
+  public static Authentication getAuthentication(
+      HttpServletRequest req, AuthenticationManager authenticationManager) {
+    String email = req.getParameter(Constants.EMAIL);
+    String password = req.getParameter(Constants.PASSWORD);
+
+    if (email == null || email.isEmpty()) {
+
+      throw new AuthenticationServiceException("email is null or empty");
+    }
+
+    if (password == null || password.isEmpty()) {
+
+      throw new AuthenticationServiceException("password is null or empty");
+    }
+
+    UsernamePasswordAuthenticationToken authToken =
+        new UsernamePasswordAuthenticationToken(email, password, null);
+
+    return authenticationManager.authenticate(authToken);
   }
 
   /**
@@ -54,23 +97,7 @@ public class AdminLoginFilter extends UsernamePasswordAuthenticationFilter {
   public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res)
       throws AuthenticationException {
 
-    String email = req.getParameter("email");
-    String password = req.getParameter("password");
-
-    if (email == null || email.isEmpty()) {
-
-      throw new AuthenticationServiceException("email is null or empty");
-    }
-
-    if (password == null || password.isEmpty()) {
-
-      throw new AuthenticationServiceException("password is null or empty");
-    }
-
-    UsernamePasswordAuthenticationToken authToken =
-        new UsernamePasswordAuthenticationToken(email, password, null);
-
-    return authenticationManager.authenticate(authToken);
+    return getAuthentication(req, authenticationManager);
   }
 
   /**

@@ -1,4 +1,4 @@
-package com.juny.finalboard.global.security.admin.service;
+package com.juny.finalboard.global.security.common.service;
 
 import com.juny.finalboard.domain.user.User;
 import com.juny.finalboard.domain.user.UserRepository;
@@ -14,6 +14,15 @@ public class CustomUserDetailsService implements UserDetailsService {
 
   private final UserRepository userRepository;
 
+  /**
+   *
+   *
+   * <h1>인증 시 유저 email DB 조회</h1>
+   *
+   * @param email email
+   * @return UserDetails
+   * @throws UsernameNotFoundException UsernameNotFoundException
+   */
   @Override
   public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 

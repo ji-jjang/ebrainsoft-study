@@ -1,0 +1,15 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Admin Login</title>
+</head>
+<body>
+<h1>관리자 로그인</h1>
+<form method="post" th:action="@{/admin/login}">
+  <label for="email">이메일:</label>
+  <input id="email" name="email" required type="text">
+  <br>
+  <label for="password">비밀번호:</label>
+  <input id="password" name="password" required type="password">
+  <br>
+  <button type="submit">로그인 하기</button>
+</form>
