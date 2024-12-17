@@ -1,13 +1,13 @@
-package com.juny.finalboard.global.security.admin.Filter;
+package com.juny.finalboard.global.security.user.handler;
 
-import jakarta.servlet.ServletException;
+import com.juny.finalboard.global.security.admin.handler.AdminAuthenticationFailureHandler;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 
-public class CustomAuthenticationFailureHandler implements AuthenticationFailureHandler {
+public class UserAuthenticationFailureHandler implements AuthenticationFailureHandler {
 
   /**
    *
@@ -21,15 +21,12 @@ public class CustomAuthenticationFailureHandler implements AuthenticationFailure
    * @param response HttpServletResponse
    * @param exception AuthenticationException
    * @throws IOException IOException
-   * @throws ServletException ServletException
    */
   @Override
   public void onAuthenticationFailure(
       HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)
       throws IOException {
 
-    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-    response.setContentType("application/json");
-    response.getWriter().write(exception.getMessage());
+    AdminAuthenticationFailureHandler.writeFailedResponse(response, exception);
   }
 }
