@@ -2,7 +2,7 @@ all:
 	mysql-run
 
 mysql-run:
-	docker run --name board-mysql \
+	docker run --name board-mysql --detach \
 	-p 3306:3306 \
 	-e MYSQL_ROOT_PASSWORD=0000 \
 	mysql:9.1 \
