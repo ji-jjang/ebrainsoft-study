@@ -20,4 +20,14 @@
     WHERE email = #{email}
   </select>
 
+  <select id="findById" resultType="com.juny.finalboard.domain.user.User">
+    SELECT id,
+           email,
+           password,
+           name,
+           role,
+           created_at
+    FROM users
+    WHERE id = #{id}
+  </select>
 </mapper>
