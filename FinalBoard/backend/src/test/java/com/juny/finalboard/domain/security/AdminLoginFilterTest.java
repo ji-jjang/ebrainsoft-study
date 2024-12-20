@@ -24,7 +24,7 @@ public class AdminLoginFilterTest {
 
     mockMvc
         .perform(
-            post("/admin/login")
+            post("/admin/v1/login")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("email", "junyhehe@gmail.com")
                 .param("password", "1234"))
@@ -37,7 +37,7 @@ public class AdminLoginFilterTest {
 
     mockMvc
         .perform(
-            post("/admin/login")
+            post("/admin/v1/login")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("email", "junyhehe@gmail.com")
                 .param("password", "12345"))

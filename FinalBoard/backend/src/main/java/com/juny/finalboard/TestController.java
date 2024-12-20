@@ -15,7 +15,7 @@ public class TestController {
     return "hello";
   }
 
-  @GetMapping("/api/admin/v1/hello")
+  @GetMapping("/admin/v1/hello")
   @ResponseBody
   public String getAdminHello() {
 

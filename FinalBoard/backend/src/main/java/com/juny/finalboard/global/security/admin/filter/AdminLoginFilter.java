@@ -38,7 +38,7 @@ public class AdminLoginFilter extends UsernamePasswordAuthenticationFilter {
   public AdminLoginFilter(AuthenticationManager authenticationManager) {
 
     String USERNAME_PARAMETER = Constants.EMAIL;
-    String LOGIN_ENDPOINT = "/admin/login";
+    String LOGIN_ENDPOINT = "/admin/v1/login";
     String LOGIN_ENDPOINT_METHOD = Constants.HTTP_POST_METHOD;
 
     this.authenticationManager = authenticationManager;

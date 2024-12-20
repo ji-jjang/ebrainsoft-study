@@ -9,6 +9,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -20,7 +21,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration;
 
 @Configuration
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -60,7 +61,9 @@ public class SecurityConfig {
     http.securityMatcher("/admin/**")
         .authorizeHttpRequests(
             auth ->
-                auth.requestMatchers("/admin/login")
+                auth.requestMatchers(HttpMethod.GET, "/admin/login")
+                    .permitAll()
+                    .requestMatchers(HttpMethod.POST, "/admin/v1/login")
                     .permitAll()
                     .anyRequest()
                     .hasAuthority("ADMIN"));
@@ -110,7 +113,13 @@ public class SecurityConfig {
     http.securityMatcher("/api/**")
         .authorizeHttpRequests(
             auth ->
-                auth.requestMatchers("/api/v1/auth/login")
+                auth.requestMatchers(
+                        HttpMethod.GET,
+                        "/api/v1/announcement-categories",
+                        "/api/v1/announcement-posts",
+                        "/api/v1/announcement-posts/{postId}")
+                    .permitAll()
+                    .requestMatchers(HttpMethod.POST, "/api/v1/auth/login")
                     .permitAll()
                     .anyRequest()
                     .hasAnyAuthority("ADMIN", "USER"));
