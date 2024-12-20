@@ -7,6 +7,9 @@ public class Constants {
   public static final String EMAIL = "email";
   public static final String PASSWORD = "password";
 
+  public static final String USER_ROLE = "USER";
+  public static final String ADMIN_ROLE = "ADMIN";
+
   public static final String CODE = "code";
   public static final String SUCCESS = "success";
   public static final String MSG = "msg";
@@ -20,4 +23,5 @@ public class Constants {
   public static final String ACCESS_TOKEN_EXPIRED = "accessTokenExpired";
   public static final String AUTHORIZATION_HEADER = "Authorization";
   public static final String BEARER_PREFIX = "Bearer ";
+  public static final String ANNOUNCEMENT_CATEGORY_DEFAULT_NAME = "공지";
 }
