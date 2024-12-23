@@ -1,12 +1,12 @@
-package com.juny.finalboard.domain.post.announcement.dto;
+package com.juny.finalboard.domain.post.announcement.common.dto;
 
 import lombok.Builder;
 
-@Builder
+@Builder(toBuilder = true)
 public record SearchCondition(
     String startDate,
     String endDate,
-    String categoryName,
+    Long categoryId,
     String keyword,
     String sort,
     int page,

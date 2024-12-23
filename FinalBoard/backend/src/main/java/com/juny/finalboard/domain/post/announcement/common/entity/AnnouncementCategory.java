@@ -1,6 +1,5 @@
-package com.juny.finalboard.domain.user;
+package com.juny.finalboard.domain.post.announcement.common.entity;
 
-import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -10,12 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class User {
+public class AnnouncementCategory {
 
   private Long id;
-  private String email;
-  private String password;
   private String name;
-  private String role;
-  private LocalDateTime createdAt;
 }

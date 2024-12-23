@@ -2,12 +2,13 @@ package com.juny.finalboard.domain.post.announcement;
 
 import static org.assertj.core.api.Assertions.*;
 
-import com.juny.finalboard.domain.post.announcement.dto.ReqPostCreate;
-import com.juny.finalboard.domain.post.announcement.dto.ReqPostUpdate;
-import com.juny.finalboard.domain.post.announcement.entity.AnnouncementPost;
-import com.juny.finalboard.domain.post.announcement.service.AnnouncementPostService;
-import com.juny.finalboard.domain.user.User;
-import com.juny.finalboard.domain.user.UserRepository;
+import com.juny.finalboard.domain.post.announcement.admin.service.AdminAnnouncementPostService;
+import com.juny.finalboard.domain.post.announcement.common.dto.ReqPostCreate;
+import com.juny.finalboard.domain.post.announcement.common.dto.ReqPostUpdate;
+import com.juny.finalboard.domain.post.announcement.common.entity.AnnouncementPost;
+import com.juny.finalboard.domain.post.announcement.common.service.AnnouncementPostService;
+import com.juny.finalboard.domain.user.user.User;
+import com.juny.finalboard.domain.user.user.UserRepository;
 import com.juny.finalboard.global.constant.Constants;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayName;
@@ -21,6 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class AnnouncementPostServiceIntegrationTest {
 
   @Autowired private AnnouncementPostService announcementPostService;
+
+  @Autowired private AdminAnnouncementPostService adminAnnouncementPostService;
 
   @Autowired private UserRepository userRepository;
 
@@ -46,13 +49,11 @@ public class AnnouncementPostServiceIntegrationTest {
         ReqPostCreate.builder()
             .title("제목 1")
             .content("내용 1")
-            .password("1234")
-            .passwordConfirm("1234")
             .isPinned(false)
             .categoryId(1L)
             .build();
 
-    AnnouncementPost post = announcementPostService.createPost(reqPostCreate, user.getId());
+    AnnouncementPost post = adminAnnouncementPostService.createPost(reqPostCreate, user.getId());
 
     assertThat(post).isNotNull();
 
@@ -75,7 +76,7 @@ public class AnnouncementPostServiceIntegrationTest {
             .build();
 
     AnnouncementPost updatedPost =
-        announcementPostService.updatePost(reqPostupdate, post.getId(), user.getId());
+        adminAnnouncementPostService.updatePost(reqPostupdate, post.getId(), user.getId());
 
     assertThat(updatedPost).isNotNull();
 
@@ -87,7 +88,7 @@ public class AnnouncementPostServiceIntegrationTest {
 
     assertThat(updatedPost.getAnnouncementCategory().getId()).isEqualTo(2L);
 
-    announcementPostService.deleteAnnouncementPostById(post.getId());
+    adminAnnouncementPostService.deleteAnnouncementPostById(post.getId());
 
     assertThatThrownBy(() -> announcementPostService.getPostById(post.getId()))
         .isInstanceOf(RuntimeException.class)

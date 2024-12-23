@@ -1,6 +1,6 @@
-package com.juny.finalboard.domain.post.announcement.repository;
+package com.juny.finalboard.domain.post.announcement.common.repository;
 
-import com.juny.finalboard.domain.post.announcement.entity.AnnouncementCategory;
+import com.juny.finalboard.domain.post.announcement.common.entity.AnnouncementCategory;
 import java.util.List;
 import java.util.Optional;
 import org.apache.ibatis.annotations.Mapper;

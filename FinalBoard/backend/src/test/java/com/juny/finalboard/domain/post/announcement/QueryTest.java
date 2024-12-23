@@ -1,10 +1,11 @@
 package com.juny.finalboard.domain.post.announcement;
 
-import com.juny.finalboard.domain.post.announcement.dto.SearchCondition;
-import com.juny.finalboard.domain.post.announcement.entity.AnnouncementCategory;
-import com.juny.finalboard.domain.post.announcement.entity.AnnouncementPost;
-import com.juny.finalboard.domain.post.announcement.repository.AnnouncementCategoryRepository;
-import com.juny.finalboard.domain.post.announcement.repository.AnnouncementPostRepository;
+import com.juny.finalboard.domain.post.announcement.common.dto.SearchCondition;
+import com.juny.finalboard.domain.post.announcement.common.entity.AnnouncementCategory;
+import com.juny.finalboard.domain.post.announcement.common.entity.AnnouncementPost;
+import com.juny.finalboard.domain.post.announcement.common.repository.AnnouncementCategoryRepository;
+import com.juny.finalboard.domain.post.announcement.common.repository.AnnouncementPostRepository;
+import com.juny.finalboard.domain.user.user.User;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.assertj.core.api.Assertions;
@@ -13,7 +14,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @SpringBootTest
 public class QueryTest {
@@ -21,8 +21,6 @@ public class QueryTest {
   @Autowired private AnnouncementCategoryRepository announcementCategoryRepository;
 
   @Autowired private AnnouncementPostRepository announcementPostRepository;
-
-  @Autowired private BCryptPasswordEncoder bCryptPasswordEncoder;
 
   @Test
   @DisplayName("findAllCategories")
@@ -51,12 +49,12 @@ public class QueryTest {
           AnnouncementPost.builder()
               .title("제목 " + i)
               .content("내용 " + i)
-              .password(bCryptPasswordEncoder.encode("1234"))
               .viewCount(0)
               .isPinned(true)
               .createdAt(LocalDateTime.now())
               .createdBy("작성자 " + i)
               .announcementCategory(category1)
+              .user(User.builder().id(3L).build())
               .build();
 
       announcementPostRepository.save(announcementPost);
@@ -85,7 +83,7 @@ public class QueryTest {
         SearchCondition.builder()
             .startDate(LocalDateTime.of(2024, 12, 15, 0, 0, 0).toString())
             .endDate(LocalDateTime.of(2024, 12, 31, 0, 0, 0).toString())
-            .categoryName("공지")
+            .categoryId(1L)
             .sort("created_at asc")
             .page(1)
             .pageSize(5)
@@ -107,7 +105,7 @@ public class QueryTest {
         SearchCondition.builder()
             .startDate(LocalDateTime.of(2024, 12, 15, 0, 0, 0).toString())
             .endDate(LocalDateTime.of(2024, 12, 31, 0, 0, 0).toString())
-            .categoryName("공지")
+            .categoryId(1L)
             .sort("created_at asc")
             .page(1)
             .pageSize(5)
@@ -128,7 +126,10 @@ public class QueryTest {
   void findPostDetailById() {
 
     AnnouncementPost post =
-        announcementPostRepository.findPostDetailById(7L).orElseThrow(RuntimeException::new);
+        announcementPostRepository.findPostDetailById(2L).orElseThrow(RuntimeException::new);
+
+    System.out.println("post.getId() = " + post.getId());
+    System.out.println("post.getUser().getId() = " + post.getUser().getId());
   }
 
   @Test
@@ -146,7 +147,7 @@ public class QueryTest {
             .announcementCategory(
                 announcementCategoryRepository
                     .findById(2L)
-                    .orElseThrow(() -> new RuntimeException()))
+                    .orElseThrow(RuntimeException::new))
             .build();
 
     announcementPostRepository.updatePost(post);

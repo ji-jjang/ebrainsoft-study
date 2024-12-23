@@ -2,6 +2,8 @@ package com.juny.finalboard.domain.user;
 
 import static org.assertj.core.api.Assertions.*;
 
+import com.juny.finalboard.domain.user.user.User;
+import com.juny.finalboard.domain.user.user.UserRepository;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;

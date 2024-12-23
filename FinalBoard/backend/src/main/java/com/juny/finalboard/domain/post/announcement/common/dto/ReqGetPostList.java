@@ -1,12 +1,14 @@
-package com.juny.finalboard.domain.post.announcement.dto;
+package com.juny.finalboard.domain.post.announcement.common.dto;
 
 import com.juny.finalboard.global.constant.Constants;
 import java.time.LocalDate;
+import lombok.Builder;
 
+@Builder
 public record ReqGetPostList(
     String startDate,
     String endDate,
-    String categoryName,
+    Long categoryId,
     String keyword,
     String sort,
     Integer page,
@@ -18,9 +20,6 @@ public record ReqGetPostList(
     }
     if (endDate == null || endDate.isEmpty()) {
       endDate = LocalDate.now().toString();
-    }
-    if (categoryName == null) {
-      categoryName = Constants.ANNOUNCEMENT_CATEGORY_DEFAULT_NAME;
     }
     if (keyword == null) {
       keyword = "";

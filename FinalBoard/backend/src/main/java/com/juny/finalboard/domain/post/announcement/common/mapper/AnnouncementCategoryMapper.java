@@ -1,8 +1,8 @@
-package com.juny.finalboard.domain.post.announcement.repository;
+package com.juny.finalboard.domain.post.announcement.common.mapper;
 
-import com.juny.finalboard.domain.post.announcement.dto.ResAnnouncementCategory;
-import com.juny.finalboard.domain.post.announcement.dto.ResAnnouncementCategoryList;
-import com.juny.finalboard.domain.post.announcement.entity.AnnouncementCategory;
+import com.juny.finalboard.domain.post.announcement.common.dto.ResAnnouncementCategory;
+import com.juny.finalboard.domain.post.announcement.common.dto.ResAnnouncementCategoryList;
+import com.juny.finalboard.domain.post.announcement.common.entity.AnnouncementCategory;
 import java.util.List;
 
 public class AnnouncementCategoryMapper {

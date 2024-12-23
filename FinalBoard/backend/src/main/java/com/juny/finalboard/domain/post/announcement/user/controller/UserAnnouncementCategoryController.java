@@ -1,9 +1,9 @@
-package com.juny.finalboard.domain.post.announcement.controller;
+package com.juny.finalboard.domain.post.announcement.user.controller;
 
-import com.juny.finalboard.domain.post.announcement.dto.ResAnnouncementCategoryList;
-import com.juny.finalboard.domain.post.announcement.entity.AnnouncementCategory;
-import com.juny.finalboard.domain.post.announcement.repository.AnnouncementCategoryMapper;
-import com.juny.finalboard.domain.post.announcement.service.AnnouncementCategoryService;
+import com.juny.finalboard.domain.post.announcement.common.mapper.AnnouncementCategoryMapper;
+import com.juny.finalboard.domain.post.announcement.common.dto.ResAnnouncementCategoryList;
+import com.juny.finalboard.domain.post.announcement.common.entity.AnnouncementCategory;
+import com.juny.finalboard.domain.post.announcement.common.service.AnnouncementCategoryService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
-public class AnnouncementCategoryController {
+public class UserAnnouncementCategoryController {
 
   private final AnnouncementCategoryService announcementCategoryService;
 

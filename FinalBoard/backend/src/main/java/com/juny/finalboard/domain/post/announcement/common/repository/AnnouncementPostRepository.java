@@ -1,7 +1,7 @@
-package com.juny.finalboard.domain.post.announcement.repository;
+package com.juny.finalboard.domain.post.announcement.common.repository;
 
-import com.juny.finalboard.domain.post.announcement.dto.SearchCondition;
-import com.juny.finalboard.domain.post.announcement.entity.AnnouncementPost;
+import com.juny.finalboard.domain.post.announcement.common.dto.SearchCondition;
+import com.juny.finalboard.domain.post.announcement.common.entity.AnnouncementPost;
 import java.util.List;
 import java.util.Optional;
 import org.apache.ibatis.annotations.Mapper;

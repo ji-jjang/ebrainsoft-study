@@ -1,4 +1,4 @@
-package com.juny.finalboard.domain.post.announcement.dto;
+package com.juny.finalboard.domain.post.announcement.common.dto;
 
 import java.util.List;
 

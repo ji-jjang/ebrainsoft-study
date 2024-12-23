@@ -4,7 +4,7 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper
-  namespace="com.juny.finalboard.domain.post.announcement.repository.AnnouncementPostRepository">
+  namespace="com.juny.finalboard.domain.post.announcement.common.repository.AnnouncementPostRepository">
 
   <delete id="deleteAnnouncementPostById" parameterType="long">
     DELETE
@@ -13,14 +13,14 @@
   </delete>
 
   <insert id="save" keyProperty="id" parameterType="AnnouncementPost" useGeneratedKeys="true">
-    INSERT INTO announcement_posts (title, content, password, view_count, is_pinned, created_by,
-                                    created_at, category_id)
-    VALUES (#{title}, #{content}, #{password}, #{viewCount}, #{isPinned}, #{createdBy},
-            #{createdAt}, #{announcementCategory.id});
+    INSERT INTO announcement_posts (title, content, view_count, is_pinned, created_by,
+                                    created_at, category_id, user_id)
+    VALUES (#{title}, #{content}, #{viewCount}, #{isPinned}, #{createdBy},
+            #{createdAt}, #{announcementCategory.id}, #{user.id});
   </insert>
 
   <resultMap id="PostDetailResultMap"
-    type="com.juny.finalboard.domain.post.announcement.entity.AnnouncementPost">
+    type="com.juny.finalboard.domain.post.announcement.common.entity.AnnouncementPost">
 
     <id column="post_id" property="id"/>
     <result column="post_is_pinned" property="isPinned"/>
@@ -32,9 +32,13 @@
     <result column="post_content" property="content"/>
     <result column="post_view_count" property="viewCount"/>
 
-    <association javaType="com.juny.finalboard.domain.post.announcement.entity.AnnouncementCategory"
+    <association javaType="com.juny.finalboard.domain.post.announcement.common.entity.AnnouncementCategory"
       property="announcementCategory">
       <result column="category_name" property="name"/>
+    </association>
+
+    <association javaType="com.juny.finalboard.domain.user.user.User" property="user">
+      <id column="user_id" property="id"/>
     </association>
 
   </resultMap>
@@ -84,7 +88,8 @@
            p.is_pinned                                    AS post_is_pinned,
            p.created_by                                   AS post_created_by,
            DATE_FORMAT(p.created_at, '%Y-%m-%d %H:%i:%s') AS post_created_at,
-           c.name                                         AS category_name
+           c.name                                         AS category_name,
+           p.user_id                                      AS user_id
 
     FROM announcement_posts p
            INNER JOIN
@@ -96,8 +101,8 @@
   <sql id="announcementPostListWhereClause">
     WHERE 1 = 1
 
-    <if test="categoryName != null and categoryName != ''">
-      AND c.name = #{categoryName}
+    <if test="categoryId != null and categoryId != ''">
+      AND c.id = #{categoryId}
     </if>
 
     <if test="keyword != null and keyword != ''">
@@ -117,7 +122,7 @@
   </sql>
 
   <update id="updatePost"
-    parameterType="com.juny.finalboard.domain.post.announcement.entity.AnnouncementPost">
+    parameterType="com.juny.finalboard.domain.post.announcement.common.entity.AnnouncementPost">
     UPDATE
       announcement_posts
     SET title       = #{title},
