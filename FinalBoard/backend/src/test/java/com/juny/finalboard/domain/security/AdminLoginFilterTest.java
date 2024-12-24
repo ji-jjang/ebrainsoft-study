@@ -2,6 +2,7 @@ package com.juny.finalboard.domain.security;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.redirectedUrl;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.DisplayName;
@@ -28,7 +29,8 @@ public class AdminLoginFilterTest {
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .param("email", "junyhehe@gmail.com")
                 .param("password", "1234"))
-        .andExpect(status().is2xxSuccessful());
+        .andExpect(status().is3xxRedirection())
+        .andExpect(redirectedUrl("/admin/management"));
   }
 
   @Test
