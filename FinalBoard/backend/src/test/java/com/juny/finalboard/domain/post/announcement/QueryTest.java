@@ -133,6 +133,18 @@ public class QueryTest {
   }
 
   @Test
+  @DisplayName("findPinnedPostList")
+  @Disabled
+  void findPinnedPostList() {
+
+    List<AnnouncementPost> pinnedPostList = announcementPostRepository.findPinnedPostList(5);
+
+    for (var e : pinnedPostList) {
+      System.out.println("e.getTitle() = " + e.getTitle());
+    }
+  }
+
+  @Test
   @DisplayName("updatePost")
   @Disabled
   void updatePost() {
@@ -145,9 +157,7 @@ public class QueryTest {
             .isPinned(true)
             .createdBy("변경된 작성자")
             .announcementCategory(
-                announcementCategoryRepository
-                    .findById(2L)
-                    .orElseThrow(RuntimeException::new))
+                announcementCategoryRepository.findById(2L).orElseThrow(RuntimeException::new))
             .build();
 
     announcementPostRepository.updatePost(post);

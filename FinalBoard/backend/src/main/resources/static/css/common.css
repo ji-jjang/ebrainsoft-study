@@ -1,0 +1,8 @@
+body {
+  padding-top: 60px;
+}
+
+.content {
+  padding: 20px;
+  flex: 1;
+}

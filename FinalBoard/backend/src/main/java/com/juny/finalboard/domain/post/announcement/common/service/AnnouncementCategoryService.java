@@ -1,7 +1,7 @@
 package com.juny.finalboard.domain.post.announcement.common.service;
 
-import com.juny.finalboard.domain.post.announcement.common.repository.AnnouncementCategoryRepository;
 import com.juny.finalboard.domain.post.announcement.common.entity.AnnouncementCategory;
+import com.juny.finalboard.domain.post.announcement.common.repository.AnnouncementCategoryRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

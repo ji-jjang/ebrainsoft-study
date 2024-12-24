@@ -35,11 +35,4 @@ public class TestController {
 
     return "admin-post-hello";
   }
-
-  @GetMapping("/")
-  @ResponseBody
-  public String Home() {
-
-    return "Hello Home";
-  }
 }

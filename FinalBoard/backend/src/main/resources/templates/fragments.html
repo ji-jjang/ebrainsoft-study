@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top border-bottom"
+     th:fragment="navbarFragment"
+     xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/">게시판 프로젝트</a>
+    <button aria-controls="navbarSupportedContent" aria-expanded="false"
+            aria-label="Toggle navigation"
+            class="navbar-toggler"
+            data-bs-target="#navbarSupportedContent" data-bs-toggle="collapse"
+            type="button">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" sec:authorize="isAnonymous()" th:href="@{/admin/login}">로그인</a>
+          <form class="nav-link" method="post" sec:authorize="isAuthenticated()"
+                style="display: inline;" th:action="@{/admin/v1/logout}">
+            <button class="btn btn-link" style="text-decoration: none; color: inherit;"
+                    type="submit">
+              로그아웃
+            </button>
+          </form>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="sidebar" th:fragment="sidebarFragment">
+  <style>
+    .sidebar {
+      width: 250px;
+      padding: 20px;
+      background-color: #f8f9fa;
+      border-right: 1px solid #ddd;
+      height: 100vh;
+    }
+  </style>
+  <a class="btn btn-outline-primary w-100 mb-2" href="/admin/announcement/board">공지사항 관리</a>
+  <a class="btn btn-outline-primary w-100 mb-2" href="/admin/free-board">자유 게시판 관리</a>
+  <a class="btn btn-outline-primary w-100 mb-2" href="/admin/gallery-board">갤러리 게시판 관리</a>
+  <a class="btn btn-outline-primary w-100" href="/admin/inquiry-board">문의 게시판 관리</a>
+</div>
+</body>
+
+</html>

@@ -1,6 +1,5 @@
 package com.juny.finalboard.domain.post.announcement.common.dto;
 
-import com.juny.finalboard.global.constant.Constants;
 import java.time.LocalDate;
 import lombok.Builder;
 

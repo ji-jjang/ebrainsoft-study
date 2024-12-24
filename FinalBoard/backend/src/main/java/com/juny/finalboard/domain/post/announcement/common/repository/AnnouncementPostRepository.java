@@ -20,4 +20,6 @@ public interface AnnouncementPostRepository {
   Optional<AnnouncementPost> findPostDetailById(Long id);
 
   void updatePost(AnnouncementPost post);
+
+  List<AnnouncementPost> findPinnedPostList(Integer count);
 }

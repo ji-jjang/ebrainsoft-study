@@ -11,5 +11,6 @@ public record ResAnnouncementPost(
     Boolean isPinned,
     String createdBy,
     String createdAt,
+    Long categoryId,
     String categoryName,
     Boolean isNew) {}
