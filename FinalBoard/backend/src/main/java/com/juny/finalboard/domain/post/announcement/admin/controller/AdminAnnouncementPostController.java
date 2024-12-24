@@ -146,16 +146,20 @@ public class AdminAnnouncementPostController {
       @RequestParam(required = false) String endDate,
       @RequestParam(required = false) String keyword,
       @RequestParam(required = false) String originCategoryId,
+      @RequestParam(required = false) String pageSize,
+      @RequestParam(required = false) String sort,
       @AuthenticationPrincipal CustomUserDetails userDetails) {
 
     adminAnnouncementPostService.createPost(req, userDetails.getId());
 
     return String.format(
-        "redirect:/admin/announcement/board?startDate=%s&endDate=%s&categoryId=%s&keyword=%s",
-        startDate,
-        endDate,
-        originCategoryId,
-        keyword != null ? URLEncoder.encode(keyword, StandardCharsets.UTF_8) : "");
+      "redirect:/admin/announcement/board?startDate=%s&endDate=%s&categoryId=%s&keyword=%s&pageSize=%s&sort=%s",
+      startDate,
+      endDate,
+      originCategoryId,
+      keyword != null ? URLEncoder.encode(keyword, StandardCharsets.UTF_8) : "",
+      pageSize,
+      sort);
   }
 
   /**
@@ -180,15 +184,41 @@ public class AdminAnnouncementPostController {
       @RequestParam(required = false) String endDate,
       @RequestParam(required = false) String keyword,
       @RequestParam(required = false) String originCategoryId,
+      @RequestParam(required = false) String pageSize,
+      @RequestParam(required = false) String sort,
       @AuthenticationPrincipal CustomUserDetails userDetails) {
 
     adminAnnouncementPostService.updatePost(req, postId, userDetails.getId());
 
     return String.format(
-        "redirect:/admin/announcement/board?startDate=%s&endDate=%s&categoryId=%s&keyword=%s",
+        "redirect:/admin/announcement/board?startDate=%s&endDate=%s&categoryId=%s&keyword=%s&pageSize=%s&sort=%s",
         startDate,
         endDate,
         originCategoryId,
-        keyword != null ? URLEncoder.encode(keyword, StandardCharsets.UTF_8) : "");
+        keyword != null ? URLEncoder.encode(keyword, StandardCharsets.UTF_8) : "",
+        pageSize,
+        sort);
+  }
+
+  @PostMapping("/admin/announcement/post/{postId}/delete")
+  public String deleteAnnouncementPost(
+      @PathVariable Long postId,
+      @RequestParam(required = false) String startDate,
+      @RequestParam(required = false) String endDate,
+      @RequestParam(required = false) String keyword,
+      @RequestParam(required = false) String categoryId,
+      @RequestParam(required = false) String pageSize,
+      @RequestParam(required = false) String sort) {
+
+    adminAnnouncementPostService.deleteAnnouncementPostById(postId);
+
+    return String.format(
+        "redirect:/admin/announcement/board?startDate=%s&endDate=%s&categoryId=%s&keyword=%s&pageSize=%s&sort=%s",
+        startDate,
+        endDate,
+        categoryId,
+        keyword != null ? URLEncoder.encode(keyword, StandardCharsets.UTF_8) : "",
+        pageSize,
+        sort);
   }
 }

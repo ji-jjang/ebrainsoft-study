@@ -35,6 +35,7 @@
     <association javaType="com.juny.finalboard.domain.post.announcement.common.entity.AnnouncementCategory"
       property="announcementCategory">
       <result column="category_name" property="name"/>
+      <result column="category_id" property="id"/>
     </association>
 
     <association javaType="com.juny.finalboard.domain.user.user.User" property="user">
@@ -42,7 +43,6 @@
     </association>
 
   </resultMap>
-
 
   <select id="getTotalAnnouncementPostCount" parameterType="SearchCondition" resultType="long">
     SELECT
@@ -87,6 +87,7 @@
            p.is_pinned                                    AS post_is_pinned,
            p.created_by                                   AS post_created_by,
            DATE_FORMAT(p.created_at, '%Y-%m-%d %H:%i:%s') AS post_created_at,
+           c.id                                           AS category_id,
            c.name                                         AS category_name,
            p.user_id                                      AS user_id
 

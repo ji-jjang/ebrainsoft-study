@@ -16,7 +16,7 @@
 <body>
 <div class="container">
 
-  <form method="post" onsubmit="return checkAnnouncementForm(this)"
+  <form id="updateForm" method="post" onsubmit="return checkAnnouncementForm(this)"
         th:action="@{/admin/announcement/post/{postId}/update(postId=${post.id})}">
     <input name="startDate" th:value="${param.startDate}" type="hidden">
     <input name="endDate" th:value="${param.endDate}" type="hidden">
@@ -40,6 +40,7 @@
       <select class="form-select" id="categoryId" name="categoryId" required>
         <option value="">카테고리를 선택하세요</option>
         <option th:each="category : ${categories}"
+                th:selected="${post.categoryId() == category.id}"
                 th:text="${category.name}"
                 th:value="${category.id}">
         </option>
@@ -50,17 +51,30 @@
       <input class="form-check-input" id="isPinned" name="isPinned" th:checked="${post.isPinned}"
              type="checkbox">
     </div>
-    <button class="btn btn-primary" type="submit">수정 완료</button>
-
-    <a class="btn btn-secondary" th:href="@{/admin/announcement/board(
-            startDate=${startDate},
-            endDate=${endDate},
-            categoryId=${categoryId},
-            keyword=${keyword},
-            pageSize=${param.pageSize},
-            sort=${param.sort})}">취소</a>
   </form>
 
+  <div class="col-auto d-flex align-items-center gap-1">
+    <button class="btn btn-primary" type="submit" form="updateForm">수정 완료</button>
+    <a class="btn btn-secondary" th:href="@{/admin/announcement/board(
+              startDate=${startDate},
+              endDate=${endDate},
+              categoryId=${categoryId},
+              keyword=${keyword},
+              pageSize=${param.pageSize},
+              sort=${param.sort})}">취소</a>
+
+    <form method="post" th:action="@{/admin/announcement/post/{postId}/delete(postId=${post.id})}"
+          class="d-inline">
+      <input name="startDate" th:value="${param.startDate}" type="hidden">
+      <input name="endDate" th:value="${param.endDate}" type="hidden">
+      <input name="keyword" th:value="${param.keyword}" type="hidden">
+      <input name="categoryId" th:value="${param.categoryId}" type="hidden">
+      <input name="pageSize" th:value="${param.pageSize}" type="hidden">
+      <input name="sort" th:value="${param.sort}" type="hidden">
+      <button class="btn btn-danger" type="submit" onclick="return confirm('정말 삭제하시겠습니까?')">삭제
+      </button>
+    </form>
+  </div>
 </div>
 </body>
 </html>

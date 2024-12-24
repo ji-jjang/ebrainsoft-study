@@ -31,6 +31,7 @@ public class AnnouncementPostMapper {
         .isPinned(post.getIsPinned())
         .createdBy(post.getCreatedBy())
         .createdAt(post.getCreatedAt().toString())
+        .categoryId(post.getAnnouncementCategory().getId())
         .categoryName(post.getAnnouncementCategory().getName())
         .isNew(isNew)
         .build();
