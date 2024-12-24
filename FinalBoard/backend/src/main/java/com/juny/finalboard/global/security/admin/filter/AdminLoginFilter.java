@@ -105,6 +105,11 @@ public class AdminLoginFilter extends UsernamePasswordAuthenticationFilter {
    *
    * <h1>인증 성공 후 SecurityContext 및 세션에 인증 정보 저장</h1>
    *
+   * <br>
+   * - 세션 정책이 IF_REQUIRED, CSRF 비활성화 되어 있으면 로그인 성공 후에도 새로운 세션이 만들어지지 않음.<br>
+   * - CSRF 비활성화했다면, 세션을 강제로 만들어주어야 Redirect 된 이후 기존 세션에서 인증 정보를 가져올 수 있음.<br>
+   * - 추후 CSRF 활성화 후 새로운 세션 만들지 않도록 할 것
+   *
    * @param request HttpServletRequest
    * @param response HttpServletResponse
    * @param chain FilterChain
@@ -122,7 +127,7 @@ public class AdminLoginFilter extends UsernamePasswordAuthenticationFilter {
 
     SecurityContextHolder.getContext().setAuthentication(authResult);
 
-    HttpSession session = request.getSession(false);
+    HttpSession session = request.getSession(true);
     if (session != null) {
       session.setAttribute(
           HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,

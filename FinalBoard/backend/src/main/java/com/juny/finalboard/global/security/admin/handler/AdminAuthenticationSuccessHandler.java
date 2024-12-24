@@ -1,11 +1,9 @@
 package com.juny.finalboard.global.security.admin.handler;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.juny.finalboard.global.constant.Constants;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
@@ -29,11 +27,6 @@ public class AdminAuthenticationSuccessHandler implements AuthenticationSuccessH
       HttpServletRequest request, HttpServletResponse response, Authentication authentication)
       throws IOException {
 
-    response.setStatus(HttpServletResponse.SC_OK);
-    response.setContentType("application/json");
-    Map<String, Object> responseBody = new HashMap<>();
-    responseBody.put("success", true);
-
-    response.getWriter().write(new ObjectMapper().writeValueAsString(responseBody));
+    response.sendRedirect(Constants.ADMIN_LOGIN_SUCCESS_REDIRECT_URL);
   }
 }

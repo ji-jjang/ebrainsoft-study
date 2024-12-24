@@ -1,6 +1,6 @@
 package com.juny.finalboard.global.security.common.service;
 
-import com.juny.finalboard.domain.user.User;
+import com.juny.finalboard.domain.user.user.User;
 import java.util.ArrayList;
 import java.util.Collection;
 import lombok.RequiredArgsConstructor;
@@ -58,7 +58,7 @@ public class CustomUserDetails implements UserDetails {
     return UserDetails.super.isEnabled();
   }
 
-  public long getId() {
+  public Long getId() {
 
     return user.getId();
   }

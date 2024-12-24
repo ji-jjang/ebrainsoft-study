@@ -15,9 +15,11 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
 import org.springframework.web.cors.CorsConfiguration;
 
 @Configuration
@@ -58,15 +60,23 @@ public class SecurityConfig {
   public SecurityFilterChain adminFilterChain(
       HttpSecurity http, AuthenticationConfiguration authenticationConfiguration) throws Exception {
 
-    http.securityMatcher("/admin/**")
+    http.securityMatcher("/admin/**", "/")
         .authorizeHttpRequests(
             auth ->
-                auth.requestMatchers(HttpMethod.GET, "/admin/login")
+                auth.requestMatchers(HttpMethod.GET, "/","/admin/login", "/admin/management")
                     .permitAll()
-                    .requestMatchers(HttpMethod.POST, "/admin/v1/login")
+                    .requestMatchers(HttpMethod.POST, "/admin/v1/login", "/admin/v1/logout")
                     .permitAll()
                     .anyRequest()
                     .hasAuthority("ADMIN"));
+
+    http.logout(
+        (auth) ->
+            auth.logoutRequestMatcher(req -> "/admin/v1/logout".equals(req.getRequestURI()))
+                .logoutSuccessUrl("/")
+                .invalidateHttpSession(true)
+                .deleteCookies("JSESSIONID")
+                .permitAll());
 
     http.formLogin(AbstractHttpConfigurer::disable).httpBasic(AbstractHttpConfigurer::disable);
 
@@ -74,7 +84,12 @@ public class SecurityConfig {
         new AdminLoginFilter(authenticationManager(authenticationConfiguration)),
         UsernamePasswordAuthenticationFilter.class);
 
-    http.csrf(AbstractHttpConfigurer::disable);
+    http
+      .csrf(AbstractHttpConfigurer::disable)
+      .securityContext(
+            (auth) -> auth.securityContextRepository(new HttpSessionSecurityContextRepository()))
+        .sessionManagement(
+            session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));
 
     return http.build();
   }
