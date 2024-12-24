@@ -74,7 +74,6 @@
     announcement_categories c ON p.category_id = c.id
     <include refid="announcementPostListWhereClause"/>
     ORDER BY
-    p.is_pinned DESC,
     ${sort}
     LIMIT
     #{pageSize} OFFSET #{offset}
@@ -101,6 +100,8 @@
   <sql id="announcementPostListWhereClause">
     WHERE 1 = 1
 
+    AND p.is_pinned = false
+
     <if test="categoryId != null and categoryId != ''">
       AND c.id = #{categoryId}
     </if>
@@ -120,6 +121,25 @@
       AND p.created_at &lt;= #{endDate}
     </if>
   </sql>
+
+  <select id="findPinnedPostList" parameterType="int" resultMap="PostDetailResultMap">
+    SELECT p.id                                           AS post_id,
+           p.title                                        AS post_title,
+           p.content                                      AS post_content,
+           p.view_count                                   AS post_view_count,
+           p.is_pinned                                    AS post_is_pinned,
+           p.created_by                                   AS post_created_by,
+           DATE_FORMAT(p.created_at, '%Y-%m-%d %H:%i:%s') AS post_created_at,
+           c.name                                         AS category_name,
+           p.user_id                                      AS user_id
+    FROM
+           announcement_posts p
+    INNER JOIN
+           announcement_categories c ON p.category_id = c.id
+    WHERE p.is_pinned = true
+    ORDER BY p.created_at DESC
+    LIMIT #{maxPinnedCount}
+  </select>
 
   <update id="updatePost"
     parameterType="com.juny.finalboard.domain.post.announcement.common.entity.AnnouncementPost">

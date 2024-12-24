@@ -23,5 +23,7 @@ public class Constants {
   public static final String ACCESS_TOKEN_EXPIRED = "accessTokenExpired";
   public static final String AUTHORIZATION_HEADER = "Authorization";
   public static final String BEARER_PREFIX = "Bearer ";
-  public static final String ANNOUNCEMENT_CATEGORY_DEFAULT_NAME = "공지";
+  public static final String ADMIN_LOGIN_SUCCESS_REDIRECT_URL = "/admin/management";
+  public static final String COLON_SIGN = ":";
+  public static final Integer MAX_PINNED_POST = 5;
 }

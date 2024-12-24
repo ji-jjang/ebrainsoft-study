@@ -1,28 +1,20 @@
 package com.juny.finalboard.domain.post.announcement.user.controller;
 
 import com.juny.finalboard.domain.post.announcement.common.dto.ReqGetPostList;
-import com.juny.finalboard.domain.post.announcement.common.dto.ReqPostCreate;
-import com.juny.finalboard.domain.post.announcement.common.dto.ReqPostUpdate;
 import com.juny.finalboard.domain.post.announcement.common.dto.ResAnnouncementPost;
 import com.juny.finalboard.domain.post.announcement.common.dto.ResAnnouncementPostList;
 import com.juny.finalboard.domain.post.announcement.common.dto.SearchCondition;
 import com.juny.finalboard.domain.post.announcement.common.entity.AnnouncementPost;
 import com.juny.finalboard.domain.post.announcement.common.mapper.AnnouncementPostMapper;
 import com.juny.finalboard.domain.post.announcement.common.service.AnnouncementPostService;
-import com.juny.finalboard.global.security.common.service.CustomUserDetails;
-import jakarta.validation.Valid;
+import com.juny.finalboard.global.constant.Constants;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -45,18 +37,25 @@ public class UserAnnouncementPostController {
   public ResponseEntity<ResAnnouncementPostList> getAnnouncementPosts(
       @ModelAttribute ReqGetPostList req) {
 
+    ResAnnouncementPostList resAnnouncementPostList = getAnnouncementPostListGroupByPinned(req);
+
+    return new ResponseEntity<>(resAnnouncementPostList, HttpStatus.OK);
+  }
+
+  private ResAnnouncementPostList getAnnouncementPostListGroupByPinned(ReqGetPostList req) {
+
+    List<AnnouncementPost> pinnedPostList =
+        announcementPostService.getPinnedPostList(Constants.MAX_PINNED_POST);
+
     SearchCondition searchCondition = announcementPostService.createSearchCondition(req);
 
     long totalBoardCount = announcementPostService.getTotalBoardCount(searchCondition);
 
-    List<AnnouncementPost> postList =
+    List<AnnouncementPost> unPinnedPostList =
         announcementPostService.getPostListBySearchCondition(searchCondition);
 
-    ResAnnouncementPostList resAnnouncementPostList =
-        AnnouncementPostMapper.toResAnnouncementPostList(
-            postList, searchCondition, totalBoardCount);
-
-    return new ResponseEntity<>(resAnnouncementPostList, HttpStatus.OK);
+    return AnnouncementPostMapper.toResAnnouncementPostList(
+        pinnedPostList, unPinnedPostList, searchCondition, totalBoardCount);
   }
 
   /**

@@ -63,7 +63,7 @@ public class SecurityConfig {
     http.securityMatcher("/admin/**", "/")
         .authorizeHttpRequests(
             auth ->
-                auth.requestMatchers(HttpMethod.GET, "/","/admin/login", "/admin/management")
+                auth.requestMatchers(HttpMethod.GET, "/", "/admin/login", "/admin/management")
                     .permitAll()
                     .requestMatchers(HttpMethod.POST, "/admin/v1/login", "/admin/v1/logout")
                     .permitAll()
@@ -84,9 +84,8 @@ public class SecurityConfig {
         new AdminLoginFilter(authenticationManager(authenticationConfiguration)),
         UsernamePasswordAuthenticationFilter.class);
 
-    http
-      .csrf(AbstractHttpConfigurer::disable)
-      .securityContext(
+    http.csrf(AbstractHttpConfigurer::disable)
+        .securityContext(
             (auth) -> auth.securityContextRepository(new HttpSessionSecurityContextRepository()))
         .sessionManagement(
             session -> session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED));

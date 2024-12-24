@@ -1,8 +1,8 @@
 package com.juny.finalboard.domain.post.announcement.user.controller;
 
-import com.juny.finalboard.domain.post.announcement.common.mapper.AnnouncementCategoryMapper;
 import com.juny.finalboard.domain.post.announcement.common.dto.ResAnnouncementCategoryList;
 import com.juny.finalboard.domain.post.announcement.common.entity.AnnouncementCategory;
+import com.juny.finalboard.domain.post.announcement.common.mapper.AnnouncementCategoryMapper;
 import com.juny.finalboard.domain.post.announcement.common.service.AnnouncementCategoryService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

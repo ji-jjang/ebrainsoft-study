@@ -7,6 +7,14 @@ import java.util.List;
 
 public class AnnouncementCategoryMapper {
 
+  /**
+   *
+   *
+   * <h1>카테고리 단건 매퍼 </h1>
+   *
+   * @param announcementCategory 카테고리 단건
+   * @return ResAnnouncementCategory
+   */
   public static ResAnnouncementCategory toResAnnouncementCategory(
       AnnouncementCategory announcementCategory) {
 
@@ -16,6 +24,14 @@ public class AnnouncementCategoryMapper {
         .build();
   }
 
+  /**
+   *
+   *
+   * <h1>카테고리 목록 매퍼 </h1>
+   *
+   * @param announcementCategoryList 카테고리 목록
+   * @return ResAnnouncementCategoryList
+   */
   public static ResAnnouncementCategoryList toResAnnouncementCategoryList(
       List<AnnouncementCategory> announcementCategoryList) {
 

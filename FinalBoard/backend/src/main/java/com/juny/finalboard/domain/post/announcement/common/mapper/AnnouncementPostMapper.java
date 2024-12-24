@@ -41,13 +41,19 @@ public class AnnouncementPostMapper {
    *
    * <h1>공지사항 게시판 목록 View 정보로 반환 매퍼</h1>
    *
-   * @param postList 게시글 리스트
+   * @param pinnedPostList 고정된 게시글 리스트
+   * @param unPinnedPostList 고정되지 않은 게시글 리스트
    * @param searchCondition 검색 조건
    * @param totalBoardCount 전체 반환
    * @return 게시판 목록 반환 정보 {게시글 목록, 검색 조건, 페이지 정보}
    */
   public static ResAnnouncementPostList toResAnnouncementPostList(
-      List<AnnouncementPost> postList, SearchCondition searchCondition, long totalBoardCount) {
+      List<AnnouncementPost> pinnedPostList,
+      List<AnnouncementPost> unPinnedPostList,
+      SearchCondition searchCondition,
+      long totalBoardCount) {
+
+    String[] sort = searchCondition.sort().split(Constants.SPACE_SIGN);
 
     PageInfo pageInfo =
         PageInfo.builder()
@@ -63,11 +69,17 @@ public class AnnouncementPostMapper {
             .endDate(searchCondition.endDate().split(Constants.SPACE_SIGN)[0])
             .categoryId(searchCondition.categoryId())
             .keyword(searchCondition.keyword())
+            .pageSize(searchCondition.pageSize())
+            .sort(sort[0] + Constants.COLON_SIGN + sort[1])
             .build();
 
-    List<ResAnnouncementPost> resPostList =
-        postList.stream().map(AnnouncementPostMapper::toResAnnouncementPost).toList();
+    List<ResAnnouncementPost> resPinnedPostList =
+        pinnedPostList.stream().map(AnnouncementPostMapper::toResAnnouncementPost).toList();
 
-    return new ResAnnouncementPostList(resPostList, resSearchCondition, pageInfo);
+    List<ResAnnouncementPost> resUnpinnedPostList =
+        unPinnedPostList.stream().map(AnnouncementPostMapper::toResAnnouncementPost).toList();
+
+    return new ResAnnouncementPostList(
+        resPinnedPostList, resUnpinnedPostList, resSearchCondition, pageInfo);
   }
 }

@@ -1,9 +1,9 @@
 package com.juny.finalboard.domain.post.announcement.common.service;
 
-import com.juny.finalboard.domain.post.announcement.common.repository.AnnouncementPostRepository;
 import com.juny.finalboard.domain.post.announcement.common.dto.ReqGetPostList;
 import com.juny.finalboard.domain.post.announcement.common.dto.SearchCondition;
 import com.juny.finalboard.domain.post.announcement.common.entity.AnnouncementPost;
+import com.juny.finalboard.domain.post.announcement.common.repository.AnnouncementPostRepository;
 import com.juny.finalboard.global.constant.Constants;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -85,8 +85,12 @@ public class AnnouncementPostService {
   public AnnouncementPost getPostById(Long id) {
 
     return announcementPostRepository
-            .findPostDetailById(id)
-            .orElseThrow(() -> new RuntimeException(String.format("invalid post id: %d", id)));
+        .findPostDetailById(id)
+        .orElseThrow(() -> new RuntimeException(String.format("invalid post id: %d", id)));
   }
 
+  public List<AnnouncementPost> getPinnedPostList(Integer count) {
+
+    return announcementPostRepository.findPinnedPostList(count);
+  }
 }

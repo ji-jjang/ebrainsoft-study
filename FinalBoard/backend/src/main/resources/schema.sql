@@ -25,6 +25,14 @@ CREATE TABLE announcement_posts
     created_by  VARCHAR(255) NOT NULL,
     created_at  DATETIME,
     category_id BIGINT,
+    user_id     BIGINT,
+    FOREIGN KEY (user_id) REFERENCES  users (id),
     FOREIGN KEY (category_id) REFERENCES announcement_categories (id)
 );
 
+
+/**
+ALTER TABLE announcement_posts
+ADD COLUMN user_id BIGINT,
+ADD CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users (id);
+ */
