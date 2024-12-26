@@ -1,6 +1,6 @@
 import axios from "axios";
 import { baseApiUrl } from "../constants/apiUrl.js";
-import { navigate } from "../services/navigateService.js";
+import { navigate } from "./navigateService.js";
 
 const api = axios.create({
   baseURL: baseApiUrl,
@@ -13,6 +13,8 @@ api.interceptors.request.use(
     if (accessToken) {
       config.headers["Authorization"] = `Bearer ${accessToken}`;
     }
+    config.credentials = true;
+
     return config;
   },
   (error) => {
