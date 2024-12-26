@@ -69,6 +69,8 @@ public class UserAnnouncementPostController {
   @GetMapping("/api/v1/announcement-posts/{postId}")
   public ResponseEntity<ResAnnouncementPost> getAnnouncementPost(@PathVariable Long postId) {
 
+    announcementPostService.increaseViewCount(postId);
+
     AnnouncementPost post = announcementPostService.getPostById(postId);
 
     ResAnnouncementPost resAnnouncementPost = AnnouncementPostMapper.toResAnnouncementPost(post);
