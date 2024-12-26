@@ -92,6 +92,8 @@ public class AdminAnnouncementPostController {
   @GetMapping("/admin/announcement/post/{postId}")
   public String getAnnouncePost(Model model, @PathVariable Long postId) {
 
+    announcementPostService.increaseViewCount(postId);
+
     AnnouncementPost post = announcementPostService.getPostById(postId);
 
     List<AnnouncementCategory> categories = announcementCategoryService.getAllCategories();
@@ -153,13 +155,13 @@ public class AdminAnnouncementPostController {
     adminAnnouncementPostService.createPost(req, userDetails.getId());
 
     return String.format(
-      "redirect:/admin/announcement/board?startDate=%s&endDate=%s&categoryId=%s&keyword=%s&pageSize=%s&sort=%s",
-      startDate,
-      endDate,
-      originCategoryId,
-      keyword != null ? URLEncoder.encode(keyword, StandardCharsets.UTF_8) : "",
-      pageSize,
-      sort);
+        "redirect:/admin/announcement/board?startDate=%s&endDate=%s&categoryId=%s&keyword=%s&pageSize=%s&sort=%s",
+        startDate,
+        endDate,
+        originCategoryId,
+        keyword != null ? URLEncoder.encode(keyword, StandardCharsets.UTF_8) : "",
+        pageSize,
+        sort);
   }
 
   /**

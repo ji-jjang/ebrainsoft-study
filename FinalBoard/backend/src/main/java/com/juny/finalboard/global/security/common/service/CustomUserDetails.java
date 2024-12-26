@@ -1,6 +1,6 @@
 package com.juny.finalboard.global.security.common.service;
 
-import com.juny.finalboard.domain.user.user.User;
+import com.juny.finalboard.domain.user.common.User;
 import java.util.ArrayList;
 import java.util.Collection;
 import lombok.RequiredArgsConstructor;

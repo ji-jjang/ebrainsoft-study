@@ -5,13 +5,16 @@ import com.juny.finalboard.domain.post.announcement.common.entity.AnnouncementPo
 import java.util.List;
 import java.util.Optional;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface AnnouncementPostRepository {
 
-  long getTotalAnnouncementPostCount(SearchCondition searchCondition);
+  long getTotalAnnouncementPostCount(
+      @Param("searchCondition") SearchCondition searchCondition, @Param("offset") int offset);
 
-  List<AnnouncementPost> findAllWithCategoryBySearchCondition(SearchCondition searchCondition);
+  List<AnnouncementPost> findAllWithCategoryBySearchCondition(
+      @Param("searchCondition") SearchCondition searchCondition, @Param("offset") int offset);
 
   void save(AnnouncementPost announcementPost);
 
@@ -22,4 +25,6 @@ public interface AnnouncementPostRepository {
   void updatePost(AnnouncementPost post);
 
   List<AnnouncementPost> findPinnedPostList(Integer count);
+
+  void increaseViewCount(Long id);
 }

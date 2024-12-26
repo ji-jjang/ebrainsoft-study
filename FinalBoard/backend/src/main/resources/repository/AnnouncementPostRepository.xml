@@ -25,26 +25,28 @@
     <id column="post_id" property="id"/>
     <result column="post_is_pinned" property="isPinned"/>
     <result column="post_created_by" property="createdBy"/>
+
     <result column="post_created_at" javaType="java.time.LocalDateTime" property="createdAt"/>
     <result column="post_created_by" property="createdBy"/>
-
     <result column="post_title" property="title"/>
+
     <result column="post_content" property="content"/>
+
     <result column="post_view_count" property="viewCount"/>
 
-    <association javaType="com.juny.finalboard.domain.post.announcement.common.entity.AnnouncementCategory"
+    <association
+      javaType="com.juny.finalboard.domain.post.announcement.common.entity.AnnouncementCategory"
       property="announcementCategory">
       <result column="category_name" property="name"/>
       <result column="category_id" property="id"/>
     </association>
-
-    <association javaType="com.juny.finalboard.domain.user.user.User" property="user">
+    <association javaType="com.juny.finalboard.domain.user.common.User" property="user">
       <id column="user_id" property="id"/>
     </association>
 
   </resultMap>
 
-  <select id="getTotalAnnouncementPostCount" parameterType="SearchCondition" resultType="long">
+  <select id="getTotalAnnouncementPostCount" parameterType="String" resultType="long">
     SELECT
     COUNT(*)
     FROM
@@ -56,7 +58,7 @@
     <include refid="announcementPostListWhereClause"/>
   </select>
 
-  <select id="findAllWithCategoryBySearchCondition" parameterType="SearchCondition"
+  <select id="findAllWithCategoryBySearchCondition" parameterType="String"
     resultMap="PostDetailResultMap">
     SELECT
     p.id AS post_id,
@@ -74,9 +76,10 @@
     announcement_categories c ON p.category_id = c.id
     <include refid="announcementPostListWhereClause"/>
     ORDER BY
-    ${sort}
+    ${searchCondition.sort},
+    p.id DESC
     LIMIT
-    #{pageSize} OFFSET #{offset}
+    #{searchCondition.pageSize} OFFSET #{offset}
   </select>
 
   <select id="findPostDetailById" parameterType="long" resultMap="PostDetailResultMap">
@@ -98,31 +101,6 @@
     WHERE p.id = #{id}
   </select>
 
-  <sql id="announcementPostListWhereClause">
-    WHERE 1 = 1
-
-    AND p.is_pinned = false
-
-    <if test="categoryId != null and categoryId != ''">
-      AND c.id = #{categoryId}
-    </if>
-
-    <if test="keyword != null and keyword != ''">
-      AND (
-      p.title LIKE CONCAT('%', #{keyword}, '%')
-      OR p.created_by LIKE CONCAT('%', #{keyword}, '%')
-      OR p.content LIKE CONCAT('%', #{keyword}, '%')
-      )
-    </if>
-
-    <if test="startDate != null and startDate != ''">
-      AND p.created_at &gt;= #{startDate}
-    </if>
-    <if test="endDate != null and endDate != ''">
-      AND p.created_at &lt;= #{endDate}
-    </if>
-  </sql>
-
   <select id="findPinnedPostList" parameterType="int" resultMap="PostDetailResultMap">
     SELECT p.id                                           AS post_id,
            p.title                                        AS post_title,
@@ -133,14 +111,38 @@
            DATE_FORMAT(p.created_at, '%Y-%m-%d %H:%i:%s') AS post_created_at,
            c.name                                         AS category_name,
            p.user_id                                      AS user_id
-    FROM
-           announcement_posts p
-    INNER JOIN
-           announcement_categories c ON p.category_id = c.id
+    FROM announcement_posts p
+           INNER JOIN
+         announcement_categories c ON p.category_id = c.id
     WHERE p.is_pinned = true
     ORDER BY p.created_at DESC
-    LIMIT #{maxPinnedCount}
+      LIMIT #{maxPinnedCount}
   </select>
+
+  <sql id="announcementPostListWhereClause">
+    WHERE 1 = 1
+
+    AND p.is_pinned = false
+
+    <if test="searchCondition.categoryId != null and searchCondition.categoryId != ''">
+      AND c.id = #{searchCondition.categoryId}
+    </if>
+
+    <if test="searchCondition.keyword != null and searchCondition.keyword != ''">
+      AND (
+      p.title LIKE CONCAT('%', #{searchCondition.keyword}, '%')
+      OR p.created_by LIKE CONCAT('%', #{searchCondition.keyword}, '%')
+      OR p.content LIKE CONCAT('%', #{searchCondition.keyword}, '%')
+      )
+    </if>
+
+    <if test="searchCondition.startDate != null and searchCondition.startDate != ''">
+      AND p.created_at &gt;= #{searchCondition.startDate}
+    </if>
+    <if test="searchCondition.endDate != null and searchCondition.endDate != ''">
+      AND p.created_at &lt;= #{searchCondition.endDate}
+    </if>
+  </sql>
 
   <update id="updatePost"
     parameterType="com.juny.finalboard.domain.post.announcement.common.entity.AnnouncementPost">
@@ -151,6 +153,13 @@
         is_pinned   = #{isPinned},
         created_by  = #{createdBy},
         category_id = #{announcementCategory.id}
+    WHERE id = #{id}
+  </update>
+
+  <update id="increaseViewCount" parameterType="Long">
+    UPDATE
+      announcement_posts
+    SET view_count = view_count + 1
     WHERE id = #{id}
   </update>
 

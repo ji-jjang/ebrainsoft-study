@@ -6,8 +6,8 @@ import com.juny.finalboard.domain.post.announcement.common.entity.AnnouncementCa
 import com.juny.finalboard.domain.post.announcement.common.entity.AnnouncementPost;
 import com.juny.finalboard.domain.post.announcement.common.repository.AnnouncementCategoryRepository;
 import com.juny.finalboard.domain.post.announcement.common.repository.AnnouncementPostRepository;
-import com.juny.finalboard.domain.user.user.User;
-import com.juny.finalboard.domain.user.user.UserRepository;
+import com.juny.finalboard.domain.user.common.User;
+import com.juny.finalboard.domain.user.common.UserRepository;
 import com.juny.finalboard.global.constant.Constants;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;

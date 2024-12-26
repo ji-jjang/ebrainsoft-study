@@ -27,7 +27,7 @@ public class AnnouncementPostService {
    */
   public SearchCondition createSearchCondition(ReqGetPostList req) {
 
-    String[] sort = req.sort().split(":");
+    String[] sort = req.sort().split(Constants.COLON_SIGN);
 
     if (sort.length != 2) {
       throw new RuntimeException("invalid sort params" + req.sort());
@@ -44,7 +44,6 @@ public class AnnouncementPostService {
         .sort(sort[0] + Constants.SPACE_SIGN + sort[1])
         .page(req.page() - 1)
         .pageSize(req.pageSize())
-        .offset((req.page() - 1) * req.pageSize())
         .build();
   }
 
@@ -58,7 +57,7 @@ public class AnnouncementPostService {
    */
   public long getTotalBoardCount(SearchCondition searchCondition) {
 
-    return announcementPostRepository.getTotalAnnouncementPostCount(searchCondition);
+    return announcementPostRepository.getTotalAnnouncementPostCount(searchCondition, -1);
   }
 
   /**
@@ -71,7 +70,9 @@ public class AnnouncementPostService {
    */
   public List<AnnouncementPost> getPostListBySearchCondition(SearchCondition searchCondition) {
 
-    return announcementPostRepository.findAllWithCategoryBySearchCondition(searchCondition);
+    int offset = searchCondition.page() * searchCondition.pageSize();
+
+    return announcementPostRepository.findAllWithCategoryBySearchCondition(searchCondition, offset);
   }
 
   /**
@@ -92,5 +93,10 @@ public class AnnouncementPostService {
   public List<AnnouncementPost> getPinnedPostList(Integer count) {
 
     return announcementPostRepository.findPinnedPostList(count);
+  }
+
+  public void increaseViewCount(Long id) {
+
+    announcementPostRepository.increaseViewCount(id);
   }
 }

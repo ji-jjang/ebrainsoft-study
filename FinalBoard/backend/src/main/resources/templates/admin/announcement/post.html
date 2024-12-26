@@ -54,7 +54,7 @@
   </form>
 
   <div class="col-auto d-flex align-items-center gap-1">
-    <button class="btn btn-primary" type="submit" form="updateForm">수정 완료</button>
+    <button class="btn btn-primary" form="updateForm" type="submit">수정 완료</button>
     <a class="btn btn-secondary" th:href="@{/admin/announcement/board(
               startDate=${startDate},
               endDate=${endDate},
@@ -63,15 +63,15 @@
               pageSize=${param.pageSize},
               sort=${param.sort})}">취소</a>
 
-    <form method="post" th:action="@{/admin/announcement/post/{postId}/delete(postId=${post.id})}"
-          class="d-inline">
+    <form class="d-inline" method="post"
+          th:action="@{/admin/announcement/post/{postId}/delete(postId=${post.id})}">
       <input name="startDate" th:value="${param.startDate}" type="hidden">
       <input name="endDate" th:value="${param.endDate}" type="hidden">
       <input name="keyword" th:value="${param.keyword}" type="hidden">
       <input name="categoryId" th:value="${param.categoryId}" type="hidden">
       <input name="pageSize" th:value="${param.pageSize}" type="hidden">
       <input name="sort" th:value="${param.sort}" type="hidden">
-      <button class="btn btn-danger" type="submit" onclick="return confirm('정말 삭제하시겠습니까?')">삭제
+      <button class="btn btn-danger" onclick="return confirm('정말 삭제하시겠습니까?')" type="submit">삭제
       </button>
     </form>
   </div>

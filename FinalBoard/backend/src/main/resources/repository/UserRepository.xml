@@ -3,30 +3,30 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="com.juny.finalboard.domain.user.user.UserRepository">
+<mapper namespace="com.juny.finalboard.domain.user.common.UserRepository">
   <insert id="save" keyColumn="id" keyProperty="id" useGeneratedKeys="true">
     INSERT INTO users (email, password, name, role, created_at)
     VALUES (#{email}, #{password}, #{name}, #{role}, #{createdAt})
   </insert>
 
-  <select id="findByEmail" resultType="com.juny.finalboard.domain.user.user.User">
+  <select id="findByEmail" resultType="com.juny.finalboard.domain.user.common.User">
     SELECT id,
            email,
            password,
            name,
            role,
-           created_at
+           created_at as createdAt
     FROM users
     WHERE email = #{email}
   </select>
 
-  <select id="findById" resultType="com.juny.finalboard.domain.user.user.User">
+  <select id="findById" resultType="com.juny.finalboard.domain.user.common.User">
     SELECT id,
            email,
            password,
            name,
            role,
-           created_at
+           created_at as createdAt
     FROM users
     WHERE id = #{id}
   </select>

@@ -1,6 +1,6 @@
 package com.juny.finalboard.domain.post.announcement.common.entity;
 
-import com.juny.finalboard.domain.user.user.User;
+import com.juny.finalboard.domain.user.common.User;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

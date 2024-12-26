@@ -1,7 +1,7 @@
 package com.juny.finalboard.global.security.common.service;
 
-import com.juny.finalboard.domain.user.user.User;
-import com.juny.finalboard.domain.user.user.UserRepository;
+import com.juny.finalboard.domain.user.common.User;
+import com.juny.finalboard.domain.user.common.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

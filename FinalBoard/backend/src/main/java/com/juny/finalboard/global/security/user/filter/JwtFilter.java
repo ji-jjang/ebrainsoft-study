@@ -1,7 +1,7 @@
 package com.juny.finalboard.global.security.user.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.juny.finalboard.domain.user.user.User;
+import com.juny.finalboard.domain.user.common.User;
 import com.juny.finalboard.global.constant.Constants;
 import com.juny.finalboard.global.security.common.service.CustomUserDetails;
 import com.juny.finalboard.global.security.user.jwt.JwtUtil;

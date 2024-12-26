@@ -5,7 +5,7 @@ import com.juny.finalboard.domain.post.announcement.common.entity.AnnouncementCa
 import com.juny.finalboard.domain.post.announcement.common.entity.AnnouncementPost;
 import com.juny.finalboard.domain.post.announcement.common.repository.AnnouncementCategoryRepository;
 import com.juny.finalboard.domain.post.announcement.common.repository.AnnouncementPostRepository;
-import com.juny.finalboard.domain.user.user.User;
+import com.juny.finalboard.domain.user.common.User;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.assertj.core.api.Assertions;
@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-public class QueryTest {
+public class AnnouncementQueryTest {
 
   @Autowired private AnnouncementCategoryRepository announcementCategoryRepository;
 
@@ -83,15 +83,14 @@ public class QueryTest {
         SearchCondition.builder()
             .startDate(LocalDateTime.of(2024, 12, 15, 0, 0, 0).toString())
             .endDate(LocalDateTime.of(2024, 12, 31, 0, 0, 0).toString())
-            .categoryId(1L)
+            .categoryId("1")
             .sort("created_at asc")
             .page(1)
             .pageSize(5)
-            .offset(0)
             .build();
 
     long totalBoardCount =
-        announcementPostRepository.getTotalAnnouncementPostCount(searchCondition);
+        announcementPostRepository.getTotalAnnouncementPostCount(searchCondition, -1);
 
     System.out.println("totalBoardCount = " + totalBoardCount);
   }
@@ -105,15 +104,15 @@ public class QueryTest {
         SearchCondition.builder()
             .startDate(LocalDateTime.of(2024, 12, 15, 0, 0, 0).toString())
             .endDate(LocalDateTime.of(2024, 12, 31, 0, 0, 0).toString())
-            .categoryId(1L)
+            .categoryId("1")
             .sort("created_at asc")
             .page(1)
             .pageSize(5)
-            .offset(0)
             .build();
 
+    int offset = 0;
     List<AnnouncementPost> postList =
-        announcementPostRepository.findAllWithCategoryBySearchCondition(searchCondition);
+        announcementPostRepository.findAllWithCategoryBySearchCondition(searchCondition, offset);
 
     for (var e : postList) {
       System.out.println("e.getId() = " + e.getId());

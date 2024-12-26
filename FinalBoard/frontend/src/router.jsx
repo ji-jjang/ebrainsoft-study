@@ -1,23 +1,56 @@
 import { createBrowserRouter } from "react-router-dom";
-import Test from "./pages/Test.jsx";
 import Login from "./pages/Login.jsx";
+import Home from "./pages/Home.jsx";
+import AnnouncementBoard from "./pages/AnnouncementBoard.jsx";
+import Header from "./components/Header.jsx";
+import Register from "./pages/Register.jsx";
+import AnnouncementPost from "./pages/AnnouncementPost.jsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <div>Hello world!</div>,
+    element: (
+      <>
+        <Header />
+        <Home />,
+      </>
+    ),
   },
   {
     path: "/login",
-    element: <Login />,
+    element: (
+      <>
+        <Header />
+        <Login />,
+      </>
+    ),
   },
   {
-    path: "/signup",
-    element: <div>signup</div>,
+    path: "/register",
+    element: (
+      <>
+        <Header />
+        <Register />
+      </>
+    ),
   },
   {
-    path: "/hello",
-    element: <Test />,
+    path: "/announcement-board",
+    element: (
+      <>
+        <Header />
+        <AnnouncementBoard />
+      </>
+    ),
+  },
+  {
+    path: "/announcement-board/post/:id",
+    element: (
+      <>
+        <Header />
+        <AnnouncementPost />
+      </>
+    ),
   },
 ]);
 
