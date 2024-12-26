@@ -7,7 +7,7 @@ import lombok.Builder;
 public record ReqGetPostList(
     String startDate,
     String endDate,
-    Long categoryId,
+    String categoryId,
     String keyword,
     String sort,
     Integer page,
