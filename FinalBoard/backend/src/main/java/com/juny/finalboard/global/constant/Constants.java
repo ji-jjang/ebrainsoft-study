@@ -26,4 +26,5 @@ public class Constants {
   public static final String ADMIN_LOGIN_SUCCESS_REDIRECT_URL = "/admin/management";
   public static final String COLON_SIGN = ":";
   public static final Integer MAX_PINNED_POST = 5;
+  public static final String FILE_RESOURCE_PREFIX = "file:";
 }

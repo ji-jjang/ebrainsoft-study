@@ -1,5 +1,6 @@
 package com.juny.finalboard.global;
 
+import com.juny.finalboard.global.constant.Constants;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -10,10 +11,10 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
 
   @Value("${resources.image-resource}")
-  private String imageResource;
+  private String imageResourcePath;
 
   @Value("${resources.attachment-resource}")
-  private String attachmentResource;
+  private String attachmentResourcePath;
 
   /**
    *
@@ -45,8 +46,8 @@ public class WebConfig implements WebMvcConfigurer {
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
-    registry.addResourceHandler("/images/**").addResourceLocations(imageResource);
+    registry.addResourceHandler("/images/**").addResourceLocations(Constants.FILE_RESOURCE_PREFIX + imageResourcePath);
 
-    registry.addResourceHandler("/attachments/**").addResourceLocations(attachmentResource);
+    registry.addResourceHandler("/attachments/**").addResourceLocations(Constants.FILE_RESOURCE_PREFIX + attachmentResourcePath);
   }
 }
