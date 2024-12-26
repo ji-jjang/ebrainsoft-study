@@ -1,4 +1,4 @@
-package com.juny.finalboard.domain.user.user;
+package com.juny.finalboard.domain.user.common;
 
 import java.util.Optional;
 import org.apache.ibatis.annotations.Mapper;

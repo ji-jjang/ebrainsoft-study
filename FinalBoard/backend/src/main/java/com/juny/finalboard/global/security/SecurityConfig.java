@@ -133,7 +133,7 @@ public class SecurityConfig {
                         "/api/v1/announcement-posts",
                         "/api/v1/announcement-posts/{postId}")
                     .permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/v1/auth/login")
+                    .requestMatchers(HttpMethod.POST, "/api/v1/auth/login", "/api/v1/register")
                     .permitAll()
                     .anyRequest()
                     .hasAnyAuthority("ADMIN", "USER"));
