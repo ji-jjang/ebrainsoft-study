@@ -19,20 +19,57 @@ CREATE TABLE announcement_posts
     id          BIGINT AUTO_INCREMENT PRIMARY KEY,
     title       VARCHAR(255) NOT NULL,
     content     TEXT         NOT NULL,
-    password    VARCHAR(255) NOT NULL,
     view_count  INT DEFAULT 0,
     is_pinned   BOOLEAN,
     created_by  VARCHAR(255) NOT NULL,
     created_at  DATETIME,
     category_id BIGINT,
     user_id     BIGINT,
-    FOREIGN KEY (user_id) REFERENCES  users (id),
+    FOREIGN KEY (user_id) REFERENCES users (id),
     FOREIGN KEY (category_id) REFERENCES announcement_categories (id)
 );
 
+CREATE TABLE free_categories
+(
+    id   BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
 
-/**
-ALTER TABLE announcement_posts
-ADD COLUMN user_id BIGINT,
-ADD CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users (id);
- */
+
+CREATE TABLE free_posts
+(
+    id          BIGINT AUTO_INCREMENT PRIMARY KEY,
+    title       VARCHAR(255) NOT NULL,
+    content     TEXT         NOT NULL,
+    view_count  INT DEFAULT 0,
+    created_by  VARCHAR(255) NOT NULL,
+    created_at  DATETIME,
+    category_id BIGINT,
+    user_id     BIGINT,
+
+    FOREIGN KEY (category_id) REFERENCES free_categories (id),
+    FOREIGN KEY (user_id) REFERENCES users (id)
+);
+
+CREATE TABLE free_attachments
+(
+    id           BIGINT AUTO_INCREMENT PRIMARY KEY,
+    logical_name VARCHAR(255) NOT NULL,
+    stored_name  VARCHAR(255) NOT NULL,
+    stored_path  VARCHAR(255) NOT NULL,
+    extension    VARCHAR(255) NOT NULL,
+    size         BIGINT          NOT NULL,
+    post_id      BIGINT,
+    FOREIGN KEY (post_id) REFERENCES free_posts (id)
+);
+
+CREATE TABLE free_comments
+(
+    id         BIGINT AUTO_INCREMENT PRIMARY KEY,
+    content    TEXT         NOT NULL,
+    created_at DATETIME,
+    created_by VARCHAR(255) NOT NULL,
+    post_id    BIGINT,
+
+    FOREIGN KEY (post_id) REFERENCES free_posts (id)
+)

@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.juny.finalboard.domain.post.free.common.repository.FreePostRepository">
+
+  <insert id="save" keyProperty="id" parameterType="FreePost" useGeneratedKeys="true">
+    INSERT INTO free_posts (title, content, view_count, created_by,
+                            created_at, category_id, user_id)
+    VALUES (#{title}, #{content}, 0, #{createdBy},
+            #{createdAt}, #{freePostCategory.id}, #{user.id});
+  </insert>
+
+  <resultMap id="freePostDetailResultMap"
+    type="com.juny.finalboard.domain.post.free.common.entity.FreePost">
+    <id column="post_id" property="id"/>
+    <result column="post_created_by" property="createdBy"/>
+    <result column="post_created_at" javaType="java.time.LocalDateTime" property="createdAt"/>
+
+    <result column="post_title" property="title"/>
+
+    <result column="post_content" property="content"/>
+
+    <result column="post_view_count" property="viewCount"/>
+
+    <association javaType="com.juny.finalboard.domain.post.free.common.entity.FreePostCategory"
+      property="freePostCategory">
+      <result column="category_id" property="id"/>
+      <result column="category_name" property="name"/>
+    </association>
+    <association javaType="com.juny.finalboard.domain.user.common.User"
+      property="user">
+      <result column="user_id" property="id"/>
+    </association>
+
+    <collection ofType="com.juny.finalboard.domain.post.free.common.entity.FreeAttachment"
+      property="freeAttachmentList">
+      <id column="attachment_id" property="id"/>
+      <result column="attachment_logical_name" property="logicalName"/>
+      <result column="attachment_stored_name" property="storedName"/>
+      <result column="attachment_stored_path" property="storedPath"/>
+      <result column="attachment_extension" property="extension"/>
+      <result column="attachment_size" property="size"/>
+    </collection>
+    <collection ofType="com.juny.finalboard.domain.post.free.common.entity.FreeComment"
+      property="freeCommentList">
+      <id column="comment_id" property="id"/>
+      <result column="comment_content" property="content"/>
+      <result column="comment_created_by" property="createdBy"/>
+      <result column="comment_created_at" javaType="java.time.LocalDateTime" property="createdAt"/>
+    </collection>
+  </resultMap>
+
+  <select id="findFreePostDetailById" resultMap="freePostDetailResultMap">
+    SELECT p.id           AS post_id,
+           p.title        AS post_title,
+           p.content      AS post_content,
+           p.view_count   AS post_view_count,
+           p.created_by   AS post_created_by,
+           p.created_at   AS post_created_at,
+
+           c.id           AS category_id,
+           c.name         AS category_name,
+
+           a.id           AS attachment_id,
+           a.logical_name AS attachment_logical_name,
+           a.stored_name  AS attachment_stored_name,
+           a.stored_path  AS attachment_stored_path,
+           a.extension    AS attachment_extension,
+           a.size         AS attachment_size,
+
+           cm.id          AS comment_id,
+           cm.content     AS comment_content,
+           cm.created_by  AS comment_created_by,
+           cm.created_at  AS comment_created_at,
+
+           u.id           AS user_id
+
+    FROM free_posts p
+           LEFT JOIN
+         free_categories c ON p.category_id = c.id
+           LEFT JOIN
+         free_attachments a ON p.id = a.post_id
+           LEFT JOIN
+         free_comments cm ON p.id = cm.post_id
+           LEFT JOIN
+         users u ON p.user_id = u.id
+    WHERE p.id = #{id}
+  </select>
+
+  <select id="getTotalFreePostCount" parameterType="String" resultType="long">
+    SELECT
+    COUNT(*)
+    FROM
+    free_posts p
+    INNER JOIN
+    free_categories c
+    ON
+    p.category_id = c.id
+    <include refid="freePostListWhereClause"/>
+  </select>
+
+  <select id="findAllWithBySearchCondition" parameterType="String"
+    resultMap="freePostDetailResultMap">
+    SELECT
+    p.id AS post_id,
+    p.title AS post_title,
+    p.content AS post_content,
+    p.view_count AS post_view_count,
+    p.created_by AS post_created_by,
+    DATE_FORMAT(p.created_at, '%Y-%m-%d %H:%i:%s') AS post_created_at,
+    c.name AS category_name
+
+    FROM
+    free_posts p
+    INNER JOIN
+    free_categories c ON p.category_id = c.id
+    <include refid="freePostListWhereClause"/>
+    ORDER BY
+    ${searchCondition.sort},
+    p.id DESC
+    LIMIT
+    #{searchCondition.pageSize} OFFSET #{offset}
+  </select>
+
+  <sql id="freePostListWhereClause">
+    WHERE 1 = 1
+
+    <if test="searchCondition.categoryId != null and searchCondition.categoryId != ''">
+      AND c.id = #{searchCondition.categoryId}
+    </if>
+
+    <if test="searchCondition.keyword != null and searchCondition.keyword != ''">
+      AND (
+      p.title LIKE CONCAT('%', #{searchCondition.keyword}, '%')
+      OR p.created_by LIKE CONCAT('%', #{searchCondition.keyword}, '%')
+      OR p.content LIKE CONCAT('%', #{searchCondition.keyword}, '%')
+      )
+    </if>
+
+    <if test="searchCondition.startDate != null and searchCondition.startDate != ''">
+      AND p.created_at &gt;= #{searchCondition.startDate}
+    </if>
+    <if test="searchCondition.endDate != null and searchCondition.endDate != ''">
+      AND p.created_at &lt;= #{searchCondition.endDate}
+    </if>
+  </sql>
+
+  <update id="updatePost"
+    parameterType="com.juny.finalboard.domain.post.free.common.entity.FreePost">
+    UPDATE
+        free_posts
+    SET title       = #{title},
+        content     = #{content},
+        category_id = #{freePostCategory.id}
+    WHERE id = #{id}
+  </update>
+
+  <delete id="deletePostById" parameterType="long">
+    DELETE FROM
+      free_posts
+    WHERE
+      id = #{id}
+  </delete>
+
+</mapper>

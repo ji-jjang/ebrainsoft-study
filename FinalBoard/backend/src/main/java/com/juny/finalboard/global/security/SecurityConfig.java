@@ -131,7 +131,10 @@ public class SecurityConfig {
                         HttpMethod.GET,
                         "/api/v1/announcement-categories",
                         "/api/v1/announcement-posts",
-                        "/api/v1/announcement-posts/{postId}")
+                        "/api/v1/announcement-posts/{postId}",
+                        "/api/v1/free-categories",
+                        "/api/v1/free-posts",
+                        "/api/v1/free-posts/{postId}")
                     .permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/v1/auth/login", "/api/v1/register")
                     .permitAll()

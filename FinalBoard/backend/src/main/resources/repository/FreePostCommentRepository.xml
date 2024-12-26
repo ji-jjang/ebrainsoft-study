@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.juny.finalboard.domain.post.free.common.entity.FreeComment">
+
+  <insert id="save" keyProperty="id" parameterType="FreePost" useGeneratedKeys="true">
+    INSERT INTO free_comments (content, created_by, created_at, post_id)
+    VALUES (#{content}, #{createdBy}, #{createdAt}, #{freePost.id});
+  </insert>
+
+  <delete id="deleteCommentById" parameterType="long">
+    DELETE FROM
+      free_comments
+    WHERE
+      id = #{id}
+  </delete>
+
+</mapper>
