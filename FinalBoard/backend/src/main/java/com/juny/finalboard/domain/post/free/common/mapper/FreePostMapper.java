@@ -42,6 +42,7 @@ public class FreePostMapper {
         .hasAttachment(hasAttachment)
         .commentCount(commentCount)
         .attachmentList(freePost.getFreeAttachmentList())
+        .commentList(freePost.getFreeCommentList())
         .build();
   }
 

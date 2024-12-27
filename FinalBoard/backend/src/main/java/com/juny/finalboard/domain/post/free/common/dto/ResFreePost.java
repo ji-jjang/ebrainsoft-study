@@ -1,6 +1,7 @@
 package com.juny.finalboard.domain.post.free.common.dto;
 
 import com.juny.finalboard.domain.post.free.common.entity.FreeAttachment;
+import com.juny.finalboard.domain.post.free.common.entity.FreeComment;
 import java.util.List;
 import lombok.Builder;
 
@@ -17,4 +18,5 @@ public record ResFreePost(
     Boolean isNew,
     Boolean hasAttachment,
     Integer commentCount,
-    List<FreeAttachment> attachmentList) {}
+    List<FreeAttachment> attachmentList,
+    List<FreeComment> commentList) {}

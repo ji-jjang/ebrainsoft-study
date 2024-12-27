@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <link crossorigin="anonymous"
+        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+        rel="stylesheet">
+  <script crossorigin="anonymous"
+          integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script src="/js/free-validation.js"></script>
+  <title>게시글 상세</title>
+</head>
+
+<body>
+<div class="container mt-5">
+
+  <div class="card">
+    <div class="card-header">
+      <h1 class="mb-0">자유 게시판</h1>
+    </div>
+
+    <div class="card-body mt-5">
+      <div class="d-flex border-bottom border-3 pb-2">
+        <h3 class="mb-0" th:text="${post.categoryName}"></h3>
+        <h4 class="ms-5" th:text="${post.title}"></h4>
+        <small class="ms-auto" th:text="${post.createdAt} + ' ' + ${post.createdBy}"></small>
+      </div>
+      <div class="text-end mt-1" th:text="'조회수 : ' + ${post.viewCount}"></div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <div class="card border-3 shadow-sm mt-4">
+        <div class="card-body p-4 bg-light">
+          <div
+              class="mb-4"
+              style="min-height: 15em; white-space: pre-wrap;"
+              th:text="${post.content}">
+          </div>
+        </div>
+      </div>
+      <div class="mt-4 d-flex justify-content-center gap-3">
+
+        <a class="btn btn-primary" href="#" th:href="@{/admin/free/board(
+              startDate=${startDate},
+              endDate=${endDate},
+              categoryId=${categoryId},
+              keyword=${keyword},
+              pageSize=${param.pageSize},
+              sort=${param.sort})}">목록</a>
+
+        <a class="btn btn-secondary"
+           href="#"
+           th:href="@{/admin/free/post/{postId}/update-form(postId=${post.id},
+      startDate=${startDate},
+      endDate=${endDate},
+      categoryId=${categoryId},
+      keyword=${keyword},
+      pageSize=${param.pageSize},
+      sort=${param.sort})}">수정</a>
+
+        <form th:action="@{/admin/free/post/{postId}/delete(postId=${post.id})}" method="post" class="d-inline">
+          <input type="hidden" name="startDate" th:value="${startDate}">
+          <input type="hidden" name="endDate" th:value="${endDate}">
+          <input type="hidden" name="categoryId" th:value="${categoryId}">
+          <input type="hidden" name="keyword" th:value="${keyword}">
+          <input type="hidden" name="pageSize" th:value="${param.pageSize}">
+          <input type="hidden" name="sort" th:value="${param.sort}">
+
+          <button type="submit" class="btn btn-danger"
+                  onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-5">
+    <div class="col">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-info text-white">
+          <h3 class="h5 mb-0">첨부 파일</h3>
+        </div>
+        <div class="card-body">
+          <ul class="list-group">
+            <li class="list-group-item d-flex justify-content-between align-items-center"
+                th:each="attachment : ${post.attachmentList()}">
+              <a th:href="@{/admin/free/attachment/{attachmentId}/download(attachmentId=${attachment.id})}"
+                 th:text="${attachment.logicalName} + ' (' + ${attachment.size} + ' bytes)'"></a>
+              <span class="badge bg-secondary" th:text="'형식: ' + ${attachment.extension}"></span>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-5">
+    <div class="col">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-success text-white">
+          <h3 class="h5 mb-0">댓글</h3>
+        </div>
+        <div class="card-body">
+          <form action="#" class="mb-5" method="post" th:action="@{/admin/free/post/{postId}/comment(postId = ${post.id})}">
+            <div class="row g-3 align-items-center">
+              <input type="hidden" name="startDate" th:value="${startDate}">
+              <input type="hidden" name="endDate" th:value="${endDate}">
+              <input type="hidden" name="categoryId" th:value="${categoryId}">
+              <input type="hidden" name="keyword" th:value="${keyword}">
+              <input type="hidden" name="pageSize" th:value="${param.pageSize}">
+              <input type="hidden" name="sort" th:value="${param.sort}">
+              <div class="col-md-9">
+                <textarea class="form-control" name="content" placeholder="댓글을 입력해 주세요" required
+                          style="resize: none;"></textarea>
+              </div>
+              <div class="col-md-3 text-end">
+                <button class="btn btn-primary w-40" type="submit">등록</button>
+              </div>
+            </div>
+          </form>
+
+          <ul class="list-group">
+            <li class="list-group-item" th:each="comment : ${post.commentList()}">
+              <div class="d-flex justify-content-between">
+                <small class="text-muted"
+                       th:text="${comment.createdBy} + ' - ' + ${comment.createdAt}"></small>
+              </div>
+              <p class="mb-0 mt-2" th:text="${comment.content}"></p>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

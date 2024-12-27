@@ -22,5 +22,7 @@ public interface FreePostRepository {
 
   void updatePost(FreePost updateFreePost);
 
-  void deleteById(Long id);
+  void deletePostById(Long id);
+
+  void increaseViewCount(Long id);
 }

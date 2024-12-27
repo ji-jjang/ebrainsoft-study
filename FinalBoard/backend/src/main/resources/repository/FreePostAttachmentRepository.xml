@@ -5,6 +5,18 @@
 
 <mapper namespace="com.juny.finalboard.domain.post.free.common.repository.FreeAttachmentRepository">
 
+  <resultMap id="attachmentResultMap" type="com.juny.finalboard.domain.post.free.common.entity.FreeAttachment">
+    <id property="id" column="id"/>
+    <result property="logicalName" column="logicalName"/>
+    <result property="storedName" column="storedName"/>
+    <result property="storedPath" column="storedPath"/>
+    <result property="extension" column="extension"/>
+    <result property="size" column="size"/>
+    <association property="freePost" javaType="com.juny.finalboard.domain.post.free.common.entity.FreePost">
+      <id property="id" column="freePostId"/>
+    </association>
+  </resultMap>
+
   <select id="findById" parameterType="Long"
     resultType="com.juny.finalboard.domain.post.free.common.entity.FreeAttachment">
     SELECT id,
@@ -16,7 +28,7 @@
     WHERE id = #{id};
   </select>
 
-  <insert id="save" keyProperty="id" parameterType="FreeAttachment" useGeneratedKeys="true">
+  <insert id="save" keyProperty="id" parameterType="com.juny.finalboard.domain.post.free.common.entity.FreeAttachment" useGeneratedKeys="true">
     INSERT INTO free_attachments (logical_name, stored_name, stored_path, extension,
                                  size, post_id)
     VALUES (#{logicalName}, #{storedName}, #{storedPath},
@@ -28,5 +40,23 @@
     FROM free_attachments
     WHERE id = #{id}
   </delete>
+
+  <select id="findAttachmentsByPostIds" parameterType="list" resultMap="attachmentResultMap">
+    SELECT
+    a.id AS id,
+    a.logical_name AS logicalName,
+    a.stored_name AS storedName,
+    a.stored_path AS storedPath,
+    a.extension AS extension,
+    a.size AS size,
+    a.post_id AS freePostId
+    FROM
+    free_attachments a
+    WHERE
+    a.post_id IN
+    <foreach item="postId" collection="list" open="(" separator="," close=")">
+      #{postId}
+    </foreach>;
+  </select>
 
 </mapper>

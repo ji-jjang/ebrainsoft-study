@@ -87,6 +87,7 @@
            LEFT JOIN
          users u ON p.user_id = u.id
     WHERE p.id = #{id}
+    ORDER BY cm.created_at DESC
   </select>
 
   <select id="getTotalFreePostCount" parameterType="String" resultType="long">
@@ -154,6 +155,13 @@
     SET title       = #{title},
         content     = #{content},
         category_id = #{freePostCategory.id}
+    WHERE id = #{id}
+  </update>
+
+  <update id="increaseViewCount" parameterType="Long">
+    UPDATE
+      free_posts
+    SET view_count = view_count + 1
     WHERE id = #{id}
   </update>
 
