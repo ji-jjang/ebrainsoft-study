@@ -1,11 +1,16 @@
 package com.juny.finalboard.domain.post.free.common.service;
 
+import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
+
 import com.juny.finalboard.domain.post.free.common.dto.FreeSearchCondition;
 import com.juny.finalboard.domain.post.free.common.dto.FreeUpdateVO;
+import com.juny.finalboard.domain.post.free.common.dto.ReqCreateFreeComment;
 import com.juny.finalboard.domain.post.free.common.dto.ReqCreateFreePost;
 import com.juny.finalboard.domain.post.free.common.dto.ReqGetFreePostList;
 import com.juny.finalboard.domain.post.free.common.dto.ReqUpdateFreePost;
 import com.juny.finalboard.domain.post.free.common.entity.FreeAttachment;
+import com.juny.finalboard.domain.post.free.common.entity.FreeComment;
 import com.juny.finalboard.domain.post.free.common.entity.FreePost;
 import com.juny.finalboard.domain.post.free.common.entity.FreePostCategory;
 import com.juny.finalboard.domain.post.free.common.repository.FreeAttachmentRepository;
@@ -17,7 +22,9 @@ import com.juny.finalboard.domain.user.common.UserRepository;
 import com.juny.finalboard.global.constant.Constants;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -81,6 +88,10 @@ public class FreePostService {
 
   private void saveAttachment(
       List<MultipartFile> attachments, Long postId, List<FreeAttachment> attachmentList) {
+
+    if (attachments.getFirst().isEmpty()) {
+      return;
+    }
 
     for (var att : attachments) {
       long size = att.getSize();
@@ -174,6 +185,9 @@ public class FreePostService {
    *
    * <h1>검색 조건에 따른 게시물 목록 </h1>
    *
+   * <br>
+   * - 연관된 일대다 엔티티 추가 조회(댓글, 첨부파일)
+   *
    * @param searchCondition 검색 조건
    * @return 게시글 목록
    */
@@ -181,7 +195,30 @@ public class FreePostService {
 
     int offset = searchCondition.page() * searchCondition.pageSize();
 
-    return freePostRepository.findAllWithBySearchCondition(searchCondition, offset);
+    List<FreePost> freePostList =
+        freePostRepository.findAllWithBySearchCondition(searchCondition, offset);
+
+    List<Long> postIds = freePostList.stream().map(FreePost::getId).collect(toList());
+
+    List<FreeComment> comments = freeCommentRepository.findCommentsByPostIds(postIds);
+    List<FreeAttachment> attachments = freeAttachmentRepository.findAttachmentsByPostIds(postIds);
+
+    Map<Long, List<FreeComment>> commentsByPostId =
+        comments.stream().collect(groupingBy(comment -> comment.getFreePost().getId()));
+
+    Map<Long, List<FreeAttachment>> attachmentsByPostId =
+        attachments.stream().collect(groupingBy(attachment -> attachment.getFreePost().getId()));
+
+    return freePostList.stream()
+        .map(
+            freePost ->
+                freePost.toBuilder()
+                    .freeCommentList(
+                        commentsByPostId.getOrDefault(freePost.getId(), Collections.emptyList()))
+                    .freeAttachmentList(
+                        attachmentsByPostId.getOrDefault(freePost.getId(), Collections.emptyList()))
+                    .build())
+        .toList();
   }
 
   /**
@@ -256,9 +293,9 @@ public class FreePostService {
    *
    * <h1>게시글 삭제 </h1>
    *
-   * @param postId
-   * @param freePost
-   * @param userId
+   * @param postId 게시글 아이디 (권한 조회)
+   * @param freePost 게시글 조회 (권한 조회)
+   * @param userId 유저 (권한 조회)
    */
   public void deletePostById(Long postId, FreePost freePost, Long userId) {
 
@@ -278,7 +315,7 @@ public class FreePostService {
       freeCommentRepository.deleteCommentById(comment.getId());
     }
 
-    freePostRepository.deleteById(postId);
+    freePostRepository.deletePostById(postId);
   }
 
   private User getUserByUserId(Long userId) {
@@ -286,5 +323,41 @@ public class FreePostService {
     return userRepository
         .findById(userId)
         .orElseThrow(() -> new RuntimeException(String.format("invalid user id: %d", userId)));
+  }
+
+  /**
+   *
+   *
+   * <h1>자유 게시글, 조회수 증가 </h1>
+   *
+   * @param postId 겍시글 아이디
+   */
+  public void increaseViewCount(Long postId) {
+
+    freePostRepository.increaseViewCount(postId);
+  }
+
+  /**
+   *
+   *
+   * <h1>댓글 생성 </h1>
+   *
+   * @param req 댓글 생성 DTO
+   * @param postId 게시글 아이디
+   * @param userId 유저 아이디
+   */
+  public void createComment(ReqCreateFreeComment req, Long postId, Long userId) {
+
+    User user = getUserByUserId(userId);
+
+    FreeComment comment =
+        FreeComment.builder()
+            .content(req.content())
+            .createdBy(user.getName())
+            .createdAt(LocalDateTime.now())
+            .freePost(FreePost.builder().id(postId).build())
+            .build();
+
+    freeCommentRepository.save(comment);
   }
 }
