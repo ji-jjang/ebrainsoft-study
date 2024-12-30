@@ -69,6 +69,8 @@ public class UserFreePostController {
   public ResponseEntity<ResFreePost> getFreePostWithCommentAndAttachment(
       @PathVariable Long postId) {
 
+    freePostService.increaseViewCount(postId);
+
     FreePost freePost = freePostService.getFreePostDetail(postId);
 
     ResFreePost resFreePost = FreePostMapper.toResFreePost(freePost);
