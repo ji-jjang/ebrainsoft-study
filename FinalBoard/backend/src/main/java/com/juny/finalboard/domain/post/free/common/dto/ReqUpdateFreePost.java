@@ -26,6 +26,7 @@ public record ReqUpdateFreePost(
     if (addAttachments == null) {
       addAttachments = Collections.emptyList();
     }
+
     if (deleteAttachmentIds == null) {
       deleteAttachmentIds = Collections.emptyList();
     }

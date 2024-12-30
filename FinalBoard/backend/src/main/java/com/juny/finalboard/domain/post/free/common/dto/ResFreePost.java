@@ -19,4 +19,5 @@ public record ResFreePost(
     Boolean hasAttachment,
     Integer commentCount,
     List<FreeAttachment> attachmentList,
-    List<FreeComment> commentList) {}
+    List<FreeComment> commentList,
+    Long userId) {}

@@ -76,6 +76,7 @@ public class FreePostService {
             .createdBy(user.getName())
             .createdAt(LocalDateTime.now())
             .freePostCategory(freePostCategory)
+            .user(User.builder().id(userId).build())
             .build();
 
     freePostRepository.save(freePost);
@@ -89,7 +90,7 @@ public class FreePostService {
   private void saveAttachment(
       List<MultipartFile> attachments, Long postId, List<FreeAttachment> attachmentList) {
 
-    if (attachments.getFirst().isEmpty()) {
+    if (attachments.isEmpty()) {
       return;
     }
 
@@ -346,7 +347,7 @@ public class FreePostService {
    * @param postId 게시글 아이디
    * @param userId 유저 아이디
    */
-  public void createComment(ReqCreateFreeComment req, Long postId, Long userId) {
+  public FreeComment createComment(ReqCreateFreeComment req, Long postId, Long userId) {
 
     User user = getUserByUserId(userId);
 
@@ -359,5 +360,7 @@ public class FreePostService {
             .build();
 
     freeCommentRepository.save(comment);
+
+    return comment;
   }
 }
