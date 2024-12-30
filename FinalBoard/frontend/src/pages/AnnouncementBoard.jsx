@@ -121,7 +121,6 @@ const AnnouncementBoard = () => {
         </Col>
       </Row>
 
-      {/* 검색 조건 */}
       <Row className="mt-3 align-items-center">
         <Col md={2}>
           <Form.Control
@@ -163,7 +162,7 @@ const AnnouncementBoard = () => {
           />
         </Col>
         <Col md="auto">
-          <Button variant="primary" onClick={() => handleSearch(1)}>
+          <Button variant="primary" onClick={() => handleSearch()}>
             검색
           </Button>
         </Col>
@@ -224,8 +223,7 @@ const AnnouncementBoard = () => {
                         );
                       }}
                     >
-                      {post.title}{" "}
-                      {post.isNew && <span>✨</span>}
+                      {post.title} {post.isNew && <span>✨</span>}
                     </a>
                   </td>
                   <td>{post.viewCount}</td>
@@ -249,8 +247,7 @@ const AnnouncementBoard = () => {
                         );
                       }}
                     >
-                      {post.title}{" "}
-                      {post.isNew && <span>✨</span>}
+                      {post.title} {post.isNew && <span>✨</span>}
                     </a>
                   </td>
                   <td>{post.viewCount}</td>
@@ -311,7 +308,6 @@ const AnnouncementBoard = () => {
       </Row>
     </Container>
   );
-  // );
 };
 
 export default AnnouncementBoard;
