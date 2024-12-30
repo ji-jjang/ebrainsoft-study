@@ -24,7 +24,7 @@ public class FreePostMapper {
     Boolean isNew = LocalDateTime.now().minusDays(7).isBefore(freePost.getCreatedAt());
 
     Boolean hasAttachment =
-        freePost.getFreeCommentList() != null && !freePost.getFreeCommentList().isEmpty();
+        freePost.getFreeAttachmentList() != null && !freePost.getFreeAttachmentList().isEmpty();
 
     Integer commentCount =
         freePost.getFreeCommentList() == null ? 0 : freePost.getFreeCommentList().size();
@@ -43,6 +43,7 @@ public class FreePostMapper {
         .commentCount(commentCount)
         .attachmentList(freePost.getFreeAttachmentList())
         .commentList(freePost.getFreeCommentList())
+        .userId(freePost.getUser() != null ? freePost.getUser().getId() : -1L)
         .build();
   }
 

@@ -134,7 +134,8 @@ public class SecurityConfig {
                         "/api/v1/announcement-posts/{postId}",
                         "/api/v1/free-categories",
                         "/api/v1/free-posts",
-                        "/api/v1/free-posts/{postId}")
+                        "/api/v1/free-posts/{postId}",
+                        "/api/v1/attachments/{attachmentId}/download")
                     .permitAll()
                     .requestMatchers(HttpMethod.POST, "/api/v1/auth/login", "/api/v1/register")
                     .permitAll()

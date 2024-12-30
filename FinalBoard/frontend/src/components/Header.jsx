@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { getUserProfileApi } from "../services/userService.js";
 import { Container, Nav, Navbar } from "react-bootstrap";
+import { useLocation } from "react-router-dom";
 
 const Header = () => {
+  const location = useLocation();
+
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const [username, setUsername] = useState("");
@@ -10,15 +13,17 @@ const Header = () => {
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
     setIsLoggedIn(!!token);
-  }, []);
+  }, [location]);
 
   useEffect(() => {
-    const loadUserProfile = async () => {
-      const data = await getUserProfileApi();
-      setUsername(data.name);
-    };
-    loadUserProfile();
-  }, []);
+    if (isLoggedIn) {
+      const loadUserProfile = async () => {
+        const data = await getUserProfileApi();
+        setUsername(data.name);
+      };
+      loadUserProfile();
+    }
+  }, [isLoggedIn]);
 
   const handleLogout = () => {
     localStorage.removeItem("accessToken");

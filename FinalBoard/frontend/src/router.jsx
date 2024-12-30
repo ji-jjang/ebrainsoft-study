@@ -5,6 +5,10 @@ import AnnouncementBoard from "./pages/AnnouncementBoard.jsx";
 import Header from "./components/Header.jsx";
 import Register from "./pages/Register.jsx";
 import AnnouncementPost from "./pages/AnnouncementPost.jsx";
+import FreeBoard from "./pages/FreeBoard.jsx";
+import FreeBoardCreateForm from "./pages/FreeBoardCreateForm.jsx";
+import FreePost from "./pages/FreePost.jsx";
+import UpdatePost from "./pages/FreeBoardUpdateForm.jsx";
 
 const router = createBrowserRouter([
   {
@@ -49,6 +53,42 @@ const router = createBrowserRouter([
       <>
         <Header />
         <AnnouncementPost />
+      </>
+    ),
+  },
+  {
+    path: "/free-board",
+    element: (
+      <>
+        <Header />
+        <FreeBoard />
+      </>
+    ),
+  },
+  {
+    path: "/free-board/post/:id",
+    element: (
+      <>
+        <Header />
+        <FreePost />
+      </>
+    ),
+  },
+  {
+    path: "/free-board/post/:id/update",
+    element: (
+      <>
+        <Header />
+        <UpdatePost />
+      </>
+    ),
+  },
+  {
+    path: "/free-board/create",
+    element: (
+      <>
+        <Header />
+        <FreeBoardCreateForm />
       </>
     ),
   },

@@ -10,16 +10,15 @@ import {
   Pagination,
 } from "react-bootstrap";
 import {
-  getAnnouncementCategoriesApi,
-  getAnnouncementPostListApi,
-} from "../services/announcementService";
+  getFreeCategoriesApi,
+  getFreePostListApi,
+} from "../services/freeService.js";
 
-const AnnouncementBoard = () => {
+const FreeBoard = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [pinnedPosts, setPinnedPosts] = useState([]);
-  const [unPinnedPosts, setUnPinnedPosts] = useState([]);
+  const [freePosts, setFreePosts] = useState([]);
   const [searchCondition, setSearchCondition] = useState({
     startDate: "",
     endDate: "",
@@ -32,20 +31,20 @@ const AnnouncementBoard = () => {
 
   const [categories, setCategories] = useState([]);
 
-  const fetchAnnouncementBoardList = async (condition) => {
-    const data = await getAnnouncementPostListApi(condition);
+  const fetchFreeBoardList = async (condition) => {
+    const data = await getFreePostListApi(condition);
 
-    setPinnedPosts(data.resPinnedPostList);
-    setUnPinnedPosts(data.resUnPinnedPostList);
+    setFreePosts(data.postList);
     setSearchCondition(data.searchCondition);
     setPageInfo(data.pageInfo);
   };
 
   useEffect(() => {
     const loadCategories = async () => {
-      const data = await getAnnouncementCategoriesApi();
-      setCategories(data.resCategoryList);
+      const data = await getFreeCategoriesApi();
+      setCategories(data);
     };
+
     loadCategories();
 
     const queryParams = Object.fromEntries(
@@ -57,7 +56,7 @@ const AnnouncementBoard = () => {
       ...queryParams,
     };
 
-    fetchAnnouncementBoardList(updatedSearchCondition);
+    fetchFreeBoardList(updatedSearchCondition);
   }, []);
 
   const handleSortChange = (e) => {
@@ -69,13 +68,13 @@ const AnnouncementBoard = () => {
       page: "1",
     };
     setSearchCondition(updatedSearchCondition);
-    fetchAnnouncementBoardList(updatedSearchCondition);
+    fetchFreeBoardList(updatedSearchCondition);
     const queryParams = new URLSearchParams(updatedSearchCondition).toString();
     navigate(`?${queryParams}`);
   };
 
   const handleSearch = () => {
-    fetchAnnouncementBoardList(searchCondition);
+    fetchFreeBoardList(searchCondition);
     const queryParams = new URLSearchParams(searchCondition).toString();
     navigate(`?${queryParams}`);
   };
@@ -89,7 +88,7 @@ const AnnouncementBoard = () => {
       page: "1",
     };
     setSearchCondition(updatedSearchCondition);
-    fetchAnnouncementBoardList(updatedSearchCondition);
+    fetchFreeBoardList(updatedSearchCondition);
     const queryParams = new URLSearchParams(updatedSearchCondition).toString();
     navigate(`?${queryParams}`);
   };
@@ -100,7 +99,7 @@ const AnnouncementBoard = () => {
       page: page,
     };
     setSearchCondition(updatedSearchCondition);
-    fetchAnnouncementBoardList(updatedSearchCondition);
+    fetchFreeBoardList(updatedSearchCondition);
     const queryParams = new URLSearchParams(updatedSearchCondition).toString();
     navigate(`?${queryParams}`);
   };
@@ -117,7 +116,7 @@ const AnnouncementBoard = () => {
     <Container fluid>
       <Row className="mt-4">
         <Col>
-          <h1>공지사항 게시판</h1>
+          <h1>자유 게시판</h1>
         </Col>
       </Row>
 
@@ -195,6 +194,19 @@ const AnnouncementBoard = () => {
         </Col>
       </Row>
 
+      <Col className="text-end mt-3">
+        <Button
+          variant="primary"
+          href={`/free-board/create`}
+          onClick={(e) => {
+            e.preventDefault();
+            navigate(`/free-board/create${location.search}`);
+          }}
+        >
+          글 등록
+        </Button>
+      </Col>
+
       <Row className="mt-3">
         <Col>
           <Table bordered hover>
@@ -209,45 +221,23 @@ const AnnouncementBoard = () => {
               </tr>
             </thead>
             <tbody>
-              {pinnedPosts.map((post) => (
+              {freePosts.map((post) => (
                 <tr key={post.id} className="table-secondary">
                   <td>{post.id}</td>
                   <td>{post.categoryName}</td>
                   <td>
                     <a
-                      href={`/announcement-board/post/${post.id}`}
+                      href={`/free-board/post/${post.id}`}
                       onClick={(e) => {
                         e.preventDefault();
                         navigate(
-                          `/announcement-board/post/${post.id}${location.search}`,
+                          `/free-board/post/${post.id}${location.search}`,
                         );
                       }}
                     >
-                      {post.title} {post.isNew && <span>✨</span>}
-                    </a>
-                  </td>
-                  <td>{post.viewCount}</td>
-                  <td>{post.createdAt}</td>
-                  <td>{post.createdBy}</td>
-                </tr>
-              ))}
-            </tbody>
-            <tbody>
-              {unPinnedPosts.map((post) => (
-                <tr key={post.id}>
-                  <td>{post.id}</td>
-                  <td>{post.categoryName}</td>
-                  <td>
-                    <a
-                      href={`/announcement-board/post/${post.id}`}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        navigate(
-                          `/announcement-board/post/${post.id}${location.search}`,
-                        );
-                      }}
-                    >
-                      {post.title} {post.isNew && <span>✨</span>}
+                      {post.title} {`(${post.commentCount})`}
+                      {post.isNew && <span>✨</span>}
+                      {post.hasAttachment && <span>📎</span>}
                     </a>
                   </td>
                   <td>{post.viewCount}</td>
@@ -310,4 +300,4 @@ const AnnouncementBoard = () => {
   );
 };
 
-export default AnnouncementBoard;
+export default FreeBoard;
