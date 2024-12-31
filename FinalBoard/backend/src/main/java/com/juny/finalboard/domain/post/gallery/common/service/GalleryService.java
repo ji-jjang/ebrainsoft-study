@@ -77,7 +77,7 @@ public class GalleryService {
     List<GalleryImage> galleryImages = new ArrayList<>();
     saveImages(req.images(), galleryPost.getId(), galleryImages);
 
-    return galleryPost;
+    return galleryPost.toBuilder().galleryImages(galleryImages).build();
   }
 
   /**
@@ -309,7 +309,7 @@ public class GalleryService {
   private void saveImages(
       List<MultipartFile> images,
       Long postId,
-      List<com.juny.finalboard.domain.post.gallery.common.entity.GalleryImage> galleryImages) {
+      List<GalleryImage> galleryImages) {
 
     if (images.isEmpty()) {
       return;
