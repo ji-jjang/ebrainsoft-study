@@ -30,7 +30,7 @@ public class AdminLoginFilterTest {
                 .param("email", "junyhehe@gmail.com")
                 .param("password", "1234"))
         .andExpect(status().is3xxRedirection())
-        .andExpect(redirectedUrl("/admin/management"));
+        .andExpect(redirectedUrl("/admin/announcement/board"));
   }
 
   @Test
