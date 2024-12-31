@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.juny.finalboard.domain.post.gallery.common.repository.GalleryPostRepository">
+
+  <delete id="deletePostById" parameterType="long">
+    DELETE
+    FROM gallery_posts
+    WHERE id = #{id}
+  </delete>
+
+
+  <insert id="save" keyProperty="id"
+    parameterType="com.juny.finalboard.domain.post.gallery.common.entity.GalleryPost"
+    useGeneratedKeys="true">
+    INSERT INTO gallery_posts (title, content, view_count, created_by,
+                               created_at, category_id, user_id)
+    VALUES (#{title}, #{content}, 0, #{createdBy},
+            #{createdAt}, #{galleryCategory.id}, #{user.id});
+  </insert>
+
+  <resultMap id="galleryPostDetailResultMap"
+    type="com.juny.finalboard.domain.post.gallery.common.entity.GalleryPost">
+
+    <id column="post_id" property="id"/>
+    <result column="post_content" property="content"/>
+    <result column="post_view_count" property="viewCount"/>
+
+    <result column="post_created_by" property="createdBy"/>
+
+    <result column="post_created_at" javaType="java.time.LocalDateTime" property="createdAt"/>
+
+    <result column="post_title" property="title"/>
+
+    <association javaType="com.juny.finalboard.domain.post.gallery.common.entity.GalleryCategory"
+      property="galleryCategory">
+      <result column="category_id" property="id"/>
+      <result column="category_name" property="name"/>
+    </association>
+    <association javaType="com.juny.finalboard.domain.user.common.User"
+      property="user">
+      <result column="user_id" property="id"/>
+    </association>
+    <collection ofType="com.juny.finalboard.domain.post.gallery.common.entity.GalleryImage"
+      property="galleryImages">
+      <id column="image_id" property="id"/>
+      <result column="image_logical_name" property="logicalName"/>
+      <result column="image_stored_name" property="storedName"/>
+      <result column="image_stored_path" property="storedPath"/>
+      <result column="image_extension" property="extension"/>
+      <result column="image_size" property="size"/>
+    </collection>
+  </resultMap>
+
+  <select id="getTotalGalleryPostCountBySearchCondition" resultType="long">
+    SELECT
+    COUNT(*)
+    FROM
+    gallery_posts p
+    INNER JOIN
+    gallery_categories c
+    ON
+    p.category_id = c.id
+    <include refid="galleryPostListWhereClause"/>
+  </select>
+
+  <select id="findAllWithBySearchCondition" resultMap="galleryPostDetailResultMap">
+    SELECT
+    p.id AS post_id,
+    p.title AS post_title,
+    p.content AS post_content,
+    p.view_count AS post_view_count,
+    p.created_by AS post_created_by,
+    p.user_id AS user_id,
+    DATE_FORMAT(p.created_at, '%Y-%m-%d %H:%i:%s') AS post_created_at,
+    c.id AS category_id,
+    c.name AS category_name
+
+    FROM
+    gallery_posts p
+    INNER JOIN
+    gallery_categories c ON p.category_id = c.id
+    <include refid="galleryPostListWhereClause"/>
+    ORDER BY
+    ${searchCondition.sort},
+    p.id DESC
+    LIMIT
+    #{searchCondition.pageSize} OFFSET #{offset}
+  </select>
+
+  <select id="findGalleryPostDetailById" parameterType="long"
+    resultMap="galleryPostDetailResultMap">
+    SELECT p.id           AS post_id,
+           p.title        AS post_title,
+           p.content      AS post_content,
+           p.view_count   AS post_view_count,
+           p.created_by   AS post_created_by,
+           p.created_at   AS post_created_at,
+
+           c.id           AS category_id,
+           c.name         AS category_name,
+
+           i.id           AS image_id,
+           i.logical_name AS image_logical_name,
+           i.stored_name  AS image_stored_name,
+           i.stored_path  AS image_stored_path,
+           i.extension    AS image_extension,
+           i.size         AS image_size,
+
+           u.id           AS user_id
+
+    FROM gallery_posts p
+           LEFT JOIN
+         gallery_categories c ON p.category_id = c.id
+           LEFT JOIN
+         gallery_images i ON p.id = i.post_id
+           LEFT JOIN
+         users u ON p.user_id = u.id
+    WHERE p.id = #{id}
+    ORDER BY i.id asc
+  </select>
+
+  <sql id="galleryPostListWhereClause">
+    WHERE 1 = 1
+
+    <if test="searchCondition.categoryId != null and searchCondition.categoryId != ''">
+      AND c.id = #{searchCondition.categoryId}
+    </if>
+
+    <if test="searchCondition.keyword != null and searchCondition.keyword != ''">
+      AND (
+      p.title LIKE CONCAT('%', #{searchCondition.keyword}, '%')
+      OR p.created_by LIKE CONCAT('%', #{searchCondition.keyword}, '%')
+      OR p.content LIKE CONCAT('%', #{searchCondition.keyword}, '%')
+      )
+    </if>
+
+    <if test="searchCondition.startDate != null and searchCondition.startDate != ''">
+      AND p.created_at &gt;= #{searchCondition.startDate}
+    </if>
+    <if test="searchCondition.endDate != null and searchCondition.endDate != ''">
+      AND p.created_at &lt;= #{searchCondition.endDate}
+    </if>
+  </sql>
+
+  <update id="increaseViewCount" parameterType="long">
+    UPDATE
+      gallery_posts
+    SET view_count = view_count + 1
+    WHERE id = #{id}
+  </update>
+
+  <update id="updatePost"
+    parameterType="com.juny.finalboard.domain.post.gallery.common.entity.GalleryPost">
+    UPDATE
+      gallery_posts
+    SET title       = #{title},
+        content     = #{content},
+        category_id = #{galleryCategory.id}
+    WHERE id = #{id}
+  </update>
+
+</mapper>
