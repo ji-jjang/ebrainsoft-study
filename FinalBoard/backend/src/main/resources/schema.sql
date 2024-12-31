@@ -72,4 +72,36 @@ CREATE TABLE free_comments
     post_id    BIGINT,
 
     FOREIGN KEY (post_id) REFERENCES free_posts (id)
-)
+);
+
+CREATE TABLE gallery_categories
+(
+    id   BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE gallery_posts
+(
+    id          BIGINT AUTO_INCREMENT PRIMARY KEY,
+    title       VARCHAR(255) NOT NULL,
+    content     TEXT         NOT NULL,
+    view_count  INT DEFAULT 0,
+    created_by  VARCHAR(255) NOT NULL,
+    created_at  DATETIME,
+    category_id BIGINT,
+    user_id     BIGINT,
+    FOREIGN KEY (user_id) REFERENCES users (id),
+    FOREIGN KEY (category_id) REFERENCES gallery_categories (id)
+);
+
+CREATE TABLE gallery_images
+(
+    id           BIGINT AUTO_INCREMENT PRIMARY KEY,
+    logical_name VARCHAR(255) NOT NULL,
+    stored_name  VARCHAR(255) NOT NULL,
+    stored_path  VARCHAR(255) NOT NULL,
+    extension    VARCHAR(255) NOT NULL,
+    size         BIGINT          NOT NULL,
+    post_id      BIGINT,
+    FOREIGN KEY (post_id) REFERENCES gallery_posts (id)
+);

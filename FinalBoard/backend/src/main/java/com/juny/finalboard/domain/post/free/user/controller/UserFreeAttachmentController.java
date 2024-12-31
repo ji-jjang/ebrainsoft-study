@@ -2,7 +2,7 @@ package com.juny.finalboard.domain.post.free.user.controller;
 
 import com.juny.finalboard.domain.post.free.common.dto.FileDownloadVo;
 import com.juny.finalboard.domain.post.free.common.service.FreeAttachmentService;
-import com.juny.finalboard.domain.post.free.common.service.LocalFileService;
+import com.juny.finalboard.domain.post.common.LocalFileService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

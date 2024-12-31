@@ -1,7 +1,6 @@
-package com.juny.finalboard.domain.post.free.common.service;
+package com.juny.finalboard.domain.post.common;
 
 import com.juny.finalboard.domain.post.free.common.dto.FileDownloadVo;
-import com.juny.finalboard.domain.post.free.common.entity.FreeAttachment;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
@@ -23,21 +22,21 @@ public class LocalFileService {
    * <h1>파일 저장 </h1>
    *
    * @param attachments 멀티파트 파일
-   * @param freeAttachments 멀티파트 파일 정보
+   * @param fileDetailsList 멀티파트 파일 정보
    */
-  public void saveFile(List<MultipartFile> attachments, List<FreeAttachment> freeAttachments) {
+  public void saveFile(List<MultipartFile> attachments, List<? extends FileDetails> fileDetailsList) {
 
-    IntStream.range(0, freeAttachments.size())
+    IntStream.range(0, fileDetailsList.size())
         .forEach(
             idx -> {
               var file = attachments.get(idx);
 
-              FreeAttachment freeAttachment = freeAttachments.get(idx);
+              FileDetails fileDetails = fileDetailsList.get(idx);
               try {
                 file.transferTo(
                     Paths.get(
-                        freeAttachment.getStoredPath(),
-                        freeAttachment.getStoredName() + freeAttachment.getExtension()));
+                        fileDetails.getStoredPath(),
+                        fileDetails.getStoredName() + fileDetails.getExtension()));
               } catch (IOException e) {
                 throw new RuntimeException(e);
               }
@@ -49,13 +48,13 @@ public class LocalFileService {
    *
    * <h1>파일 삭제 </h1>
    *
-   * @param freeAttachments 삭제할 파일 정보
+   * @param fileDetailsList 삭제할 파일 정보
    */
-  public void deleteFile(List<FreeAttachment> freeAttachments) {
+  public void deleteFile(List<? extends FileDetails> fileDetailsList) {
 
-    for (var attachment : freeAttachments) {
+    for (var fileDetails : fileDetailsList) {
       String path =
-          attachment.getStoredPath() + attachment.getStoredName() + attachment.getExtension();
+          fileDetails.getStoredPath() + fileDetails.getStoredName() + fileDetails.getExtension();
       try {
         Files.delete(Path.of(path));
       } catch (IOException e) {

@@ -15,7 +15,7 @@ import com.juny.finalboard.domain.post.free.common.mapper.FreePostMapper;
 import com.juny.finalboard.domain.post.free.common.service.FreeAttachmentService;
 import com.juny.finalboard.domain.post.free.common.service.FreePostCategoryService;
 import com.juny.finalboard.domain.post.free.common.service.FreePostService;
-import com.juny.finalboard.domain.post.free.common.service.LocalFileService;
+import com.juny.finalboard.domain.post.common.LocalFileService;
 import com.juny.finalboard.global.security.common.service.CustomUserDetails;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
