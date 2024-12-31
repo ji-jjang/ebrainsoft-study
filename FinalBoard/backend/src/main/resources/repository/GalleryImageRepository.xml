@@ -17,7 +17,7 @@
     useGeneratedKeys="true">
     INSERT INTO gallery_images (logical_name, stored_path, stored_name, extension,
                                 size, post_id)
-    VALUES (#{logicalName}, #{storedName}, #{storedPath},
+    VALUES (#{logicalName}, #{storedPath}, #{storedName},
             #{extension}, #{size}, #{post.id});
   </insert>
 
