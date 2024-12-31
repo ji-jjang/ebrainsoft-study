@@ -10,7 +10,7 @@ import com.juny.finalboard.domain.post.free.common.dto.ResFreePostList;
 import com.juny.finalboard.domain.post.free.common.entity.FreePost;
 import com.juny.finalboard.domain.post.free.common.mapper.FreePostMapper;
 import com.juny.finalboard.domain.post.free.common.service.FreePostService;
-import com.juny.finalboard.domain.post.free.common.service.LocalFileService;
+import com.juny.finalboard.domain.post.common.LocalFileService;
 import com.juny.finalboard.global.security.common.service.CustomUserDetails;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
