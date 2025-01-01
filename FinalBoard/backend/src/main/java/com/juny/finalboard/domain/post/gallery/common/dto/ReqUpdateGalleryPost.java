@@ -3,6 +3,7 @@ package com.juny.finalboard.domain.post.gallery.common.dto;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import lombok.Builder;
@@ -40,5 +41,18 @@ public record ReqUpdateGalleryPost(
     if (deleteImageIds == null) {
       deleteImageIds = Collections.emptyList();
     }
+
+    List<MultipartFile> newImages = new ArrayList<>();
+
+    for (var image : addImages) {
+      if (image.getSize() > 0) newImages.add(image);
+    }
+
+    if (newImages.size() > 5) {
+      throw new RuntimeException(
+          String.format("max file upload limit exceeded, max:%d cur:%d", 5, newImages.size()));
+    }
+
+    addImages = newImages;
   }
 }
