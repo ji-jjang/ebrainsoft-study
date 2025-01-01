@@ -1,5 +1,6 @@
 package com.juny.finalboard.domain.post.free.admin.controller;
 
+import com.juny.finalboard.domain.post.common.LocalFileService;
 import com.juny.finalboard.domain.post.free.common.dto.FileDownloadVo;
 import com.juny.finalboard.domain.post.free.common.dto.FreeSearchCondition;
 import com.juny.finalboard.domain.post.free.common.dto.FreeUpdateVO;
@@ -15,7 +16,6 @@ import com.juny.finalboard.domain.post.free.common.mapper.FreePostMapper;
 import com.juny.finalboard.domain.post.free.common.service.FreeAttachmentService;
 import com.juny.finalboard.domain.post.free.common.service.FreePostCategoryService;
 import com.juny.finalboard.domain.post.free.common.service.FreePostService;
-import com.juny.finalboard.domain.post.common.LocalFileService;
 import com.juny.finalboard.global.security.common.service.CustomUserDetails;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -146,7 +146,9 @@ public class AdminFreePostController {
       @RequestParam(required = false) String sort,
       @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-    freePostService.createFreePost(req, userDetails.getId());
+    FreePost freePost = freePostService.createFreePost(req, userDetails.getId());
+
+    localFileService.saveFile(req.attachments(), freePost.getFreeAttachmentList());
 
     return String.format(
         "redirect:/admin/announcement/board?startDate=%s&endDate=%s&categoryId=%s&keyword=%s&pageSize=%s&sort=%s",
