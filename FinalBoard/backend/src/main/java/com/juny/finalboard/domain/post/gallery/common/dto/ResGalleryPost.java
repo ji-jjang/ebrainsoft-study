@@ -15,6 +15,7 @@ public record ResGalleryPost(
     String createdBy,
     boolean isNew,
     Integer imageCount,
+    Long userId,
     String representImagePath,
     GalleryCategory categories,
     List<GalleryImage> galleryImages) {}

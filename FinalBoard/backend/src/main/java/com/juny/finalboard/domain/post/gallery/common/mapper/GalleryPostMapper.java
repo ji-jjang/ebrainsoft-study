@@ -35,6 +35,7 @@ public class GalleryPostMapper {
         .isNew(isNew)
         .imageCount(imageCount)
         .representImagePath(representImagePath)
+        .userId(galleryPost.getUser().getId())
         .categories(galleryPost.getGalleryCategory())
         .galleryImages(galleryPost.getGalleryImages())
         .build();
@@ -45,24 +46,26 @@ public class GalleryPostMapper {
 
     String[] sort = searchCondition.sort().split(Constants.SPACE_SIGN);
 
-    GalleryPageInfo resPageInfo = GalleryPageInfo.builder()
-      .page(searchCondition.page() + 1)
-      .pageSize(searchCondition.pageSize())
-      .totalPages((int) Math.ceil((double) totalPostCount / searchCondition.pageSize()))
-      .totalCount(totalPostCount)
-      .build();
+    GalleryPageInfo resPageInfo =
+        GalleryPageInfo.builder()
+            .page(searchCondition.page() + 1)
+            .pageSize(searchCondition.pageSize())
+            .totalPages((int) Math.ceil((double) totalPostCount / searchCondition.pageSize()))
+            .totalCount(totalPostCount)
+            .build();
 
-    GallerySearchCondition resSearchCondition = GallerySearchCondition.builder()
-      .startDate(searchCondition.startDate().split(Constants.SPACE_SIGN)[0])
-      .endDate(searchCondition.endDate().split(Constants.SPACE_SIGN)[0])
-      .categoryId(searchCondition.categoryId())
-      .keyword(searchCondition.keyword())
-      .pageSize(searchCondition.pageSize())
-      .sort(sort[0] + Constants.COLON_SIGN + sort[1])
-      .build();
+    GallerySearchCondition resSearchCondition =
+        GallerySearchCondition.builder()
+            .startDate(searchCondition.startDate().split(Constants.SPACE_SIGN)[0])
+            .endDate(searchCondition.endDate().split(Constants.SPACE_SIGN)[0])
+            .categoryId(searchCondition.categoryId())
+            .keyword(searchCondition.keyword())
+            .pageSize(searchCondition.pageSize())
+            .sort(sort[0] + Constants.COLON_SIGN + sort[1])
+            .build();
 
-    List<ResGalleryPost> resGalleryPostList = galleryPosts.stream().map(GalleryPostMapper::toResGalleryPost)
-      .toList();
+    List<ResGalleryPost> resGalleryPostList =
+        galleryPosts.stream().map(GalleryPostMapper::toResGalleryPost).toList();
 
     return new ResGalleryPostList(resGalleryPostList, resSearchCondition, resPageInfo);
   }
