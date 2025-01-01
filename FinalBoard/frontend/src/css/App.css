@@ -1,0 +1,10 @@
+#galleryCarousel .carousel-control-prev-icon,
+#galleryCarousel .carousel-control-next-icon {
+  filter: invert(100%);
+}
+#galleryCarousel .carousel-indicators {
+  filter: invert(100%);
+}
+#galleryCarousel .carousel-indicators .active {
+  transform: scale(1.2);
+}

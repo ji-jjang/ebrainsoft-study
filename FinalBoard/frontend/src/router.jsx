@@ -9,6 +9,10 @@ import FreeBoard from "./pages/FreeBoard.jsx";
 import FreeBoardCreateForm from "./pages/FreeBoardCreateForm.jsx";
 import FreePost from "./pages/FreePost.jsx";
 import UpdatePost from "./pages/FreeBoardUpdateForm.jsx";
+import GalleryBoard from "./pages/GalleryBoard.jsx";
+import GalleryPost from "./pages/GalleryPost.jsx";
+import GalleryBoardCreateForm from "./pages/GalleryBoardCreateForm.jsx";
+import GalleryBoardUpdateForm from "./pages/GalleryBoardUpdateForm.jsx";
 
 const router = createBrowserRouter([
   {
@@ -89,6 +93,42 @@ const router = createBrowserRouter([
       <>
         <Header />
         <FreeBoardCreateForm />
+      </>
+    ),
+  },
+  {
+    path: "/gallery-board",
+    element: (
+      <>
+        <Header />
+        <GalleryBoard />
+      </>
+    ),
+  },
+  {
+    path: "/gallery-board/post/:id",
+    element: (
+      <>
+        <Header />
+        <GalleryPost />
+      </>
+    ),
+  },
+  {
+    path: "/gallery-board/create",
+    element: (
+      <>
+        <Header />
+        <GalleryBoardCreateForm />
+      </>
+    ),
+  },
+  {
+    path: "/gallery-board/post/:id/update",
+    element: (
+      <>
+        <Header />
+        <GalleryBoardUpdateForm />
       </>
     ),
   },
