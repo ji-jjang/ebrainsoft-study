@@ -57,9 +57,14 @@
     <ul class="list-group">
       <li class="list-group-item d-flex justify-content-between align-items-center"
           th:each="image : ${post.galleryImages()}">
-        <a th:href="@{/admin/gallery/image/{imageId}/download(imageId=${image.id})}"
-
-           th:text="${image.logicalName} + ' (' + ${image.size} + ' bytes)'"></a>
+        <div>
+          <img alt="이미지 설명"
+               class="d-block w-100"
+               style="max-height: 100px; object-fit: contain;"
+               th:src="@{/images/{imagePath}(imagePath=${image.storedName + image.extension})}">
+          <a th:href="@{/admin/gallery/image/{imageId}/download(imageId=${image.id})}"
+             th:text="${image.logicalName} + ' (' + ${image.size} + ' bytes)'"></a>
+        </div>
         <div>
           <span class="badge bg-secondary me-2" th:text="${image.extension}"></span>
           <button class="btn btn-danger btn-sm"

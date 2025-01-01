@@ -1,47 +1,34 @@
 import { useState, useEffect } from "react";
+import { Container, Row, Col, Form, Button, InputGroup } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
 import {
-  Container,
-  Row,
-  Col,
-  Form,
-  Button,
-  InputGroup,
-  ListGroup,
-} from "react-bootstrap";
-import { useNavigate, useLocation } from "react-router-dom";
-import {
-  updateFreePostApi,
-  getFreeCategoriesApi,
-} from "../services/freeService.js";
-import { baseApiUrl } from "../constants/apiUrl.js";
+  createGalleryPostApi,
+  getGalleryCategoriesApi,
+} from "../services/galleryService.js";
 
-const FreeBoardEditForm = () => {
+const GalleryBoardCreateForm = () => {
   const navigate = useNavigate();
-  const location = useLocation();
-  const post = location.state?.post || {
+
+  const maxFiles = 5;
+
+  const [formData, setFormData] = useState({
     title: "",
     content: "",
     categoryId: "",
-    attachmentList: [],
-  };
-
-  const [fileInputs, setFileInputs] = useState([0]);
-  const [formData, setFormData] = useState({
-    ...post,
-    deleteAttachmentIds: new Set(),
-    newAttachments: [],
+    images: [],
   });
 
   const [categories, setCategories] = useState([]);
-  const maxFiles = 5;
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const data = await getFreeCategoriesApi();
+      const data = await getGalleryCategoriesApi();
       setCategories(data);
     };
     fetchCategories();
   }, []);
+
+  const [fileInputs, setFileInputs] = useState([0]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -49,9 +36,9 @@ const FreeBoardEditForm = () => {
   };
 
   const handleFileChange = (e, index) => {
-    const files = [...formData.newAttachments];
+    const files = [...formData.images];
     files[index] = e.target.files[0];
-    setFormData({ ...formData, newAttachments: files });
+    setFormData({ ...formData, images: files });
   };
 
   const addFileInput = () => {
@@ -64,35 +51,22 @@ const FreeBoardEditForm = () => {
 
   const removeFileInput = (index) => {
     const updatedFileInputs = fileInputs.filter((_, i) => i !== index);
-    const updatedAttachments = formData.newAttachments.filter(
-      (_, i) => i !== index,
-    );
-    setFormData({ ...formData, newAttachments: updatedAttachments });
+    const updatedImages = formData.images.filter((_, i) => i !== index);
     setFileInputs(updatedFileInputs);
-  };
-
-  const removeExistingAttachment = (attachmentId) => {
-    setFormData((prev) => ({
-      ...prev,
-      deleteAttachmentIds: new Set([...prev.deleteAttachmentIds, attachmentId]),
-      attachmentList: prev.attachmentList.filter(
-        (attachment) => attachment.id !== attachmentId,
-      ),
-    }));
+    setFormData({ ...formData, images: updatedImages });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await updateFreePostApi({
-      ...formData,
-      deleteAttachmentIds: Array.from(formData.deleteAttachmentIds),
-    });
-    navigate(`/free-board/post/${post.id}${location.search}`);
+
+    const res = await createGalleryPostApi(formData);
+
+    navigate(`/gallery-board/post/${res.id}${location.search}`);
   };
 
   return (
     <Container className="mt-4">
-      <h1>게시글 수정</h1>
+      <h1>게시글 생성</h1>
       <Form onSubmit={handleSubmit}>
         <Row className="mb-3">
           <Col md={3}>
@@ -144,40 +118,13 @@ const FreeBoardEditForm = () => {
 
         <Row className="mb-3">
           <Col>
-            <Form.Label>첨부파일</Form.Label>
-            <ListGroup>
-              {formData.attachmentList.map((attachment) => (
-                <ListGroup.Item
-                  key={attachment.id}
-                  className="d-flex justify-content-between align-items-center"
-                >
-                  <a
-                    href={`${baseApiUrl}/api/v1/attachments/${attachment.id}/download`}
-                  >
-                    {attachment.logicalName} ({attachment.size} bytes)
-                  </a>
-                  <div>
-                    <span className="badge bg-secondary me-2">
-                      {attachment.extension}
-                    </span>
-                    <Button
-                      variant="danger"
-                      size="sm"
-                      onClick={() => removeExistingAttachment(attachment.id)}
-                    >
-                      삭제
-                    </Button>
-                  </div>
-                </ListGroup.Item>
-              ))}
-            </ListGroup>
-
-            {fileInputs.map((_, index) => (
-              <InputGroup className="mb-2 mt-3" key={index}>
+            <Form.Label>이미지</Form.Label>
+            {fileInputs.map((input, index) => (
+              <InputGroup className="mb-2" key={index}>
                 <Form.Control
                   type="text"
                   placeholder={
-                    formData.newAttachments[index]?.name || "선택된 파일 없음"
+                    formData.images[index]?.name || "선택된 파일 없음"
                   }
                   readOnly
                 />
@@ -202,7 +149,7 @@ const FreeBoardEditForm = () => {
             ))}
 
             {fileInputs.length < maxFiles && (
-              <Button variant="primary mt-3" onClick={addFileInput}>
+              <Button variant="primary" onClick={addFileInput}>
                 추가
               </Button>
             )}
@@ -212,13 +159,14 @@ const FreeBoardEditForm = () => {
         <Row className="mt-4">
           <Col className="text-center">
             <Button type="submit" variant="success" className="me-2">
-              수정
+              등록
             </Button>
+
             <Button
               variant="secondary"
               onClick={() =>
                 window.confirm("정말 취소하시겠습니까?") &&
-                navigate(`/free-board${location.search}`)
+                navigate(`/gallery-board${location.search}`)
               }
             >
               취소
@@ -230,4 +178,4 @@ const FreeBoardEditForm = () => {
   );
 };
 
-export default FreeBoardEditForm;
+export default GalleryBoardCreateForm;

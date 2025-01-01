@@ -172,7 +172,10 @@ public class GalleryService {
 
     List<Long> postIds = galleryPosts.stream().map(GalleryPost::getId).toList();
 
-    List<GalleryImage> galleryImages = galleryImageRepository.findImagesByPostIds(postIds);
+    List<GalleryImage> galleryImages = Collections.emptyList();
+    if (postIds.size() > 0) {
+      galleryImages = galleryImageRepository.findImagesByPostIds(postIds);
+    }
 
     Map<Long, List<GalleryImage>> imagesByPostId =
         galleryImages.stream().collect(groupingBy(image -> image.getPost().getId()));
@@ -200,6 +203,8 @@ public class GalleryService {
   @Transactional
   public GalleryUpdateVO updatePost(
       ReqUpdateGalleryPost req, GalleryPost galleryPost, Long userId) {
+
+    System.out.println("req = " + req);
 
     User user = getUser(userId);
 
@@ -307,9 +312,7 @@ public class GalleryService {
   }
 
   private void saveImages(
-      List<MultipartFile> images,
-      Long postId,
-      List<GalleryImage> galleryImages) {
+      List<MultipartFile> images, Long postId, List<GalleryImage> galleryImages) {
 
     if (images.isEmpty()) {
       return;

@@ -110,9 +110,9 @@ public class AdminGalleryPostController {
     List<GalleryCategory> categoryList = galleryCategoryService.getAllCategories();
 
     model.addAttribute("categoryList", categoryList);
-    model.addAttribute("postList", resGalleryPostList.resGalleryPostList());
-    model.addAttribute("searchCondition", resGalleryPostList.resSearchCondition());
-    model.addAttribute("pageInfo", resGalleryPostList.resPageInfo());
+    model.addAttribute("postList", resGalleryPostList.postList());
+    model.addAttribute("searchCondition", resGalleryPostList.searchCondition());
+    model.addAttribute("pageInfo", resGalleryPostList.pageInfo());
 
     return "admin/gallery/board";
   }

@@ -10,26 +10,26 @@ import {
 } from "react-bootstrap";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
-  updateFreePostApi,
-  getFreeCategoriesApi,
-} from "../services/freeService.js";
+  getGalleryCategoriesApi,
+  updateGalleryPostApi,
+} from "../services/galleryService.js";
 import { baseApiUrl } from "../constants/apiUrl.js";
 
-const FreeBoardEditForm = () => {
+const GalleryBoardEditForm = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const post = location.state?.post || {
     title: "",
     content: "",
-    categoryId: "",
-    attachmentList: [],
+    categories: [],
+    galleryImages: [],
   };
 
   const [fileInputs, setFileInputs] = useState([0]);
   const [formData, setFormData] = useState({
     ...post,
-    deleteAttachmentIds: new Set(),
-    newAttachments: [],
+    deleteImageIds: new Set(),
+    newImages: [],
   });
 
   const [categories, setCategories] = useState([]);
@@ -37,7 +37,7 @@ const FreeBoardEditForm = () => {
 
   useEffect(() => {
     const fetchCategories = async () => {
-      const data = await getFreeCategoriesApi();
+      const data = await getGalleryCategoriesApi();
       setCategories(data);
     };
     fetchCategories();
@@ -49,9 +49,9 @@ const FreeBoardEditForm = () => {
   };
 
   const handleFileChange = (e, index) => {
-    const files = [...formData.newAttachments];
+    const files = [...formData.newImages];
     files[index] = e.target.files[0];
-    setFormData({ ...formData, newAttachments: files });
+    setFormData({ ...formData, newImages: files });
   };
 
   const addFileInput = () => {
@@ -64,30 +64,26 @@ const FreeBoardEditForm = () => {
 
   const removeFileInput = (index) => {
     const updatedFileInputs = fileInputs.filter((_, i) => i !== index);
-    const updatedAttachments = formData.newAttachments.filter(
-      (_, i) => i !== index,
-    );
-    setFormData({ ...formData, newAttachments: updatedAttachments });
+    const updatedImages = formData.newImages.filter((_, i) => i !== index);
+    setFormData({ ...formData, newImages: updatedImages });
     setFileInputs(updatedFileInputs);
   };
 
-  const removeExistingAttachment = (attachmentId) => {
+  const removeExistingImage = (imageId) => {
     setFormData((prev) => ({
       ...prev,
-      deleteAttachmentIds: new Set([...prev.deleteAttachmentIds, attachmentId]),
-      attachmentList: prev.attachmentList.filter(
-        (attachment) => attachment.id !== attachmentId,
-      ),
+      deleteImageIds: new Set([...prev.deleteImageIds, imageId]),
+      galleryImages: prev.galleryImages.filter((image) => image.id !== imageId),
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await updateFreePostApi({
+    await updateGalleryPostApi({
       ...formData,
-      deleteAttachmentIds: Array.from(formData.deleteAttachmentIds),
+      deleteImageIds: Array.from(formData.deleteImageIds),
     });
-    navigate(`/free-board/post/${post.id}${location.search}`);
+    navigate(`/gallery-board/post/${post.id}${location.search}`);
   };
 
   return (
@@ -99,7 +95,7 @@ const FreeBoardEditForm = () => {
             <Form.Label>분류</Form.Label>
             <Form.Select
               name="categoryId"
-              value={formData.categoryId}
+              value={formData.categories.id}
               onChange={handleChange}
               required
             >
@@ -144,26 +140,34 @@ const FreeBoardEditForm = () => {
 
         <Row className="mb-3">
           <Col>
-            <Form.Label>첨부파일</Form.Label>
+            <Form.Label>이미지</Form.Label>
             <ListGroup>
-              {formData.attachmentList.map((attachment) => (
+              {formData.galleryImages.map((image) => (
                 <ListGroup.Item
-                  key={attachment.id}
+                  key={image.id}
                   className="d-flex justify-content-between align-items-center"
                 >
-                  <a
-                    href={`${baseApiUrl}/api/v1/attachments/${attachment.id}/download`}
-                  >
-                    {attachment.logicalName} ({attachment.size} bytes)
-                  </a>
+                  <div>
+                    <img
+                      alt="이미지 설명"
+                      className="d-block w-100"
+                      style={{ maxHeight: "100px", objectFit: "contain" }}
+                      src={`${baseApiUrl}/images/${image.storedName}${image.extension}`}
+                    />
+                    <a
+                      href={`${baseApiUrl}/api/v1/images/${image.id}/download`}
+                    >
+                      {image.logicalName} ({image.size} bytes)
+                    </a>
+                  </div>
                   <div>
                     <span className="badge bg-secondary me-2">
-                      {attachment.extension}
+                      {image.extension}
                     </span>
                     <Button
                       variant="danger"
                       size="sm"
-                      onClick={() => removeExistingAttachment(attachment.id)}
+                      onClick={() => removeExistingImage(image.id)}
                     >
                       삭제
                     </Button>
@@ -177,7 +181,7 @@ const FreeBoardEditForm = () => {
                 <Form.Control
                   type="text"
                   placeholder={
-                    formData.newAttachments[index]?.name || "선택된 파일 없음"
+                    formData.newImages[index]?.name || "선택된 파일 없음"
                   }
                   readOnly
                 />
@@ -218,7 +222,7 @@ const FreeBoardEditForm = () => {
               variant="secondary"
               onClick={() =>
                 window.confirm("정말 취소하시겠습니까?") &&
-                navigate(`/free-board${location.search}`)
+                navigate(`/gallery-board${location.search}`)
               }
             >
               취소
@@ -230,4 +234,4 @@ const FreeBoardEditForm = () => {
   );
 };
 
-export default FreeBoardEditForm;
+export default GalleryBoardEditForm;
