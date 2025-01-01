@@ -21,15 +21,15 @@ public class LocalFileService {
    *
    * <h1>파일 저장 </h1>
    *
-   * @param attachments 멀티파트 파일
+   * @param multipartFiles 멀티파트 파일
    * @param fileDetailsList 멀티파트 파일 정보
    */
-  public void saveFile(List<MultipartFile> attachments, List<? extends FileDetails> fileDetailsList) {
+  public void saveFile(List<MultipartFile> multipartFiles, List<? extends FileDetails> fileDetailsList) {
 
     IntStream.range(0, fileDetailsList.size())
         .forEach(
             idx -> {
-              var file = attachments.get(idx);
+              var file = multipartFiles.get(idx);
 
               FileDetails fileDetails = fileDetailsList.get(idx);
               try {

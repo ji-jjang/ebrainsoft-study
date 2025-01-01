@@ -6,6 +6,7 @@ import com.juny.finalboard.domain.post.gallery.common.dto.ReqCreateGalleryPost;
 import com.juny.finalboard.domain.post.gallery.common.dto.ReqGetGalleryPostList;
 import com.juny.finalboard.domain.post.gallery.common.dto.ReqUpdateGalleryPost;
 import com.juny.finalboard.domain.post.gallery.common.dto.ResGalleryPost;
+import com.juny.finalboard.domain.post.gallery.common.dto.ResGalleryPostList;
 import com.juny.finalboard.domain.post.gallery.common.entity.GalleryImage;
 import com.juny.finalboard.domain.post.gallery.common.entity.GalleryPost;
 import com.juny.finalboard.domain.post.gallery.common.entity.GalleryUpdateVO;
@@ -87,7 +88,7 @@ public class UserGalleryPostController {
    * @return 게시글 목록
    */
   @GetMapping("/v1/gallery-posts")
-  public ResponseEntity<List<ResGalleryPost>> getGalleryPostList(
+  public ResponseEntity<ResGalleryPostList> getGalleryPostList(
       @ModelAttribute ReqGetGalleryPostList req) {
 
     GallerySearchCondition searchCondition = galleryService.createSearchCondition(req);
@@ -97,8 +98,8 @@ public class UserGalleryPostController {
     List<GalleryPost> galleryPosts =
         galleryService.getGalleryPostListBySearchCondition(searchCondition);
 
-    List<ResGalleryPost> resGalleryPosts =
-        GalleryPostMapper.toResGalleryPostList(galleryPosts, searchCondition, totalPostCount);
+    ResGalleryPostList resGalleryPosts = GalleryPostMapper.toResGalleryPostList(galleryPosts,
+      searchCondition, totalPostCount);
 
     return new ResponseEntity<>(resGalleryPosts, HttpStatus.OK);
   }

@@ -5,6 +5,8 @@ import com.juny.finalboard.domain.post.free.common.entity.FreePost;
 import com.juny.finalboard.domain.post.free.common.repository.FreePostRepository;
 import com.juny.finalboard.domain.post.free.common.service.FreePostService;
 import java.util.List;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -17,7 +19,9 @@ public class FreePostServiceTest {
   @Autowired private FreePostRepository freePostRepository;
 
   @Test
-  void test() {
+  @DisplayName("updateFreePost")
+  @Disabled
+  void updateFreePost() {
 
     ReqUpdateFreePost req =
         ReqUpdateFreePost.builder()

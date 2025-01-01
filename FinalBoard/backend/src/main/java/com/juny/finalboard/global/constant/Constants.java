@@ -23,7 +23,7 @@ public class Constants {
   public static final String ACCESS_TOKEN_EXPIRED = "accessTokenExpired";
   public static final String AUTHORIZATION_HEADER = "Authorization";
   public static final String BEARER_PREFIX = "Bearer ";
-  public static final String ADMIN_LOGIN_SUCCESS_REDIRECT_URL = "/admin/management";
+  public static final String ADMIN_LOGIN_SUCCESS_REDIRECT_URL = "/admin/announcement/board";
   public static final String COLON_SIGN = ":";
   public static final Integer MAX_PINNED_POST = 5;
   public static final String FILE_RESOURCE_PREFIX = "file:";
