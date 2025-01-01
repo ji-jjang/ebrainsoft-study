@@ -13,6 +13,7 @@ import {
   updateFreePostApi,
   getFreeCategoriesApi,
 } from "../services/freeService.js";
+import { baseApiUrl } from "../constants/apiUrl.js";
 
 const FreeBoardEditForm = () => {
   const navigate = useNavigate();
@@ -24,7 +25,7 @@ const FreeBoardEditForm = () => {
     attachmentList: [],
   };
 
-  const [fileInputs, setFileInputs] = useState([0]); // 기본 첨부파일 입력란 보장
+  const [fileInputs, setFileInputs] = useState([0]);
   const [formData, setFormData] = useState({
     ...post,
     deleteAttachmentIds: new Set(),
@@ -150,7 +151,9 @@ const FreeBoardEditForm = () => {
                   key={attachment.id}
                   className="d-flex justify-content-between align-items-center"
                 >
-                  <a href={`/api/v1/attachments/${attachment.id}/download`}>
+                  <a
+                    href={`${baseApiUrl}/api/v1/attachments/${attachment.id}/download`}
+                  >
                     {attachment.logicalName} ({attachment.size} bytes)
                   </a>
                   <div>
