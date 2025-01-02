@@ -119,6 +119,7 @@ CREATE TABLE question_posts
     content     TEXT         NOT NULL,
     view_count  INT DEFAULT 0,
     is_secret   TINYINT,
+    password    VARCHAR(255),
     created_by  VARCHAR(255) NOT NULL,
     created_at  DATETIME,
     category_id BIGINT,

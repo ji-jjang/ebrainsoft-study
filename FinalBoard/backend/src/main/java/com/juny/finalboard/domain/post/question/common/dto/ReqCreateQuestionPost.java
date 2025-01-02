@@ -17,12 +17,22 @@ public record ReqCreateQuestionPost(
         String content,
     @NotNull(message = "categoryId not null") @NotEmpty(message = "categoryId not empty")
         String categoryId,
-    Boolean isSecret) {
+    Boolean isSecret,
+    String password,
+    String passwordConfirm) {
 
   public ReqCreateQuestionPost {
 
     if (isSecret == null) {
       isSecret = false;
+    }
+
+    if (password == null) {
+      password = "";
+    }
+
+    if (passwordConfirm == null) {
+      passwordConfirm = "";
     }
   }
 }

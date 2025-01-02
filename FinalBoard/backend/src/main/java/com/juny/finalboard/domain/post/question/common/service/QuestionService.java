@@ -2,19 +2,22 @@ package com.juny.finalboard.domain.post.question.common.service;
 
 import com.juny.finalboard.domain.post.question.common.dto.QuestionSearchCondition;
 import com.juny.finalboard.domain.post.question.common.dto.ReqCreateQuestionPost;
+import com.juny.finalboard.domain.post.question.common.dto.ReqDeleteQuestionPost;
+import com.juny.finalboard.domain.post.question.common.dto.ReqGetQuestionPost;
 import com.juny.finalboard.domain.post.question.common.dto.ReqGetQuestionPostList;
 import com.juny.finalboard.domain.post.question.common.dto.ReqUpdateQuestionPost;
 import com.juny.finalboard.domain.post.question.common.entity.QuestionCategory;
 import com.juny.finalboard.domain.post.question.common.entity.QuestionPost;
-import com.juny.finalboard.domain.post.question.common.repository.AnswerRepository;
 import com.juny.finalboard.domain.post.question.common.repository.QuestionCategoryRepository;
 import com.juny.finalboard.domain.post.question.common.repository.QuestionPostRepository;
 import com.juny.finalboard.domain.user.common.User;
 import com.juny.finalboard.domain.user.common.UserRepository;
 import com.juny.finalboard.global.constant.Constants;
+import com.juny.finalboard.global.security.common.service.CustomUserDetails;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,12 +31,15 @@ public class QuestionService {
   private final UserRepository userRepository;
   private final QuestionPostRepository questionPostRepository;
   private final QuestionCategoryRepository questionCategoryRepository;
-  private final AnswerRepository answerRepository;
+  private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
   /**
    *
    *
    * <h1>질문 생성 </h1>
+   *
+   * <br>
+   * - 로그인 하지 않고, 비밀글로 한 사용자는 비밀번호 요청 폼 추가 입력 <br>
    *
    * @param req 질문 생성 폼
    * @param userId 유저 아이디
@@ -42,7 +48,11 @@ public class QuestionService {
   @Transactional
   public QuestionPost createQuestionPost(ReqCreateQuestionPost req, Long userId) {
 
-    User user = getUser(userId);
+    String userName = Constants.ANONYMOUS_NAME;
+    if (userId != null) {
+      User user = getUser(userId);
+      userName = user.getName();
+    }
 
     QuestionCategory questionCategory = getQuestionCategory(req.categoryId());
 
@@ -53,10 +63,20 @@ public class QuestionService {
             .viewCount(0)
             .isSecret(req.isSecret())
             .createdAt(LocalDateTime.now())
-            .createdBy(user.getName())
+            .createdBy(userName)
             .questionCategory(questionCategory)
-            .user(user)
+            .user(User.builder().id(userId).build())
             .build();
+
+    if (userId == null && req.isSecret()) {
+      if (req.password().isEmpty() || req.passwordConfirm().isEmpty())
+        throw new RuntimeException("password not empty");
+
+      if (!req.password().equals(req.passwordConfirm()))
+        throw new RuntimeException("password not match");
+
+      post = post.toBuilder().password(bCryptPasswordEncoder.encode(req.password())).build();
+    }
 
     questionPostRepository.save(post);
 
@@ -78,17 +98,50 @@ public class QuestionService {
   /**
    *
    *
-   * <h1>질문 상세 조회 </h1>
+   * <h1>질문 게시글 상세 조회 </h1>
    *
-   * @param postId 조회하는 아이디
-   * @return 질문 상세
+   * <br>
+   * - 관리자인 경우 권한 조회 없이 바로 게시글 반환 <br>
+   * - 게시글에 비밀번호 있고(익명 사용자) 비밀글인 경우, 1. 비밀번호 요청값 empty -> password 로 다시 요청 하도록, 2. 패스워드 일치여부 검사 <br>
+   * - 게시글에 비밀번호 없고 비밀글인 경우, 게시글의 유저 아이디와 현재 접근한 사용자 아이디와 다른 경우 -> "user not match"
+   *
+   * @param postId 조회할 게시글 아이디
+   * @param req 비밀번호
+   * @param userDetails 인증 정보
+   * @return 상세 게시글
    */
-  public QuestionPost getQuestionPostDetail(Long postId) {
+  public QuestionPost getQuestionPostDetail(
+      Long postId, ReqGetQuestionPost req, CustomUserDetails userDetails) {
 
-    return questionPostRepository
-        .findQuestionPostDetailById(postId)
-        .orElseThrow(
-            () -> new RuntimeException(String.format("post not found postId: %d", postId)));
+    QuestionPost post =
+        questionPostRepository
+            .findQuestionPostDetailById(postId)
+            .orElseThrow(
+                () -> new RuntimeException(String.format("post not found postId: %d", postId)));
+
+    Long userId = userDetails.getId();
+    String userRole = userDetails.getRole();
+
+    if (userId != null && userRole.equals(Constants.ADMIN_ROLE)) return post;
+
+    if (!post.getPassword().isEmpty() && post.getIsSecret()) {
+      if (req.password().isEmpty()) {
+        throw new RuntimeException("retry with password");
+      }
+
+      if (!validatePassword(req.password(), post.getPassword())) {
+        throw new RuntimeException("password not match");
+      }
+    }
+
+    if (post.getPassword().isEmpty() && post.getIsSecret()) {
+      if (!post.getUser().getId().equals(userId)) {
+        throw new RuntimeException(
+            String.format("user not match, post's userId: %d", post.getUser().getId()));
+      }
+    }
+
+    return post;
   }
 
   /**
@@ -155,27 +208,42 @@ public class QuestionService {
    *
    * <h1>질문 수정 </h1>
    *
+   * <br>
+   * - 게시글에 비밀번호가 있다면, 작성자가 익명이므로 비밀번호 검사<br>
+   * - 비밀번호 없다면, 작성자 아이디와 로그인한 사용자 아이디 검사<br>
+   * - 관리자라면 검증 로직 생략 (패스워드 확인 및 사용자 아이디)
+   *
    * @param req 수정 폼
-   * @param questionPost 기존 질문 조회
-   * @param userId 유저 아이디
+   * @param post 기존 질문 조회
+   * @param userDetails 인증 정보
    * @return 수정된 질문
    */
   @Transactional
   public QuestionPost updatePost(
-      ReqUpdateQuestionPost req, QuestionPost questionPost, Long userId) {
-
-    User user = getUser(userId);
+      ReqUpdateQuestionPost req, QuestionPost post, CustomUserDetails userDetails) {
 
     QuestionCategory questionCategory = getQuestionCategory(req.categoryId());
 
-    if (user.getRole().equals(Constants.USER_ROLE)) {
-      if (!questionPost.getUser().getId().equals(userId)) {
+    Long userId = userDetails.getId();
+    String userRole = userDetails.getRole();
+
+    if (!post.getPassword().isEmpty()
+        && userRole != null
+        && !userRole.equals(Constants.ADMIN_ROLE)) {
+      boolean isValid = bCryptPasswordEncoder.matches(req.password(), post.getPassword());
+      if (!isValid) {
+        throw new RuntimeException("password not match");
+      }
+    }
+
+    if (post.getPassword().isEmpty() && userRole.equals(Constants.USER_ROLE)) {
+      if (!post.getUser().getId().equals(userId)) {
         throw new RuntimeException("user is not allowed to update (post's user id does not match)");
       }
     }
 
     QuestionPost updateQuestionPost =
-        questionPost.toBuilder()
+        post.toBuilder()
             .title(req.title())
             .content(req.content())
             .isSecret(req.isSecret())
@@ -192,30 +260,39 @@ public class QuestionService {
    *
    * <h1>질문 삭제 </h1>
    *
-   * @param postId 삭제할 아이디
+   * - 게시글에 비밀번호가 있다면, 작성자가 익명이므로 비밀번호 검사<br>
+   * - 비밀번호 없다면, 작성자 아이디와 로그인한 사용자 아이디 검사<br>
+   * - 관리자라면 검증 로직 생략 (패스워드 확인 및 사용자 아이디)
+   *
+   * @param req 삭제 요청 폼(패스워드)
    * @param post 삭제할 질문
-   * @param userId 유저 아이디
+   * @param userDetails 유저 인증 정보
    */
   @Transactional
-  public void deletePost(Long postId, QuestionPost post, Long userId) {
+  public void deletePost(
+      ReqDeleteQuestionPost req, QuestionPost post, CustomUserDetails userDetails) {
 
-    User user = getUser(userId);
+    Long userId = userDetails.getId();
+    String userRole = userDetails.getRole();
 
-    if (user.getRole().equals(Constants.USER_ROLE)) {
+    if (!post.getPassword().isEmpty()
+        && userRole != null
+        && !userRole.equals(Constants.ADMIN_ROLE)) {
+
+      boolean isValid = validatePassword(req.password(), post.getPassword());
+
+      if (!isValid) {
+        throw new RuntimeException("password not match");
+      }
+    }
+
+    if (post.getPassword().isEmpty() && userRole.equals(Constants.USER_ROLE)) {
       if (!post.getUser().getId().equals(userId)) {
         throw new RuntimeException("user is not allowed to update (post's user id does not match)");
       }
     }
 
-    if (user.getRole().equals(Constants.USER_ROLE) && post.getAnswer() != null) {
-      throw new RuntimeException("answered post is not allowed to delete");
-    }
-
-    if (post.getAnswer() != null) {
-      answerRepository.deleteById(post.getAnswer().getId());
-    }
-
-    questionPostRepository.deletePostById(postId);
+    questionPostRepository.deletePostById(post.getId());
   }
 
   private User getUser(Long userId) {
@@ -232,5 +309,10 @@ public class QuestionService {
         .findById(Long.parseLong(req))
         .orElseThrow(
             () -> new RuntimeException(String.format("category not found categoryId: %s", req)));
+  }
+
+  private boolean validatePassword(String inputPassword, String password) {
+
+    return bCryptPasswordEncoder.matches(inputPassword, password);
   }
 }
