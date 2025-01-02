@@ -27,4 +27,5 @@ public class Constants {
   public static final String COLON_SIGN = ":";
   public static final Integer MAX_PINNED_POST = 5;
   public static final String FILE_RESOURCE_PREFIX = "file:";
+  public static final String ANONYMOUS_NAME = "익명";
 }

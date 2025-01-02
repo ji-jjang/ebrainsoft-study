@@ -20,7 +20,7 @@ public class QuestionPostMapper {
         .title(post.getTitle())
         .content(post.getContent())
         .isSecret(post.getIsSecret())
-        .viewCount(post.getViewCount())
+        .viewCount(post.getViewCount() + 1)
         .createdAt(post.getCreatedAt().toString())
         .createdBy(post.getCreatedBy())
         .isNew(isNew)

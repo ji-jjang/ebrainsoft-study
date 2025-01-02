@@ -18,6 +18,7 @@ public class QuestionPost {
   private String content;
   private Integer viewCount;
   private Boolean isSecret;
+  private String password;
   private String createdBy;
   private LocalDateTime createdAt;
 

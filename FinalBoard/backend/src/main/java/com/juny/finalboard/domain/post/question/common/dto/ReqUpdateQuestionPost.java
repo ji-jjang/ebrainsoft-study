@@ -17,7 +17,8 @@ public record ReqUpdateQuestionPost(
         String content,
     @NotNull(message = "categoryId not null") @NotEmpty(message = "categoryId not empty")
         String categoryId,
-    Boolean isSecret) {
+    Boolean isSecret,
+    String password) {
 
   public ReqUpdateQuestionPost {
 
@@ -27,6 +28,10 @@ public record ReqUpdateQuestionPost(
 
     if (isSecret == null) {
       isSecret = false;
+    }
+
+    if (password == null) {
+      password = "";
     }
   }
 }

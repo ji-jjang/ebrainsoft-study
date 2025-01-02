@@ -2,6 +2,8 @@ package com.juny.finalboard.domain.post.question.user.controller;
 
 import com.juny.finalboard.domain.post.question.common.dto.QuestionSearchCondition;
 import com.juny.finalboard.domain.post.question.common.dto.ReqCreateQuestionPost;
+import com.juny.finalboard.domain.post.question.common.dto.ReqDeleteQuestionPost;
+import com.juny.finalboard.domain.post.question.common.dto.ReqGetQuestionPost;
 import com.juny.finalboard.domain.post.question.common.dto.ReqGetQuestionPostList;
 import com.juny.finalboard.domain.post.question.common.dto.ReqUpdateQuestionPost;
 import com.juny.finalboard.domain.post.question.common.dto.ResQuestionPost;
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -61,11 +64,12 @@ public class UserQuestionPostController {
    * @return 질문 상세
    */
   @GetMapping("/v1/question-posts/{postId}")
-  public ResponseEntity<ResQuestionPost> getQuestionPost(@PathVariable Long postId) {
+  public ResponseEntity<Object> getQuestionPost(
+      @RequestBody ReqGetQuestionPost req,
+      @PathVariable Long postId,
+      @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-    questionService.increaseViewCount(postId);
-
-    QuestionPost post = questionService.getQuestionPostDetail(postId);
+    QuestionPost post = questionService.getQuestionPostDetail(postId, req, userDetails);
 
     ResQuestionPost resQuestionPost = QuestionPostMapper.toResQuestionPost(post);
 
@@ -113,9 +117,11 @@ public class UserQuestionPostController {
       @ModelAttribute ReqUpdateQuestionPost req,
       @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-    QuestionPost post = questionService.getQuestionPostDetail(postId);
+    QuestionPost post =
+        questionService.getQuestionPostDetail(
+            postId, ReqGetQuestionPost.builder().password(req.password()).build(), userDetails);
 
-    QuestionPost updatedPost = questionService.updatePost(req, post, userDetails.getId());
+    QuestionPost updatedPost = questionService.updatePost(req, post, userDetails);
 
     ResQuestionPost resQuestionPost = QuestionPostMapper.toResQuestionPost(updatedPost);
 
@@ -133,11 +139,15 @@ public class UserQuestionPostController {
    */
   @DeleteMapping("/v1/question-posts/{postId}")
   public ResponseEntity<Void> deleteQuestionPost(
-      @PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails userDetails) {
+      @PathVariable Long postId,
+      @RequestBody ReqDeleteQuestionPost req,
+      @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-    QuestionPost post = questionService.getQuestionPostDetail(postId);
+    QuestionPost post =
+        questionService.getQuestionPostDetail(
+            postId, ReqGetQuestionPost.builder().password(req.password()).build(), userDetails);
 
-    questionService.deletePost(postId, post, userDetails.getId());
+    questionService.deletePost(req, post, userDetails);
 
     return new ResponseEntity<>(HttpStatus.NO_CONTENT);
   }

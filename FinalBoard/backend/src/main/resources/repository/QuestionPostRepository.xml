@@ -15,9 +15,9 @@
   <insert id="save" keyProperty="id"
     parameterType="com.juny.finalboard.domain.post.question.common.entity.QuestionPost"
     useGeneratedKeys="true">
-    INSERT INTO question_posts (title, content, view_count, is_secret, created_by,
+    INSERT INTO question_posts (title, content, view_count, is_secret, password, created_by,
                                 created_at, category_id, user_id)
-    VALUES (#{title}, #{content}, 0, #{isSecret}, #{createdBy},
+    VALUES (#{title}, #{content}, 0, #{isSecret}, #{password}, #{createdBy},
             #{createdAt}, #{questionCategory.id}, #{user.id});
   </insert>
 
@@ -30,6 +30,7 @@
     <result column="post_content" property="content"/>
     <result column="post_view_count" property="viewCount"/>
     <result column="post_is_secret" property="isSecret"/>
+    <result column="post_password" property="password"/>
     <result column="post_created_by" property="createdBy"/>
     <result column="post_created_at" javaType="java.time.LocalDateTime" property="createdAt"/>
 
@@ -98,6 +99,7 @@
            p.content    AS post_content,
            p.view_count AS post_view_count,
            p.is_secret  AS post_is_secret,
+           p.password   AS post_password,
            p.created_by AS post_created_by,
            p.created_at AS post_created_at,
 
