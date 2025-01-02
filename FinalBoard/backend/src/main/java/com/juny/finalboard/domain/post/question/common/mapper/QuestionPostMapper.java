@@ -4,6 +4,7 @@ import com.juny.finalboard.domain.post.question.common.dto.QuestionPageInfo;
 import com.juny.finalboard.domain.post.question.common.dto.QuestionSearchCondition;
 import com.juny.finalboard.domain.post.question.common.dto.ResQuestionPost;
 import com.juny.finalboard.domain.post.question.common.dto.ResQuestionPostList;
+import com.juny.finalboard.domain.post.question.common.entity.Answer;
 import com.juny.finalboard.domain.post.question.common.entity.QuestionPost;
 import com.juny.finalboard.global.constant.Constants;
 import java.time.LocalDateTime;
@@ -15,6 +16,12 @@ public class QuestionPostMapper {
 
     boolean isNew = LocalDateTime.now().minusDays(7).isBefore(post.getCreatedAt());
 
+    boolean isAnswered = (post.getAnswer() != null) ? true : false;
+
+    Long postUserId = post.getUser() != null ? post.getUser().getId() : null;
+
+    Answer answer = post.getAnswer() != null ? post.getAnswer() : null;
+
     return ResQuestionPost.builder()
         .id(post.getId())
         .title(post.getTitle())
@@ -24,8 +31,10 @@ public class QuestionPostMapper {
         .createdAt(post.getCreatedAt().toString())
         .createdBy(post.getCreatedBy())
         .isNew(isNew)
+        .isAnswered(isAnswered)
         .category(post.getQuestionCategory())
-        .userId(post.getUser().getId())
+        .userId(postUserId)
+        .answer(answer)
         .build();
   }
 
@@ -35,6 +44,8 @@ public class QuestionPostMapper {
       long totalPostCount) {
 
     String[] sort = searchCondition.sort().split(Constants.SPACE_SIGN);
+    if (sort[0].startsWith("p."))
+      sort[0] = sort[0].substring(2);
 
     QuestionPageInfo resPageInfo =
         QuestionPageInfo.builder()

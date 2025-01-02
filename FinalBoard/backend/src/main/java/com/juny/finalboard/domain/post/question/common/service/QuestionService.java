@@ -163,6 +163,10 @@ public class QuestionService {
       throw new RuntimeException(String.format("not support sort %s %s", sort[0], sort[1]));
     }
 
+    if (sort[0].equals("created_at")) {
+      sort[0] = "p." + sort[0];
+    }
+
     return QuestionSearchCondition.builder()
         .startDate(req.startDate() + " 00:00:00")
         .endDate(req.endDate() + " 23:59:59")
@@ -227,7 +231,7 @@ public class QuestionService {
     Long userId = userDetails.getId();
     String userRole = userDetails.getRole();
 
-    if (!post.getPassword().isEmpty()
+    if (post.getPassword() != null && !post.getPassword().isEmpty()
         && userRole != null
         && !userRole.equals(Constants.ADMIN_ROLE)) {
       boolean isValid = bCryptPasswordEncoder.matches(req.password(), post.getPassword());
@@ -236,7 +240,7 @@ public class QuestionService {
       }
     }
 
-    if (post.getPassword().isEmpty() && userRole.equals(Constants.USER_ROLE)) {
+    if (post.getPassword() == null && userRole.equals(Constants.USER_ROLE)) {
       if (!post.getUser().getId().equals(userId)) {
         throw new RuntimeException("user is not allowed to update (post's user id does not match)");
       }
@@ -275,7 +279,7 @@ public class QuestionService {
     Long userId = userDetails.getId();
     String userRole = userDetails.getRole();
 
-    if (!post.getPassword().isEmpty()
+    if (post.getPassword() != null && !post.getPassword().isEmpty()
         && userRole != null
         && !userRole.equals(Constants.ADMIN_ROLE)) {
 
@@ -286,7 +290,7 @@ public class QuestionService {
       }
     }
 
-    if (post.getPassword().isEmpty() && userRole.equals(Constants.USER_ROLE)) {
+    if (post.getPassword() == null && userRole.equals(Constants.USER_ROLE)) {
       if (!post.getUser().getId().equals(userId)) {
         throw new RuntimeException("user is not allowed to update (post's user id does not match)");
       }
