@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.juny.finalboard.domain.post.question.common.repository.AnswerRepository">
+
+  <delete id="deleteAnswerById" parameterType="long">
+    DELETE
+    FROM question_answers
+    WHERE id = #{id}
+  </delete>
+
+  <insert id="save" keyProperty="id"
+    parameterType="com.juny.finalboard.domain.post.question.common.entity.Answer"
+    useGeneratedKeys="true">
+    INSERT INTO question_answers (content, post_id, user_id)
+    VALUES (#{content}, #{post.id}, #{user.id});
+  </insert>
+</mapper>
