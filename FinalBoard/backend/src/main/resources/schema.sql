@@ -132,6 +132,7 @@ CREATE TABLE question_answers
 (
     id      BIGINT AUTO_INCREMENT PRIMARY KEY,
     content TEXT NOT NULL,
+    created_at  DATETIME,
     post_id BIGINT,
     user_id BIGINT,
     FOREIGN KEY (user_id) REFERENCES users (id),

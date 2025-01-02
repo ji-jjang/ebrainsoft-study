@@ -14,7 +14,7 @@
   <insert id="save" keyProperty="id"
     parameterType="com.juny.finalboard.domain.post.question.common.entity.Answer"
     useGeneratedKeys="true">
-    INSERT INTO question_answers (content, post_id, user_id)
-    VALUES (#{content}, #{post.id}, #{user.id});
+    INSERT INTO question_answers (content, created_at, post_id, user_id)
+    VALUES (#{content}, #{createdAt}, #{post.id}, #{user.id});
   </insert>
 </mapper>

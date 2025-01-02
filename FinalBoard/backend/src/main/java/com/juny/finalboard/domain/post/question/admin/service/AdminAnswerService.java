@@ -5,6 +5,7 @@ import com.juny.finalboard.domain.post.question.common.entity.Answer;
 import com.juny.finalboard.domain.post.question.common.entity.QuestionPost;
 import com.juny.finalboard.domain.post.question.common.repository.AnswerRepository;
 import com.juny.finalboard.domain.user.common.User;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +37,7 @@ public class AdminAnswerService {
     Answer answer =
         Answer.builder()
             .content(req.content())
+            .createdAt(LocalDateTime.now())
             .post(post)
             .user(User.builder().id(userId).build())
             .build();

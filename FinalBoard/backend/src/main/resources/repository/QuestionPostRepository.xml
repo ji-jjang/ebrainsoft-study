@@ -39,14 +39,24 @@
       <result column="category_id" property="id"/>
       <result column="category_name" property="name"/>
     </association>
+
     <association javaType="com.juny.finalboard.domain.user.common.User"
       property="user">
-      <result column="user_id" property="id"/>
+      <result column="post_user_id" property="id"/>
+      <result column="post_user_name" property="name"/>
     </association>
+
     <collection ofType="com.juny.finalboard.domain.post.question.common.entity.Answer"
       property="answer">
       <id column="answer_id" property="id"/>
       <result column="answer_content" property="content"/>
+      <result column="answer_created_at" property="createdAt"/>
+
+      <association javaType="com.juny.finalboard.domain.user.common.User"
+        property="user">
+        <result column="answer_user_id" property="id"/>
+        <result column="answer_user_name" property="name"/>
+      </association>
     </collection>
   </resultMap>
 
@@ -108,8 +118,13 @@
 
            a.id         AS answer_id,
            a.content    AS answer_content,
+           a.created_at  As answer_created_at,
 
-           u.id         AS user_id
+           pu.id         AS post_user_id,
+           pu.name       AS post_user_name,
+
+           au.id         AS answer_user_id,
+           au.name       AS answer_user_name
 
     FROM question_posts p
            LEFT JOIN
@@ -117,9 +132,11 @@
            LEFT JOIN
          question_answers a ON p.id = a.post_id
            LEFT JOIN
-         users u ON p.user_id = u.id
+         users pu ON p.user_id = pu.id
+           LEFT JOIN
+         users au ON a.user_id = au.id
     WHERE p.id = #{id}
-    ORDER BY u.id asc
+    ORDER BY pu.id asc
   </select>
 
   <sql id="questionPostListWhereClause">

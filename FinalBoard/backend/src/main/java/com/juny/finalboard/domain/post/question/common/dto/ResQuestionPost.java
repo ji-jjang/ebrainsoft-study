@@ -1,5 +1,6 @@
 package com.juny.finalboard.domain.post.question.common.dto;
 
+import com.juny.finalboard.domain.post.question.common.entity.Answer;
 import com.juny.finalboard.domain.post.question.common.entity.QuestionCategory;
 import lombok.Builder;
 
@@ -13,5 +14,7 @@ public record ResQuestionPost(
     String createdAt,
     String createdBy,
     boolean isNew,
+    boolean isAnswered,
     Long userId,
-    QuestionCategory category) {}
+    QuestionCategory category,
+    Answer answer) {}
