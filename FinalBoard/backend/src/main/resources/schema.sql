@@ -58,7 +58,7 @@ CREATE TABLE free_attachments
     stored_name  VARCHAR(255) NOT NULL,
     stored_path  VARCHAR(255) NOT NULL,
     extension    VARCHAR(255) NOT NULL,
-    size         BIGINT          NOT NULL,
+    size         BIGINT       NOT NULL,
     post_id      BIGINT,
     FOREIGN KEY (post_id) REFERENCES free_posts (id)
 );
@@ -101,7 +101,38 @@ CREATE TABLE gallery_images
     stored_name  VARCHAR(255) NOT NULL,
     stored_path  VARCHAR(255) NOT NULL,
     extension    VARCHAR(255) NOT NULL,
-    size         BIGINT          NOT NULL,
+    size         BIGINT       NOT NULL,
     post_id      BIGINT,
     FOREIGN KEY (post_id) REFERENCES gallery_posts (id)
 );
+
+CREATE TABLE question_categories
+(
+    id   BIGINT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE question_posts
+(
+    id          BIGINT AUTO_INCREMENT PRIMARY KEY,
+    title       VARCHAR(255) NOT NULL,
+    content     TEXT         NOT NULL,
+    view_count  INT DEFAULT 0,
+    is_secret   TINYINT,
+    created_by  VARCHAR(255) NOT NULL,
+    created_at  DATETIME,
+    category_id BIGINT,
+    user_id     BIGINT,
+    FOREIGN KEY (user_id) REFERENCES users (id),
+    FOREIGN KEY (category_id) REFERENCES question_categories (id)
+);
+
+CREATE TABLE question_answers
+(
+    id      BIGINT AUTO_INCREMENT PRIMARY KEY,
+    content TEXT NOT NULL,
+    post_id BIGINT,
+    user_id BIGINT,
+    FOREIGN KEY (user_id) REFERENCES users (id),
+    FOREIGN KEY (post_id) REFERENCES question_posts (id)
+)

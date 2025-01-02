@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+  namespace="com.juny.finalboard.domain.post.question.common.repository.QuestionCategoryRepository">
+
+  <select id="findById" parameterType="Long"
+    resultType="com.juny.finalboard.domain.post.question.common.entity.QuestionCategory">
+    SELECT id,
+           name
+    FROM question_categories
+    WHERE id = #{id};
+  </select>
+
+  <select id="findAll"
+    resultType="com.juny.finalboard.domain.post.question.common.entity.QuestionCategory">
+    SELECT id,
+           name
+    FROM question_categories
+  </select>
+
+</mapper>

@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+  namespace="com.juny.finalboard.domain.post.question.common.repository.QuestionPostRepository">
+
+  <delete id="deletePostById" parameterType="long">
+    DELETE
+    FROM question_posts
+    WHERE id = #{id}
+  </delete>
+
+  <insert id="save" keyProperty="id"
+    parameterType="com.juny.finalboard.domain.post.question.common.entity.QuestionPost"
+    useGeneratedKeys="true">
+    INSERT INTO question_posts (title, content, view_count, is_secret, created_by,
+                                created_at, category_id, user_id)
+    VALUES (#{title}, #{content}, 0, #{isSecret}, #{createdBy},
+            #{createdAt}, #{questionCategory.id}, #{user.id});
+  </insert>
+
+  <resultMap id="questionPostDetailResultMap"
+    type="com.juny.finalboard.domain.post.question.common.entity.QuestionPost">
+
+    <id column="post_id" property="id"/>
+
+    <result column="post_title" property="title"/>
+    <result column="post_content" property="content"/>
+    <result column="post_view_count" property="viewCount"/>
+    <result column="post_is_secret" property="isSecret"/>
+    <result column="post_created_by" property="createdBy"/>
+    <result column="post_created_at" javaType="java.time.LocalDateTime" property="createdAt"/>
+
+    <association javaType="com.juny.finalboard.domain.post.question.common.entity.QuestionCategory"
+      property="questionCategory">
+      <result column="category_id" property="id"/>
+      <result column="category_name" property="name"/>
+    </association>
+    <association javaType="com.juny.finalboard.domain.user.common.User"
+      property="user">
+      <result column="user_id" property="id"/>
+    </association>
+    <collection ofType="com.juny.finalboard.domain.post.question.common.entity.Answer"
+      property="answer">
+      <id column="answer_id" property="id"/>
+      <result column="answer_content" property="content"/>
+    </collection>
+  </resultMap>
+
+  <select id="getTotalQuestionPostCountBySearchCondition" resultType="long">
+    SELECT
+    COUNT(*)
+    FROM
+    question_posts p
+    INNER JOIN
+    question_categories c
+    ON
+    p.category_id = c.id
+    <include refid="questionPostListWhereClause"/>
+  </select>
+
+  <select id="findAllWithBySearchCondition" resultMap="questionPostDetailResultMap">
+    SELECT
+    p.id AS post_id,
+    p.title AS post_title,
+    p.view_count AS post_view_count,
+    p.is_secret AS post_is_secret,
+    p.created_by AS post_created_by,
+    p.user_id AS user_id,
+    DATE_FORMAT(p.created_at, '%Y-%m-%d %H:%i:%s') AS post_created_at,
+
+    c.id AS category_id,
+    c.name AS category_name,
+
+    a.id AS answer_id,
+    a.content AS answer_content
+
+    FROM
+    question_posts p
+    INNER JOIN
+    question_categories c ON p.category_id = c.id
+    LEFT JOIN
+    question_answers a ON p.id = a.post_id
+    <include refid="questionPostListWhereClause"/>
+    ORDER BY
+    ${searchCondition.sort},
+    p.id DESC
+    LIMIT
+    #{searchCondition.pageSize} OFFSET #{offset}
+  </select>
+
+  <select id="findQuestionPostDetailById" parameterType="long"
+    resultMap="questionPostDetailResultMap">
+    SELECT p.id         AS post_id,
+           p.title      AS post_title,
+           p.content    AS post_content,
+           p.view_count AS post_view_count,
+           p.is_secret  AS post_is_secret,
+           p.created_by AS post_created_by,
+           p.created_at AS post_created_at,
+
+           c.id         AS category_id,
+           c.name       AS category_name,
+
+           a.id         AS answer_id,
+           a.content    AS answer_content,
+
+           u.id         AS user_id
+
+    FROM question_posts p
+           LEFT JOIN
+         question_categories c ON p.category_id = c.id
+           LEFT JOIN
+         question_answers a ON p.id = a.post_id
+           LEFT JOIN
+         users u ON p.user_id = u.id
+    WHERE p.id = #{id}
+    ORDER BY u.id asc
+  </select>
+
+  <sql id="questionPostListWhereClause">
+    WHERE 1 = 1
+
+    <if test="searchCondition.categoryId != null and searchCondition.categoryId != ''">
+      AND c.id = #{searchCondition.categoryId}
+    </if>
+
+    <if test="searchCondition.keyword != null and searchCondition.keyword != ''">
+      AND (
+      p.title LIKE CONCAT('%', #{searchCondition.keyword}, '%')
+      OR p.created_by LIKE CONCAT('%', #{searchCondition.keyword}, '%')
+      OR p.content LIKE CONCAT('%', #{searchCondition.keyword}, '%')
+      )
+    </if>
+
+    <if test="searchCondition.startDate != null and searchCondition.startDate != ''">
+      AND p.created_at &gt;= #{searchCondition.startDate}
+    </if>
+    <if test="searchCondition.endDate != null and searchCondition.endDate != ''">
+      AND p.created_at &lt;= #{searchCondition.endDate}
+    </if>
+  </sql>
+
+  <update id="increaseViewCount" parameterType="long">
+    UPDATE
+      question_posts
+    SET view_count = view_count + 1
+    WHERE id = #{id}
+  </update>
+
+  <update id="updatePost"
+    parameterType="com.juny.finalboard.domain.post.question.common.entity.QuestionPost">
+    UPDATE
+      question_posts
+    SET title       = #{title},
+        content     = #{content},
+        is_secret   = #{isSecret},
+        category_id = #{questionCategory.id}
+    WHERE id = #{id}
+  </update>
+
+</mapper>
