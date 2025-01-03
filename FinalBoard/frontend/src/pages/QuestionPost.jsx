@@ -131,7 +131,7 @@ const QuestionPost = () => {
                 <Card.Body className="p-4 bg-light">
                   <div className="d-flex justify-content-between">
                     <small className="text-muted">
-                      {post.answer.createdBy} - {post.answer.createdAt}
+                      {post.answer.user.name} - {post.answer.createdAt}
                     </small>
                   </div>
                   <p className="mb-0 mt-2">{post.answer.content}</p>
@@ -163,11 +163,6 @@ const QuestionPost = () => {
               <Button
                 variant="secondary"
                 onClick={() => handleAction("update")}
-                // onClick={() =>
-                //   navigate(`/question-board/post/${id}/update${location.search}`, {
-                //     state: { post, password },
-                //   })
-                // }
               >
                 수정
               </Button>
@@ -177,12 +172,6 @@ const QuestionPost = () => {
               <Button
                 variant="danger"
                 onClick={() => handleAction("delete")}
-                // onClick={() => {
-                //   if (window.confirm("정말 삭제하시겠습니까?")) {
-                //     deleteQuestionPostApi(id, password);
-                //     navigate(`/question-board${location.search}`);
-                //   }
-                // }}
               >
                 삭제
               </Button>
