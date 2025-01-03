@@ -31,6 +31,7 @@ public class JwtFilterTest {
         jwtUtil.createJwt(
             1L,
             "USER",
+            "juny",
             new Date(System.currentTimeMillis() + jwtUtil.getAccessTokenExpiredMileSecond()));
 
     mockMvc
@@ -48,7 +49,7 @@ public class JwtFilterTest {
 
     String accessToken =
         jwtUtil.createJwt(
-            1L, "USER", Date.from(past.atStartOfDay(ZoneId.systemDefault()).toInstant()));
+            1L, "USER", "juny", Date.from(past.atStartOfDay(ZoneId.systemDefault()).toInstant()));
 
     mockMvc
         .perform(

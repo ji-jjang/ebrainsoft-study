@@ -1,15 +1,17 @@
 import { useState, useEffect } from "react";
 
-import { Container, Row, Col, ListGroup, Table, Button } from "react-bootstrap";
+import { Container, Row, Col, Table, Button } from "react-bootstrap";
 import { getAnnouncementPostListApi } from "../services/announcementService.js";
 import { getFreePostListApi } from "../services/freeService.js";
 import { getGalleryPostListApi } from "../services/galleryService.js";
 import { baseApiUrl } from "../constants/apiUrl.js";
+import { getQuestionPostListApi } from "../services/questionService.js";
 
 const Home = () => {
   const [announcementPostList, setAnnouncementPostList] = useState([]);
   const [freePostList, setFreePostList] = useState([]);
   const [galleryPostList, setGalleryPostList] = useState([]);
+  const [questionPostList, setQuestionPostList] = useState([]);
 
   useEffect(() => {
     const loadAnnouncementPostList = async () => {
@@ -32,13 +34,15 @@ const Home = () => {
       const slicedGalleryPostList = galleryPostList.postList.slice(0, 5);
 
       setGalleryPostList(slicedGalleryPostList);
+
+      const questionPostList = await getQuestionPostListApi();
+
+      const slicedQuestionPostList = questionPostList.postList.slice(0, 5);
+
+      setQuestionPostList(slicedQuestionPostList);
     };
     loadAnnouncementPostList();
   }, []);
-
-  const data = {
-    qnaBoard: ["문의 1", "문의 2", "문의 3", "문의 4", "문의 5"],
-  };
 
   return (
     <div>
@@ -162,12 +166,35 @@ const Home = () => {
           </Col>
 
           <Col md={6} className="mb-3">
-            <h5>문의 게시판</h5>
-            <ListGroup>
-              {data.qnaBoard.map((item, index) => (
-                <ListGroup.Item key={index}>{item}</ListGroup.Item>
-              ))}
-            </ListGroup>
+            <div className="d-flex justify-content-between align-items-center">
+              <h5 className="mb-0">문의 게시판</h5>
+              <Button variant="link" href="/question-board">
+                더보기
+              </Button>
+            </div>
+            <Table striped bordered hover>
+              <thead>
+                <tr>
+                  <th>번호</th>
+                  <th>분류</th>
+                  <th>제목</th>
+                </tr>
+              </thead>
+              <tbody>
+                {questionPostList.map((item, index) => (
+                  <tr key={item.id}>
+                    <td>{index + 1}</td>
+                    <td>{item.category.id}</td>
+                    <td>
+                      {item.title}
+                      {item.isAnswered ? "(답변완료)" : "(미답변)"}
+                      {item.isNew && <span>🆕</span>}
+                      {item.isSecret && <span> 🔒</span>}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
           </Col>
         </Row>
       </Container>

@@ -47,7 +47,7 @@ public class AdminQuestionPostController {
       @RequestParam(required = false) String sort,
       @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-    questionService.createQuestionPost(req, userDetails.getId());
+    questionService.createQuestionPost(req, userDetails);
 
     return String.format(
         "redirect:/admin/question/board?startDate=%s&endDate=%s&categoryId=%s&keyword=%s&pageSize=%s&sort=%s",

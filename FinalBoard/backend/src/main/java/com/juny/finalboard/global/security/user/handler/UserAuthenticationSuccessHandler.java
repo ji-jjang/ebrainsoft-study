@@ -47,7 +47,11 @@ public class UserAuthenticationSuccessHandler implements AuthenticationSuccessHa
         new Date(System.currentTimeMillis() + jwtUtil.getAccessTokenExpiredMileSecond());
 
     String accessToken =
-        jwtUtil.createJwt(customUserDetails.getId(), customUserDetails.getRole(), expiredDate);
+        jwtUtil.createJwt(
+            customUserDetails.getId(),
+            customUserDetails.getRole(),
+            customUserDetails.getName(),
+            expiredDate);
 
     response.setStatus(HttpServletResponse.SC_OK);
     response.setContentType(Constants.APPLICATION_JSON_TYPE);

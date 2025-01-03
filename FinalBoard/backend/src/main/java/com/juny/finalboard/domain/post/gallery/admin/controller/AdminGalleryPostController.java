@@ -135,8 +135,6 @@ public class AdminGalleryPostController {
 
     ResGalleryPost resGalleryPost = GalleryPostMapper.toResGalleryPost(galleryPost);
 
-    System.out.println("resGalleryPost = " + resGalleryPost);
-
     model.addAttribute("categories", categories);
 
     model.addAttribute("post", resGalleryPost);

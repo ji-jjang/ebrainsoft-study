@@ -5,6 +5,7 @@ public class Constants {
   public static final String ID = "id";
   public static final String ROLE = "role";
   public static final String EMAIL = "email";
+  public static final String NAME = "name";
   public static final String PASSWORD = "password";
 
   public static final String USER_ROLE = "USER";
@@ -25,6 +26,7 @@ public class Constants {
   public static final String BEARER_PREFIX = "Bearer ";
   public static final String ADMIN_LOGIN_SUCCESS_REDIRECT_URL = "/admin/announcement/board";
   public static final String COLON_SIGN = ":";
+  public static final String EMPTY_SIGN = "";
   public static final Integer MAX_PINNED_POST = 5;
   public static final String FILE_RESOURCE_PREFIX = "file:";
   public static final String ANONYMOUS_NAME = "익명";

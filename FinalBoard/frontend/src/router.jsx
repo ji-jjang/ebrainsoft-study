@@ -13,6 +13,11 @@ import GalleryBoard from "./pages/GalleryBoard.jsx";
 import GalleryPost from "./pages/GalleryPost.jsx";
 import GalleryBoardCreateForm from "./pages/GalleryBoardCreateForm.jsx";
 import GalleryBoardUpdateForm from "./pages/GalleryBoardUpdateForm.jsx";
+import QuestionBoard from "./pages/QuestionBoard.jsx";
+import QuestionPostCreateForm from "./pages/QuestionPostCreateForm.jsx";
+import QuestionPost from "./pages/QuestionPost.jsx";
+import QuestionBoardUpdateForm from "./pages/QuestionPostUpdateForm.jsx";
+import QuestionPostPasswordForm from "./pages/QuestionPostPasswordForm.jsx";
 
 const router = createBrowserRouter([
   {
@@ -129,6 +134,51 @@ const router = createBrowserRouter([
       <>
         <Header />
         <GalleryBoardUpdateForm />
+      </>
+    ),
+  },
+  {
+    path: "/question-board",
+    element: (
+      <>
+        <Header />
+        <QuestionBoard />
+      </>
+    ),
+  },
+  {
+    path: "/question-board/create",
+    element: (
+      <>
+        <Header />
+        <QuestionPostCreateForm />
+      </>
+    ),
+  },
+  {
+    path: "/question-board/post/:id",
+    element: (
+      <>
+        <Header />
+        <QuestionPost />
+      </>
+    ),
+  },
+  {
+    path: "/question-board/post/:id/update",
+    element: (
+      <>
+        <Header />
+        <QuestionBoardUpdateForm />
+      </>
+    ),
+  },
+  {
+    path: "/question-board/post/:id/passwordForm",
+    element: (
+      <>
+        <Header />
+        <QuestionPostPasswordForm />
       </>
     ),
   },

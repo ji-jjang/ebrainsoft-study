@@ -135,9 +135,22 @@ public class SecurityConfig {
                         "/api/v1/free-categories",
                         "/api/v1/free-posts",
                         "/api/v1/free-posts/{postId}",
-                        "/api/v1/attachments/{attachmentId}/download")
+                        "/api/v1/attachments/{attachmentId}/download",
+                        "/api/v1/gallery-categories",
+                        "/api/v1/gallery-posts",
+                        "/api/v1/gallery-posts/{postId}",
+                        "/api/v1/question-categories",
+                        "/api/v1/question-posts")
                     .permitAll()
-                    .requestMatchers(HttpMethod.POST, "/api/v1/auth/login", "/api/v1/register")
+                    .requestMatchers(
+                        HttpMethod.POST,
+                        "/api/v1/auth/login",
+                        "/api/v1/register",
+                        "/api/v1/question-posts",
+                        "/api/v1/question-posts/{postId}",
+                        "/api/v1/question-posts/{postId}/delete")
+                    .permitAll()
+                    .requestMatchers(HttpMethod.PATCH, "/api/v1/question-posts/{postId}")
                     .permitAll()
                     .anyRequest()
                     .hasAnyAuthority("ADMIN", "USER"));
