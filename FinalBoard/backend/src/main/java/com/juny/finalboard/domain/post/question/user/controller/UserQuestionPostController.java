@@ -17,13 +17,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -48,7 +46,7 @@ public class UserQuestionPostController {
       @ModelAttribute ReqCreateQuestionPost req,
       @AuthenticationPrincipal CustomUserDetails userDetails) {
 
-    QuestionPost post = questionService.createQuestionPost(req, userDetails.getId());
+    QuestionPost post = questionService.createQuestionPost(req, userDetails);
 
     ResQuestionPost resQuestionPost = QuestionPostMapper.toResQuestionPost(post);
 
@@ -63,13 +61,15 @@ public class UserQuestionPostController {
    * @param postId 조회할 게시글 아이디
    * @return 질문 상세
    */
-  @GetMapping("/v1/question-posts/{postId}")
-  public ResponseEntity<Object> getQuestionPost(
-      @RequestBody ReqGetQuestionPost req,
+  @PostMapping("/v1/question-posts/{postId}")
+  public ResponseEntity<ResQuestionPost> getQuestionPost(
+      @ModelAttribute ReqGetQuestionPost req,
       @PathVariable Long postId,
       @AuthenticationPrincipal CustomUserDetails userDetails) {
 
     QuestionPost post = questionService.getQuestionPostDetail(postId, req, userDetails);
+
+    questionService.increaseViewCount(postId);
 
     ResQuestionPost resQuestionPost = QuestionPostMapper.toResQuestionPost(post);
 
@@ -137,10 +137,10 @@ public class UserQuestionPostController {
    * @param userDetails 인증 정보
    * @return Void
    */
-  @DeleteMapping("/v1/question-posts/{postId}")
+  @PostMapping("/v1/question-posts/{postId}/delete")
   public ResponseEntity<Void> deleteQuestionPost(
       @PathVariable Long postId,
-      @RequestBody ReqDeleteQuestionPost req,
+      @ModelAttribute ReqDeleteQuestionPost req,
       @AuthenticationPrincipal CustomUserDetails userDetails) {
 
     QuestionPost post =
