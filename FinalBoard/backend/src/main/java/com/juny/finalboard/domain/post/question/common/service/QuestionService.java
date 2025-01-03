@@ -42,16 +42,18 @@ public class QuestionService {
    * - 로그인 하지 않고, 비밀글로 한 사용자는 비밀번호 요청 폼 추가 입력 <br>
    *
    * @param req 질문 생성 폼
-   * @param userId 유저 아이디
+   * @param userDetails 유저 인증 정보
    * @return 생성된 질문
    */
   @Transactional
-  public QuestionPost createQuestionPost(ReqCreateQuestionPost req, Long userId) {
+  public QuestionPost createQuestionPost(ReqCreateQuestionPost req, CustomUserDetails userDetails) {
 
     String userName = Constants.ANONYMOUS_NAME;
-    if (userId != null) {
-      User user = getUser(userId);
-      userName = user.getName();
+    Long userId = null;
+
+    if (userDetails != null) {
+      userName = userDetails.getName();
+      userId = userDetails.getId();
     }
 
     QuestionCategory questionCategory = getQuestionCategory(req.categoryId());
@@ -68,9 +70,9 @@ public class QuestionService {
             .user(User.builder().id(userId).build())
             .build();
 
-    if (userId == null && req.isSecret()) {
+    if (userId == null) {
       if (req.password().isEmpty() || req.passwordConfirm().isEmpty())
-        throw new RuntimeException("password not empty");
+        throw new RuntimeException("retry with password");
 
       if (!req.password().equals(req.passwordConfirm()))
         throw new RuntimeException("password not match");
@@ -119,12 +121,16 @@ public class QuestionService {
             .orElseThrow(
                 () -> new RuntimeException(String.format("post not found postId: %d", postId)));
 
-    Long userId = userDetails.getId();
-    String userRole = userDetails.getRole();
+    Long userId = null;
+    String userRole = null;
+    if (userDetails != null) {
+      userId = userDetails.getId();
+      userRole = userDetails.getRole();
+    }
 
     if (userId != null && userRole.equals(Constants.ADMIN_ROLE)) return post;
 
-    if (!post.getPassword().isEmpty() && post.getIsSecret()) {
+    if (post.getPassword() != null && post.getIsSecret()) {
       if (req.password().isEmpty()) {
         throw new RuntimeException("retry with password");
       }
@@ -134,7 +140,7 @@ public class QuestionService {
       }
     }
 
-    if (post.getPassword().isEmpty() && post.getIsSecret()) {
+    if (post.getPassword() == null && post.getIsSecret()) {
       if (!post.getUser().getId().equals(userId)) {
         throw new RuntimeException(
             String.format("user not match, post's userId: %d", post.getUser().getId()));
@@ -228,12 +234,19 @@ public class QuestionService {
 
     QuestionCategory questionCategory = getQuestionCategory(req.categoryId());
 
-    Long userId = userDetails.getId();
-    String userRole = userDetails.getRole();
+    Long userId = null;
+    String userRole = null;
+    if (userDetails != null) {
+      userId = userDetails.getId();
+      userRole = userDetails.getRole();
+    }
 
-    if (post.getPassword() != null && !post.getPassword().isEmpty()
-        && userRole != null
-        && !userRole.equals(Constants.ADMIN_ROLE)) {
+    if (post.getPassword() != null) {
+
+      if (req.password().isEmpty()) {
+        throw new RuntimeException("retry with password");
+      }
+
       boolean isValid = bCryptPasswordEncoder.matches(req.password(), post.getPassword());
       if (!isValid) {
         throw new RuntimeException("password not match");
@@ -276,12 +289,18 @@ public class QuestionService {
   public void deletePost(
       ReqDeleteQuestionPost req, QuestionPost post, CustomUserDetails userDetails) {
 
-    Long userId = userDetails.getId();
-    String userRole = userDetails.getRole();
+    Long userId = null;
+    String userRole = null;
+    if (userDetails != null) {
+      userId = userDetails.getId();
+      userRole = userDetails.getRole();
+    }
 
-    if (post.getPassword() != null && !post.getPassword().isEmpty()
-        && userRole != null
-        && !userRole.equals(Constants.ADMIN_ROLE)) {
+    if (post.getPassword() != null) {
+
+      if (req.password().isEmpty()) {
+        throw new RuntimeException("retry with password");
+      }
 
       boolean isValid = validatePassword(req.password(), post.getPassword());
 
