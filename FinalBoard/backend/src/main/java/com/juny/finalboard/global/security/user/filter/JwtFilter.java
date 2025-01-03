@@ -101,7 +101,11 @@ public class JwtFilter extends OncePerRequestFilter {
   private void storeSecurityContextHolder(String accessToken) {
 
     User user =
-        User.builder().id(jwtUtil.getId(accessToken)).role(jwtUtil.getRole(accessToken)).build();
+        User.builder()
+            .id(jwtUtil.getId(accessToken))
+            .role(jwtUtil.getRole(accessToken))
+            .name(jwtUtil.getName(accessToken))
+            .build();
 
     CustomUserDetails customUserDetails = new CustomUserDetails(user);
 

@@ -28,8 +28,9 @@ public class JwtUtilTest {
                 .truncatedTo(ChronoUnit.SECONDS));
 
     String role = "USER";
+    String name = "juny";
 
-    String accessToken = jwtUtil.createJwt(id, role, expiredDate);
+    String accessToken = jwtUtil.createJwt(id, role, "juny", expiredDate);
 
     assertThat(accessToken).isNotNull();
 
@@ -38,5 +39,7 @@ public class JwtUtilTest {
     assertThat(jwtUtil.getExpiration(accessToken)).isEqualTo(expiredDate);
 
     assertThat(jwtUtil.getRole(accessToken)).isEqualTo(role);
+
+    assertThat(jwtUtil.getName(accessToken)).isEqualTo(name);
   }
 }

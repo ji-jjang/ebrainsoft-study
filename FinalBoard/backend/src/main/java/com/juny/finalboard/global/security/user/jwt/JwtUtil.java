@@ -76,6 +76,16 @@ public class JwtUtil {
         .get(Constants.ROLE, String.class);
   }
 
+  public String getName(String token) {
+
+    return Jwts.parser()
+        .verifyWith(secretKey)
+        .build()
+        .parseSignedClaims(token)
+        .getPayload()
+        .get(Constants.NAME, String.class);
+  }
+
   /**
    *
    *
@@ -94,11 +104,12 @@ public class JwtUtil {
         .getExpiration();
   }
 
-  public String createJwt(Long id, String role, Date expired) {
+  public String createJwt(Long id, String role, String name, Date expired) {
 
     return Jwts.builder()
         .claim(Constants.ID, id)
         .claim(Constants.ROLE, role)
+        .claim(Constants.NAME, name)
         .issuedAt(new Date())
         .expiration(expired)
         .signWith(secretKey)
