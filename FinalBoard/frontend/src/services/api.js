@@ -33,10 +33,10 @@ api.interceptors.response.use(
     };
 
     if (error.response) {
-      const { code, msg } = error.response.data;
+      const { code, message } = error.response.data;
       errorResponse = {
         code: code || errorResponse.code,
-        message: msg || errorResponse.message,
+        message: message || errorResponse.message,
         status: error.response.status,
       };
     }

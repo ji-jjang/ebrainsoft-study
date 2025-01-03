@@ -39,7 +39,7 @@ const Header = () => {
           <Nav.Link href="/announcement-board">공지사항</Nav.Link>
           <Nav.Link href="/free-board">자유게시판</Nav.Link>
           <Nav.Link href="/gallery-board">갤러리</Nav.Link>
-          <Nav.Link href="/qna-board">문의게시판</Nav.Link>
+          <Nav.Link href="/question-board">문의게시판</Nav.Link>
         </Nav>
         <Nav>
           {isLoggedIn ? (

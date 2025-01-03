@@ -42,8 +42,6 @@ const GalleryPost = () => {
       userIdRef.current = user.id;
 
       setIsPostOwner(userIdRef.current === post.userId);
-
-      console.log(post.galleryImages);
     };
 
     loadGalleryPost();
