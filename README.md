@@ -32,15 +32,15 @@
 
 ### 사용자 홈 화면
 
-![사용자 홈 화면](image-1.png)
+![사용자 홈 화면](./files/image-1.png)
 
 #### 1. 공지사항 게시판
 - 관리자
 
-![관리자 공지사항 게시판](image.png)
+![관리자 공지사항 게시판](./files/image.png)
 - 사용자
 
-![사용자 공지사항 게시판](image-2.png)
+![사용자 공지사항 게시판](./files/image-2.png)
 
 >
 1. 관리자만 게시글 생성, 수정 가능 
@@ -51,15 +51,15 @@
 #### 2. 자유 게시판
 - 관리자
 
-![관리자 자유 게시판](image-3.png)
+![관리자 자유 게시판](./files/image-3.png)
 
 - 사용자
 
-![사용자 자유 게시판](image-4.png)
+![사용자 자유 게시판](./files/image-4.png)
 
-![사용자 자유 게시글 생성 폼](image-6.png)
+![사용자 자유 게시글 생성 폼](./files/image-6.png)
 
-![사용자 자유 상세 게시글](image-5.png)
+![사용자 자유 상세 게시글](./files/image-5.png)
 
 
 >
@@ -69,13 +69,13 @@
 #### 3. 갤러리 게시판
 - 관리자
 
-![관리자 갤러리 게시판](image-7.png)
+![관리자 갤러리 게시판](./files/image-7.png)
 
 - 사용자
 
-![사용자 갤러리 게시판](image-8.png)
+![사용자 갤러리 게시판](./files/image-8.png)
 
-![사용자 갤러리 상세 화면](image-9.png)
+![사용자 갤러리 상세 화면](./files/image-9.png)
 >
 1. 사용자, 관리자 게시글 생성, 조회, 수정, 삭제 가능 (사용자는 자신의 게시글만)
 2. 사용자 이미지 등록 가능 (수정에서 클릭 시 다운로드)
@@ -84,14 +84,14 @@
 #### 4. 문의 게시판
 - 관리자
 
-![관리자 문의 게시판](image-10.png)
+![관리자 문의 게시판](./files/image-10.png)
 
-![관리자 문의글 상세](image-11.png)
+![관리자 문의글 상세](./files/image-11.png)
 
-![관리자 문의글 답변](image-12.png)
+![관리자 문의글 답변](./files/image-12.png)
 - 사용자
 
-![질문 상세](image-13.png)
+![질문 상세](./files/image-13.png)
 
 # ETC
 - 간단한 HTTP 파서(https://github.com/ji-jjang/ebrainsoft-study/tree/main/SimpleHttpParser)
