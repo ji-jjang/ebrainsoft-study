@@ -93,6 +93,13 @@
 
 ![질문 상세](./files/image-13.png)
 
+>
+1. 로그인 하지 않은 사용자도 문의글 작성 가능 (비밀글 가능)
+2. 로그인 하지 않은 사용자, 비밀글 일 때 비밀번호 입력하고 조회 가능
+3. 로그인 하지 않은 비밀글이 아닌 경우 수정, 삭제일 경우 비밀번호 입력하고 수정, 삭제할 수 있도록
+4. 로그인한 사용자가 작성한 글은 자신이 작성한 글만 조회, 수정, 삭제 가능
+5. 관리자는 어떤 게시물이건 조회, 수정, 삭제 가능
+
 # ETC
 - 간단한 HTTP 파서(https://github.com/ji-jjang/ebrainsoft-study/tree/main/SimpleHttpParser)
 - React 빙고 게임(https://github.com/ji-jjang/ebrainsoft-study/tree/main/BingoGame)
